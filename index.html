@@ -1,0 +1,75 @@
+<!doctype html> <!-- HTML5 document -->
+
+<html lang="en"> <!-- root HTML element, page language -->
+
+<head> <!-- metadata, not visible content -->
+
+  <meta charset="UTF-8" /> <!-- enables proper text encoding -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- responsive layout on mobile -->
+
+  <title>Quiz Game</title> <!-- browser tab title -->
+
+  <link rel="stylesheet" href="style.css" /> <!-- connects CSS styling -->
+</head>
+
+<body> <!-- visible page content -->
+
+  <div class="container"> <!-- main quiz wrapper -->
+
+    <div class="screen active" id="start-screen"> <!-- start screen, visible on load -->
+
+      <h1>Quiz Time!</h1> <!-- quiz title -->
+
+      <p>Test your knowledge with these fun questions</p> <!-- short intro text -->
+
+      <button id="start-btn">Start Quiz</button> <!-- button to start the quiz -->
+    </div>
+
+    <div class="screen" id="quiz-screen"> <!-- quiz screen, hidden initially -->
+
+      <div class="quiz-header"> <!-- top section of quiz -->
+
+        <img id="answer-image" alt="Correct answer image" /> <!-- image shown after answering -->
+
+
+
+  <h2 id="question-text">Question goes here</h2> <!-- displays the current quiz question -->
+
+<div class="quiz-info"> <!-- container for question number and score -->
+
+  <p> <!-- question counter text -->
+    Question <span id="current-question">1</span> <!-- current question number -->
+    of
+    <span id="total-questions">5</span> <!-- total number of questions -->
+  </p>
+
+  <p>Score: <span id="score">0</span></p> <!-- current score display -->
+</div>
+</div> <!-- end of quiz-header -->
+
+<div id="answers-container" class="answers-container"> <!-- container for answer buttons -->
+  <!-- answer buttons are created here by JavaScript -->
+</div>
+
+<button id="next-btn" disabled>Next</button> <!-- goes to the next question, disabled until answer -->
+
+<div class="progress-bar"> <!-- container for the progress bar -->
+  <div id="progress" class="progress"></div> <!-- animated progress indicator -->
+</div>
+</div> <!-- end of quiz screen -->
+
+<div id="result-screen" class="screen"> <!-- result screen, hidden until quiz ends -->
+
+<h1>Quiz Results</h1>
+<p id="final-text">You scored <span id="final-score">0</span> out of <span id="max-score">0</span></p>
+<button id="restart-btn" class="primary-btn">Restart Quiz</button>
+
+
+</div>
+</div> <!-- end of main container -->
+
+
+    <script src="script.js"></script> <!-- end of main container -->
+  </body>
+</html>
