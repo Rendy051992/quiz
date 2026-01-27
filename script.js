@@ -1,99 +1,47 @@
-// DOM Elements – references to HTML elements
+// DOM Elements, references to HTML elements
+const startScreen = document.getElementById("start-screen")
+const quizScreen = document.getElementById("quiz-screen")
+const resultScreen = document.getElementById("result-screen")
 
-const startScreen =
-  document.getElementById("start-screen"); /* start screen container */
-const quizScreen =
-  document.getElementById("quiz-screen"); /* quiz screen container */
-const resultScreen =
-  document.getElementById("result-screen"); /* result screen container */
+const startButton = document.getElementById("start-btn")
 
-const startButton =
-  document.getElementById("start-btn"); /* start quiz button */
+const questionText = document.getElementById("question-text")
+const answersContainer = document.getElementById("answers-container")
 
-const questionText =
-  document.getElementById(
-    "question-text",
-  ); /* element showing the question text */
-const answersContainer =
-  document.getElementById(
-    "answers-container",
-  ); /* container for answer buttons */
+const currentQuestionSpan = document.getElementById("current-question")
+const totalQuestionsSpan = document.getElementById("total-questions")
 
-const currentQuestionSpan =
-  document.getElementById("current-question"); /* current question number */
-const totalQuestionsSpan =
-  document.getElementById("total-questions"); /* total number of questions */
+const scoreSpan = document.getElementById("score")
+const finalScoreSpan = document.getElementById("final-score")
+const maxScoreSpan = document.getElementById("max-score")
 
-const scoreSpan =
-  document.getElementById("score"); /* live score during the quiz */
-const finalScoreSpan =
-  document.getElementById("final-score"); /* score shown on result screen */
-const maxScoreSpan =
-  document.getElementById("max-score"); /* maximum possible score */
+const resultMessage = document.getElementById("result-message")
+const restartButton = document.getElementById("restart-btn")
 
-const resultMessage =
-  document.getElementById("result-message"); /* text message on result screen */
-const restartButton =
-  document.getElementById("restart-btn"); /* restart quiz button */
+const progressBar = document.getElementById("progress")
+const answerImage = document.getElementById("answer-image")
 
-const progressBar =
-  document.getElementById("progress"); /* progress bar element */
-const answerImage =
-  document.getElementById(
-    "answer-image",
-  ); /* image shown after selecting an answer */
-
-const nextBtn = document.getElementById("next-btn"); /* next question button */
-
-nextBtn.addEventListener("click", () => {   /* runs code when the Next button is clicked */
-
-  currentQuestionIndex++;                  /* moves to the next question */
-
-  if (currentQuestionIndex < quizQuestions.length) {
-    showQuestion();                        /* shows the next question */
-  } else {
-    showResults();                         /* shows the results screen when quiz ends */
-  }
-});
+const nextBtn = document.getElementById("next-btn")
 
 function shuffleArray(array) {
-  // function used to shuffle quiz questions or answer options
-
   for (let i = array.length - 1; i > 0; i--) {
-    // goes from the last question/answer to the beginning
-
-    const j = Math.floor(Math.random() * (i + 1));
-    // picks a random question/answer index
-
-    [array[i], array[j]] = [array[j], array[i]];
-    // swaps two questions/answers so their order changes
+    const j = Math.floor(Math.random() * (i + 1))
+    const tmp = array[i]
+    array[i] = array[j]
+    array[j] = tmp
   }
+  return array
 }
 
 const quizQuestions = [
-  // array that stores all quiz questions
-
   {
     question: "What is the capital city of Australia?",
-    // the question text shown to the user
-
     correctImage: "images/img1.webp",
-    // image displayed after selecting an answer (used for learning)
-
     answers: [
-      // list of possible answers for this question
-
       { text: "Sydney", correct: false },
-      // answer option, marked as incorrect
-
       { text: "Melbourne", correct: false },
-      // answer option, marked as incorrect
-
       { text: "Canberra", correct: true },
-      // correct answer for this question
-
       { text: "Perth", correct: false },
-      // answer option, marked as incorrect
     ],
   },
   {
@@ -368,7 +316,8 @@ const quizQuestions = [
     ],
   },
   {
-    question: "Which country is the largest island nation in the world (consisting of over 17,000 islands)?",
+    question:
+      "Which country is the largest island nation in the world (consisting of over 17,000 islands)?",
     correctImage: "images/img29.webp",
     answers: [
       { text: "Japan", correct: false },
@@ -387,228 +336,156 @@ const quizQuestions = [
       { text: "Mendoza", correct: false },
     ],
   },
-];
+]
 
 // QUIZ STATE VARS
-let currentQuestionIndex = 0;
- // tracks which quiz question is currently shown
+let currentQuestionIndex = 0
+let score = 0
+let answersDisabled = false
 
-let score = 0;
- // stores the number of correct answers
+totalQuestionsSpan.textContent = quizQuestions.length
+maxScoreSpan.textContent = quizQuestions.length
 
-let answersDisabled = false;
- // prevents clicking multiple answers for one question
+startButton.addEventListener("click", startQuiz)
+restartButton.addEventListener("click", restartQuiz)
 
+nextBtn.addEventListener("click", () => {
+  currentQuestionIndex++
 
-totalQuestionsSpan.textContent = quizQuestions.length;
- // displays total number of questions in the quiz UI
-
-maxScoreSpan.textContent = quizQuestions.length;
- // shows the maximum possible score on the result screen
-
-
-// event listeners
-startButton.addEventListener("click", startQuiz);
- // starts the quiz when the Start button is clicked
-
-restartButton.addEventListener("click", restartQuiz);
- // restarts the quiz when Restart is clicked
-
+  if (currentQuestionIndex < quizQuestions.length) {
+    showQuestion()
+  } else {
+    showResults()
+  }
+})
 
 function startQuiz() {
-  // runs when the quiz starts
+  currentQuestionIndex = 0
+  score = 0
+  scoreSpan.textContent = "0"
 
-  currentQuestionIndex = 0;
-  // resets the quiz to the first question
+  startScreen.classList.remove("active")
+  quizScreen.classList.add("active")
 
-  score = 0;
-  // resets the score
-
-  scoreSpan.textContent = 0;
-  // updates score display in the UI
-
-  startScreen.classList.remove("active");
-  // hides the start screen
-
-  quizScreen.classList.add("active");
-  // shows the quiz screen
-
-  showQuestion();
-  // loads and displays the first quiz question
+  showQuestion()
 }
 
+function resetAnswerUI() {
+  answersDisabled = false
+  answersContainer.classList.remove("answers-disabled")
+
+  answerImage.style.display = "none"
+  answerImage.src = ""
+
+  nextBtn.disabled = true
+}
 
 function showQuestion() {
-  nextBtn.disabled = true; // disables the Next button until the user selects an answer
+  resetAnswerUI()
 
-  // reset state
-  answersDisabled = false;// allows clicking answers again for the new question
+  const currentQuestion = quizQuestions[currentQuestionIndex]
 
-  answersContainer.classList.remove("answers-disabled"); 
-// re-enables hover and clicking on answers for the new question
+  currentQuestionSpan.textContent = String(currentQuestionIndex + 1)
 
+  const progressPercent = (currentQuestionIndex / quizQuestions.length) * 100
+  progressBar.style.width = progressPercent + "%"
 
-  answerImage.style.display = "none"; // hides the learning image from the previous question
+  questionText.textContent = currentQuestion.question
 
-  answerImage.src = ""; // clears the image source so the old image is removed
+  answersContainer.innerHTML = ""
 
-  const currentQuestion = quizQuestions[currentQuestionIndex];
-  // gets the current question object based on the index
+  const shuffledAnswers = shuffleArray([...currentQuestion.answers])
 
-  shuffleArray(currentQuestion.answers);
-  // randomizes the order of answers for this question
+  for (const answer of shuffledAnswers) {
+    const button = document.createElement("button")
+    button.type = "button"
+    button.textContent = answer.text
+    button.classList.add("answer-btn")
+    button.dataset.correct = answer.correct ? "true" : "false"
 
-  currentQuestionSpan.textContent = currentQuestionIndex + 1;
-  // updates the UI to show the current question number
+    // pointerup is much more reliable than click on Android WebView
+    button.addEventListener("pointerup", onAnswerTap, { passive: false })
 
-  const progressPercent = (currentQuestionIndex / quizQuestions.length) * 100;
-  // calculates quiz progress as a percentage
+    // fallback for older environments
+    button.addEventListener("click", onAnswerTap, { passive: false })
 
-  progressBar.style.width = progressPercent + "%";
-  // visually updates the progress bar width
-
-  questionText.textContent = currentQuestion.question;
-  // displays the question text on the page
-
-  answersContainer.innerHTML = "";
-  // removes answer buttons from the previous question
-
-  currentQuestion.answers.forEach((answer) => {
-    // loops through all answers of the current question
-
-    const button = document.createElement("button");
-    // creates a new button for an answer
-
-    button.textContent = answer.text;
-    // sets the answer text on the button
-
-    button.classList.add("answer-btn");
-    // applies quiz answer styling to the button
-
-
-    // what is dataset? it's a property of the button element that allows you to store custom data
-button.dataset.correct = answer.correct;
- // stores whether this answer is correct or not inside the button
-
-button.addEventListener("click", selectAnswer);
- // runs the selectAnswer function when this answer is clicked
-
-answersContainer.appendChild(button);
- // adds the answer button to the page so the user can see and click it
-
-  });
-}
-
-function selectAnswer(event) {
-  // runs when the user clicks an answer
-
-  nextBtn.disabled = false;
-  // enables the Next button so the user can move to the next question
-
-  if (answersDisabled) return;
-  // stops the function if an answer was already selected
-
- answersDisabled = true; 
-// Marks that an answer has already been selected, prevents selecting another one
-
-answersContainer.classList.add("answers-disabled"); 
-// Adds a CSS class to the answers container to disable hover and clicks on all answer buttons
-// This makes the selected answer stay highlighted (green/red) and allows hover only on the Next button
-
-
- const selectedButton = event.target.closest(".answer-btn");
-
- if (!selectedButton) return;
-
-
-  const isCorrect = selectedButton.dataset.correct === "true";
-  // checks if the selected answer is correct (stored in data-correct)
-
-  Array.from(answersContainer.children).forEach((button) => {
-    // loops through all answer buttons for this question
-
-    if (button.dataset.correct === "true") {
-      button.classList.add("correct");
-      // highlights the correct answer in green
-    } else if (button === selectedButton) {
-      button.classList.add("incorrect");
-      // highlights the clicked wrong answer in red
-    }
-
-    const currentQuestion = quizQuestions[currentQuestionIndex];
-    // gets the current quiz question data
-
-    if (currentQuestion.correctImage) {
-      answerImage.src = currentQuestion.correctImage;
-      // sets the learning image for this question
-
-      answerImage.style.display = "block";
-      // shows the image after an answer is selected
-    }
-  });
-
- if (isCorrect) {
-  // checks if the selected answer is correct
-
-  score++;
-  // increases the quiz score by 1
-
-  scoreSpan.textContent = score;
-  // updates the score display on the screen
-}
-
-
-  // setTimeout(() => {
-  //   currentQuestionIndex++;
-
-  //   if (currentQuestionIndex < quizQuestions.length) {
-  //     showQuestion();
-  //   } else {
-  //     showResults();
-  //   }
-  // }, 1000);
-}
-
-function showResults() {
-  // shows the result screen at the end of the quiz
-
-  quizScreen.classList.remove("active");
-  // hides the quiz screen
-
-  resultScreen.classList.add("active");
-  // shows the result screen
-
-  finalScoreSpan.textContent = score;
-  // displays the final score to the user
-
-  const percentage = (score / quizQuestions.length) * 100;
-  // calculates the quiz success percentage
-
-  if (percentage === 100) {
-    resultMessage.textContent = "Perfect! You're a genius!";
-    // message for a perfect score
-  } else if (percentage >= 80) {
-    resultMessage.textContent = "Great job! You know your stuff!";
-    // message for very high score
-  } else if (percentage >= 60) {
-    resultMessage.textContent = "Good effort! Keep learning!";
-    // message for average score
-  } else if (percentage >= 40) {
-    resultMessage.textContent = "Not bad! Try again to improve!";
-    // message for low-average score
-  } else {
-    resultMessage.textContent = "Keep studying! You'll get better!";
-    // message for very low score
+    answersContainer.appendChild(button)
   }
 }
 
+function onAnswerTap(event) {
+  // stop double fire from pointerup plus click
+  event.preventDefault()
+
+  if (answersDisabled) return
+
+  const selectedButton = event.currentTarget
+  if (!selectedButton || !selectedButton.classList.contains("answer-btn")) return
+
+  answersDisabled = true
+  answersContainer.classList.add("answers-disabled")
+  nextBtn.disabled = false
+
+  const isCorrect = selectedButton.dataset.correct === "true"
+
+  // clear old classes just in case
+  const buttons = Array.from(answersContainer.querySelectorAll(".answer-btn"))
+  for (const btn of buttons) {
+    btn.classList.remove("correct")
+    btn.classList.remove("incorrect")
+  }
+
+  // paint result
+  for (const btn of buttons) {
+    if (btn.dataset.correct === "true") {
+      btn.classList.add("correct")
+    } else if (btn === selectedButton) {
+      btn.classList.add("incorrect")
+    }
+  }
+
+  // update score exactly once
+  if (isCorrect) {
+    score += 1
+    scoreSpan.textContent = String(score)
+  }
+
+  // show image after UI paint, helps Android repaint timing
+  const currentQuestion = quizQuestions[currentQuestionIndex]
+  if (currentQuestion.correctImage) {
+    answerImage.style.display = "block"
+
+    // force a layout read, nudges some Android WebViews to repaint
+    void answerImage.offsetHeight
+
+    requestAnimationFrame(() => {
+      answerImage.src = currentQuestion.correctImage
+    })
+  }
+}
+
+function showResults() {
+  quizScreen.classList.remove("active")
+  resultScreen.classList.add("active")
+
+  finalScoreSpan.textContent = String(score)
+
+  const percentage = (score / quizQuestions.length) * 100
+
+  if (percentage === 100) {
+    resultMessage.textContent = "Perfect! You're a genius!"
+  } else if (percentage >= 80) {
+    resultMessage.textContent = "Great job! You know your stuff!"
+  } else if (percentage >= 60) {
+    resultMessage.textContent = "Good effort! Keep learning!"
+  } else if (percentage >= 40) {
+    resultMessage.textContent = "Not bad! Try again to improve!"
+  } else {
+    resultMessage.textContent = "Keep studying! You'll get better!"
+  }
+}
 
 function restartQuiz() {
-  // runs when the user clicks the Restart button
-
-  resultScreen.classList.remove("active");
-  // hides the result screen
-
-  startQuiz();
-  // starts the quiz again from the beginning
+  resultScreen.classList.remove("active")
+  startQuiz()
 }
