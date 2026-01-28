@@ -406,8 +406,7 @@ function showQuestion() {
     // pointerup is much more reliable than click on Android WebView
     button.addEventListener("pointerup", onAnswerTap, { passive: false })
 
-    // fallback for older environments
-    button.addEventListener("click", onAnswerTap, { passive: false })
+
 
     answersContainer.appendChild(button)
   }
@@ -415,7 +414,7 @@ function showQuestion() {
 
 function onAnswerTap(event) {
   // stop double fire from pointerup plus click
-  event.preventDefault()
+
 
   if (answersDisabled) return
 
