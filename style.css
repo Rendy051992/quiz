@@ -102,8 +102,9 @@ background-color: #061733;
 #start-screen p,
 #result-screen p {
   color: #868282; /* farba textu v Start a Result boxe */
-  margin-bottom: 30px; /* medzera pod textom */
-  font-size: 1.1rem; /* veľkosť textu v Start a Result boxe */
+ margin-bottom: 40px;
+line-height: 1.5;
+
 }
 
 /* =========================
@@ -448,7 +449,7 @@ button {
   position: absolute;
   inset: 0;
   z-index: 0;
- background: url("./assets/splash.png") center / cover no-repeat;
+ background: url("./assets/splash.webp") center / cover no-repeat;
 
 
 
