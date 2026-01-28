@@ -489,6 +489,27 @@ button {
 }
 
 /* hidden state (we will toggle this from JS) */
+.splash{
+  opacity: 1;
+  filter: blur(0px);
+  transition:
+    opacity 900ms ease-out,
+    filter 900ms ease-out;
+}
+
+.splash.is-hiding{
+  opacity: 0;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+
+.splash.is-hiding{
+  opacity: 0;
+  pointer-events: none;
+}
+
 .splash.is-hidden{
   display: none;
 }
+

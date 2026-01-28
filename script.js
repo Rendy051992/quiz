@@ -495,7 +495,15 @@ window.addEventListener("load", () => {
   if (!splash) return;
 
   const MIN_MS = 1500;
+  const FADE_MS = 400;
+
   setTimeout(() => {
-    splash.classList.add("is-hidden");
+    splash.classList.add("is-hiding");
+
+    setTimeout(() => {
+      splash.classList.add("is-hidden");
+    }, FADE_MS);
+
   }, MIN_MS);
 });
+
