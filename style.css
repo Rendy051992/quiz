@@ -14,10 +14,15 @@
    Toto je to, čo vidíš okolo hlavného boxu quizu
    ========================= */
 body {
-  min-height: 100vh; /* výška stránky aspoň ako výška okna, aby sa to centrovalo */
-  display: flex; /* umožní centrovanie hlavného boxu */
-  justify-content: center; /* centrovanie hlavného boxu horizontálne */
-  align-items: center; /* centrovanie hlavného boxu vertikálne */
+  min-height: 100dvh; /* toto je nová, "inteligentná" výška */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+width: 100%;
+overflow-x: hidden;
+background-color: #061733;
+
 
   /* Toto je pozadie celej stránky, nie box Start alebo Result */
   background:
@@ -341,28 +346,49 @@ button {
    ========================= */
 @media (max-width: 600px) {
   body {
-    min-height: 100dvh; /* lepšie pre mobil, rešpektuje dynamickú výšku */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+    #quiz-screen {
+    padding: 16px;
   }
 
   .container {
-    width: min(94vw, 520px); /* karta je skoro celá šírka mobilu */
-    margin: 18px auto; /* okraje okolo karty */
-    padding-bottom: calc(18px + env(safe-area-inset-bottom)); /* aby to nešlo pod iPhone bar */
-    backdrop-filter: blur(10px); /* menší blur na mobile */
+    width: min(94vw, 520px);
+    margin: 0;
+    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
+  .screen {
+    padding: 0;
+  }
+
+ #start-screen, #result-screen {
+    padding: 2rem 1.6rem;
+  }
+
+  #start-screen h1, #result-screen h1 {
+    margin: 0 0 12px 0;
+  }
+
+  #start-screen p, #result-screen p {
+    margin: 0 0 18px 0;
+  }
+
 
   #answer-image {
-    width: min(72vw, 300px); /* obrázok sa prispôsobí šírke mobilu */
-    max-height: 18vh; /* aby nezabil celý screen */
-    margin: 4px auto 8px; /* menšie medzery */
+    width: min(72vw, 300px);
+    max-height: 18vh;
+    margin: 4px auto 8px;
   }
 }
 
 @media (max-width: 500px) {
-  .screen {
-    padding: 1rem; /* menší padding screenov na veľmi malom mobile */
-  }
+ .screen {
+  padding: 0;
+}
+
 
   #start-screen h1,
   #result-screen h1 {
@@ -389,6 +415,9 @@ button {
   }
 }
 
+
+
+
 /* =========================
    EXTRA SAFETY, vypne hover efekty na touch zariadeniach
    Toto rieši "vyznačenú odpoveď bez click" na mobile po reloadoch
@@ -406,15 +435,13 @@ button {
 
 
 /* SPLASH OVERLAY (covers whole screen) */
-.splash{
+.splash {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
 }
+
+
 
 /* background image full screen */
 .splash .bg{
@@ -512,4 +539,55 @@ button {
 .splash.is-hidden{
   display: none;
 }
+
+/* ROTATE OVERLAY – default hidden */
+#rotate-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 40, 0.97);
+  color: #fff;
+  font-size: 1.3rem;
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* ROTATE OVERLAY, default hidden */
+/* ROTATE OVERLAY – default hidden */
+#rotate-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 40, 0.97);
+  color: #fff;
+  font-size: 1.3rem;
+  z-index: 100000;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* PHONE LANDSCAPE – FORCE ROTATE MESSAGE (reliable for iPhone) */
+@media (max-height: 500px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  #rotate-overlay {
+    display: flex !important;
+  }
+
+  .container {
+    display: none !important;
+  }
+
+  body {
+    overflow: hidden;
+  }
+}
+
+
+
+
+
 
