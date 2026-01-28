@@ -343,6 +343,9 @@ let currentQuestionIndex = 0
 let score = 0
 let answersDisabled = false
 
+// Dedupe for mobile: ignore click right after pointerdown
+let lastPointerDownAt = 0
+
 totalQuestionsSpan.textContent = quizQuestions.length
 maxScoreSpan.textContent = quizQuestions.length
 
@@ -403,18 +406,22 @@ function showQuestion() {
     button.classList.add("answer-btn")
     button.dataset.correct = answer.correct ? "true" : "false"
 
-    // pointerup is much more reliable than click on Android WebView
-    button.addEventListener("pointerup", onAnswerTap, { passive: false })
-
-
+    // FIX 1: instant feedback (pointerdown) + click fallback
+    // pointerdown = no "delay until you release finger"
+    button.addEventListener("pointerdown", onAnswerTap, { passive: true })
+    button.addEventListener("click", onAnswerTap)
 
     answersContainer.appendChild(button)
   }
 }
 
 function onAnswerTap(event) {
-  // stop double fire from pointerup plus click
-
+  // FIX 2: prevent double-fire (click after pointerdown on mobile)
+  if (event.type === "pointerdown") {
+    lastPointerDownAt = Date.now()
+  } else if (event.type === "click") {
+    if (Date.now() - lastPointerDownAt < 700) return
+  }
 
   if (answersDisabled) return
 
@@ -427,38 +434,34 @@ function onAnswerTap(event) {
 
   const isCorrect = selectedButton.dataset.correct === "true"
 
-  // clear old classes just in case
   const buttons = Array.from(answersContainer.querySelectorAll(".answer-btn"))
   for (const btn of buttons) {
     btn.classList.remove("correct")
     btn.classList.remove("incorrect")
   }
 
-  // paint result
-  for (const btn of buttons) {
-    if (btn.dataset.correct === "true") {
-      btn.classList.add("correct")
-    } else if (btn === selectedButton) {
-      btn.classList.add("incorrect")
-    }
-  }
+  // FIX 3: paint selected directly (no fragile btn === selectedButton loop logic)
+  selectedButton.classList.add(isCorrect ? "correct" : "incorrect")
 
-  // update score exactly once
+  // Always show the correct answer too (even when user is wrong)
+  const correctBtn = answersContainer.querySelector('[data-correct="true"]')
+  if (correctBtn) correctBtn.classList.add("correct")
+
   if (isCorrect) {
     score += 1
     scoreSpan.textContent = String(score)
   }
 
-  // show image after UI paint, helps Android repaint timing
+  // Show image AFTER the highlight paints (prevents "red appears late" feeling)
   const currentQuestion = quizQuestions[currentQuestionIndex]
   if (currentQuestion.correctImage) {
     answerImage.style.display = "block"
 
-    // force a layout read, nudges some Android WebViews to repaint
-    void answerImage.offsetHeight
-
+    // 2x rAF: 1st frame paints red/green, 2nd frame swaps the image
     requestAnimationFrame(() => {
-      answerImage.src = currentQuestion.correctImage
+      requestAnimationFrame(() => {
+        answerImage.src = currentQuestion.correctImage
+      })
     })
   }
 }
@@ -490,19 +493,17 @@ function restartQuiz() {
 }
 
 window.addEventListener("load", () => {
-  const splash = document.getElementById("splash");
-  if (!splash) return;
+  const splash = document.getElementById("splash")
+  if (!splash) return
 
-  const MIN_MS = 1500;
-  const FADE_MS = 400;
+  const MIN_MS = 1500
+  const FADE_MS = 400
 
   setTimeout(() => {
-    splash.classList.add("is-hiding");
+    splash.classList.add("is-hiding")
 
     setTimeout(() => {
-      splash.classList.add("is-hidden");
-    }, FADE_MS);
-
-  }, MIN_MS);
-});
-
+      splash.classList.add("is-hidden")
+    }, FADE_MS)
+  }, MIN_MS)
+})
