@@ -489,3 +489,13 @@ function restartQuiz() {
   resultScreen.classList.remove("active")
   startQuiz()
 }
+
+window.addEventListener("load", () => {
+  const splash = document.getElementById("splash");
+  if (!splash) return;
+
+  const MIN_MS = 1500;
+  setTimeout(() => {
+    splash.classList.add("is-hidden");
+  }, MIN_MS);
+});
