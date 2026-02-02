@@ -7,30 +7,28 @@
   padding: 0; /* ruší defaultné vnútorné odsadenie */
   box-sizing: border-box; /* padding a border sa započítajú do šírky a výšky elementov */
   font-family: "Poppins", sans-serif; /* font pre všetky texty na stránke */
+  /* ... tvoje existujúce nastavenia ... */
+  -webkit-tap-highlight-color: transparent; /* Zruší ten škaredý sivý rámček pri ťuknutí na mobile */
+  -webkit-touch-callout: none;              /* Zruší menu pri dlhom podržaní (ako v prehliadači) */
+  user-select: none;                        /* Hráč nebude môcť omylom označiť text v menu */
+  
 }
+
+
 
 /* =========================
    PAGE BACKGROUND, pozadie celej stránky, nie karta
    Toto je to, čo vidíš okolo hlavného boxu quizu
    ========================= */
 body {
-  min-height: 100dvh; /* toto je nová, "inteligentná" výška */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  min-height: 100dvh;
   margin: 0;
-width: 100%;
-overflow-x: hidden;
-background-color: #061733;
-
-
-  /* Toto je pozadie celej stránky, nie box Start alebo Result */
-  background:
-    radial-gradient(circle at 50% 20%, rgba(70, 130, 255, 0.18), transparent 45%), /* svetlý modrý "glow" hore */
-    radial-gradient(circle at 20% 80%, rgba(0, 255, 200, 0.10), transparent 40%), /* jemný zeleno modrý glow dole */
-    linear-gradient(180deg, #0b0f1a 0%, #070a12 60%, #060811 100%); /* hlavný tmavý gradient */
+  display: flex;           /* TOTO */
+  justify-content: center;  /* TOTO vycentruje vodorovne */
+  align-items: center;      /* TOTO vycentruje zvisle */
+  background-color: #040914; /* Tvoja farba */
+  overflow-x: hidden;       /* Poistka proti posúvaniu do strán */
 }
-
 /* =========================
    MAIN CARD CONTAINER, hlavná karta, čo drží všetky screeny
    Toto je ten veľký box okolo Start, Quiz, Result
@@ -70,42 +68,101 @@ background-color: #061733;
 }
 
 /* =========================
-   START BOX a RESULT BOX, rovnaký vzhľad
-   Toto je VNÚTORNÝ tmavý box Start a Result
-   Toto nie je celá stránka, a nie je to hlavná container karta
+   START SCREEN (Nedotknutý, len uprataný)
    ========================= */
-#start-screen,
+#start-screen {
+  display: none !important; /* TOTO JU TOTÁLNE VYPNI PRI ŠTARTE */
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 9, 20, 0.98);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Toto pravidlo povie: ukáž sa LEN vtedy, ak máš triedu 'active' */
+#start-screen.active {
+  display: flex !important;
+}
+
+/* =========================
+   RESULT SCREEN (Nový vylepšený dizajn)
+   ========================= */
+/* =========================
+   VYLEPŠENÝ RESULT SCREEN
+   ========================= */
 #result-screen {
-  background: rgba(0, 0, 0, 0.55); /* pozadie konkrétneho boxu Start a Result */
-  backdrop-filter: blur(12px); /* sklo efekt priamo na Start a Result boxe */
-  -webkit-backdrop-filter: blur(12px); /* Safari verzia blur */
-  border-radius: 20px; /* zaoblenie rohov Start a Result boxu */
-  padding: 2.5rem; /* vnútorné odsadenie Start a Result boxu */
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6); /* tieň Start a Result boxu */
+  position: fixed !important; /* Vytrhne kartu z kontajnera */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999; /* Musí byť nad všetkým */
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.98) 0%, #040914 100%);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  
+  display: none; /* JS prepne na flex */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
-/* =========================
-   Nadpisy na Start a Result
-   Ovplyvňuje len h1 v Start a Result boxe
-   ========================= */
-#start-screen h1,
+/* Keď JS pridá triedu active, obrazovka sa ukáže */
+#result-screen.active {
+  display: flex !important;
+}
+
+/* Samotná karta s výsledkom */
+.result-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 40px;
+  padding: 40px 20px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
 #result-screen h1 {
-  font-size: 2.5rem; /* veľkosť nadpisu Quiz Time, Quiz Results */
-  margin-bottom: 20px; /* medzera pod nadpisom */
-  color: #218c1d; /* farba nadpisu len v Start a Result */
+  font-size: 32px;
+  color: #fff;
+  margin-bottom: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
-/* =========================
-   Texty na Start a Result
-   Ovplyvňuje len p v Start a Result boxe
-   ========================= */
-#start-screen p,
 #result-screen p {
-  color: #868282; /* farba textu v Start a Result boxe */
- margin-bottom: 40px;
-line-height: 1.5;
-
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  margin-bottom: 30px;
 }
+
+/* FIALOVÝ RESTART BUTTON */
+#restart-btn {
+  width: 100%;
+  padding: 20px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(135deg, #7d44ff, #a580ff);
+  color: white;
+  font-size: 20px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 0 15px 35px rgba(125, 68, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+#restart-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 5px 15px rgba(125, 68, 255, 0.2);
+}
+
+
 
 /* =========================
    QUIZ HEADER a QUESTION, hlavná otázka v quiz screene
@@ -277,46 +334,167 @@ line-height: 1.5;
    BUTTONS, všeobecné tlačidlá Start, Next, Restart
    Toto ovplyvní všetky button elementy, ak nemajú vlastný override
    ========================= */
-button {
-  background-color: #601f03; /* základná farba tlačidiel, hlavne Start a Restart */
-  color: #fff; /* farba textu tlačidiel */
-  border: none; /* bez okraja */
-  border-radius: 10px; /* zaoblenie tlačidla */
+/* CONTAINER PRE START SCREEN */
+#start-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.5); /* Tmavý podklad pod kartou */
+  display: none; /* JavaScript to zapne cez .active */
+  justify-content: center;
+  align-items: center;
 
-  padding: 15px 30px; /* veľkosť tlačidla */
-  font-size: 1.1rem; /* veľkosť textu */
-  transition: background-color 0.3s ease; /* plynulý hover pre farbu */
 }
 
-/* =========================
-   NEXT button, špeciálny štýl len pre tlačidlo Next
-   Aby ladilo s "glass" dizajnom odpovedí
-   ========================= */
-#next-btn {
-  background: rgba(10, 20, 40, 0.55); /* pozadie Next tlačidla */
-  border: 1px solid rgba(120, 200, 255, 0.45); /* okraj Next tlačidla */
-  color: rgba(235, 245, 255, 0.95); /* farba textu */
-  border-radius: 12px; /* zaoblenie Next tlačidla */
-
-  box-shadow:
-    0 0 0 1px rgba(120, 200, 255, 0.18),
-    0 0 26px rgba(80, 170, 255, 0.20);
+#start-screen.active {
+  display: flex !important;
 }
 
-/* Disabled Next, keď ešte nič neklikla */
-#next-btn:disabled {
-  opacity: 0.45; /* vyzerá sivšie */
-  cursor: not-allowed; /* zakázaný kurzor */
+/* HLAVNÁ KARTA */
+.start-card {
+  position: relative;
+  z-index: 10001 !important; /* Toto zabezpečí, že kartu uvidíš nad čiernym pozadím */
+  width: 90%;
+  max-width: 370px;
+  background: rgba(15, 23, 42, 0.8); 
+  backdrop-filter: blur(25px); 
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.2); 
+  border-radius: 40px; 
+  padding: 50px 30px;
+  text-align: center;
+  box-shadow: 0 25px 50px rgba(2, 13, 58, 0.866), inset 0 0 20px rgba(125, 68, 255, 0.1); 
+  overflow: hidden;
+  margin: auto; /* Pomôže s centrovaním */
 }
 
-/* Hover pre buttony iba na PC */
-@media (hover: hover) and (pointer: fine) {
-  #start-btn:hover,
-  #next-btn:hover:enabled,
-  #restart-btn:hover {
-    background-color: #ab4f33; /* hover farba buttonov */
-    cursor: pointer;
+#start-screen.active {
+  display: flex !important;
+}
+
+
+
+/* PODNADPISEK */
+.ready-text {
+  font-size: 16px;
+  font-weight: 800;
+  color: #44ff63; /* svetlo zelená farba GET READY */
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* NADPIS */
+#start-screen h1 {
+  font-size: 36px;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 40px;
+  line-height: 1.1;
+  text-shadow: 0 10px 20px rgba(6, 62, 130, 0.3); /* jemný tieň pod textom Classic Quiz   */
+}
+
+/* IKONA V STREDE - Plávajúca zemeguľa */
+.start-icon-wrap {
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(125, 68, 255, 0.2) 0%, transparent 70%); /* jemný glow pozadia okolo zemegule 🌍  */
+  border-radius:50%;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 50px;
+  font-size: 65px;
+  position: relative;
+  animation: floatEmoji 4s ease-in-out infinite;
+}
+
+/* TLAČIDLO "LET'S GO" */
+
+@keyframes buttonGlow {
+  0% { 
+    box-shadow: 0 10px 25px rgba(125, 68, 255, 0.4); 
+    transform: scale(1);
   }
+  50% { 
+    box-shadow: 0 15px 40px rgba(125, 68, 255, 0.7); 
+    transform: scale(1.02); /* Jemné zväčšenie pri pulze */
+  }
+  100% { 
+    box-shadow: 0 10px 25px rgba(125, 68, 255, 0.4); 
+    transform: scale(1);
+  }
+}
+#start-btn {
+  
+  width: 100%;
+  padding: 22px;
+  border: none;
+  border-radius: 25px; /* zaoblené tlačidlo */
+  background: linear-gradient(135deg, #7d44ff, #a580ff);
+  color: white;
+  font-size: 22px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 0 15px 35px rgba(125, 68, 255, 0.5);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#start-btn:active {
+  transform: scale(0.9) rotate(-1deg);
+  box-shadow: 0 5px 15px rgba(125, 68, 255, 0.3);
+}
+
+/* ANIMÁCIE zemegule */
+@keyframes slideIn3D {
+  0% { opacity: 0; transform: translateZ(-200px) translateY(100px) rotateX(-20deg); }
+  100% { opacity: 1; transform: translateZ(0) translateY(0) rotateX(0); }
+}
+
+@keyframes floatEmoji {
+  0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 10px rgba(125, 68, 255, 0)); }
+  50% { transform: translateY(-20px) scale(1.05); filter: drop-shadow(0 15px 25px rgba(125, 68, 255, 0.4)); }
+}
+
+#next-btn {
+    width: 100%;
+    padding: 18px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    /* Vzhľad, keď je AKTÍVNY */
+    background: linear-gradient(135deg, #7d44ff, #a580ff);
+    color: white;
+    box-shadow: 0 10px 20px rgba(125, 68, 255, 0.3);
+}
+
+/* Vzhľad, keď je ZABLOKOVANÝ (disabled) */
+#next-btn:disabled {
+    background: rgba(255, 255, 255, 0.1); /* Veľmi jemná sivá/priehľadná */
+    color: rgba(255, 255, 255, 0.3); /* Nevýrazný text */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: scale(1); /* Žiadny pohyb pri kliknutí */
+    filter: grayscale(1); /* Odstráni farbu */
+}
+
+/* Efekt pri kliknutí na aktívne tlačidlo */
+#next-btn:enabled:active {
+    transform: scale(0.95);
+    filter: brightness(1.2);
 }
 
 /* =========================
@@ -365,9 +543,7 @@ button {
     padding: 0;
   }
 
- #start-screen, #result-screen {
-    padding: 2rem 1.6rem;
-  }
+
 
   #start-screen h1, #result-screen h1 {
     margin: 0 0 12px 0;
@@ -395,6 +571,8 @@ button {
   #result-screen h1 {
     font-size: 2rem; /* menší nadpis na mobile */
   }
+
+  
 
   .question-text,
   #question-text {
@@ -435,126 +613,52 @@ button {
 }
 
 
-/* SPLASH OVERLAY (covers whole screen) */
+/* SPLASH, fullscreen, clean */
 .splash {
   position: fixed;
   inset: 0;
+  width: 100vw;
+  height: 100svh;
+  min-height: 100vh;
   z-index: 9999;
+
+  background: #040914;
+  opacity: 1;
+  pointer-events: auto;
+
+  transition: opacity 900ms ease-out;
 }
 
-
-
-/* background image full screen */
-.splash .bg{
+/* Background image layer */
+.splash .bg {
   position: absolute;
-  inset: 0;
-  z-index: 0;
- background: url("./assets/splash.webp") center / cover no-repeat;
+inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bottom)) 0;  z-index: 0;
 
-
-
+  background: url("./assets/splash.webp") center / cover no-repeat;
   transform: scale(1.02);
   filter: saturate(1.05) contrast(1.05);
 }
 
-/* dark overlay */
-.splash .overlay{
+/* Dark overlay layer, keep it simple so no line appears */
+.splash .overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: radial-gradient(circle at center, rgba(0,0,0,0.25), rgba(0,0,0,0.75));
+
+  background: rgba(0, 0, 0, 0.45);
 }
 
-/* loader content */
-.splash .loaderWrap{
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  text-align: center;
-  padding: 24px;
-}
-
-.splash .logoText{
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  font-size: 22px;
-  color: #fff;
-  opacity: 0.95;
-}
-
-.splash .ring{
-  width: 54px;
-  height: 54px;
-  border-radius: 999px;
-  border: 4px solid rgba(255,255,255,0.18);
-  border-top-color: rgba(255,255,255,0.95);
-  animation: splashSpin 900ms linear infinite;
-}
-
-.splash .dots{
-  display: flex;
-  gap: 6px;
-}
-.splash .dot{
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.85);
-  animation: splashBounce 800ms ease-in-out infinite;
-  opacity: 0.7;
-}
-.splash .dot:nth-child(2){ animation-delay: 120ms; }
-.splash .dot:nth-child(3){ animation-delay: 240ms; }
-
-@keyframes splashSpin { to { transform: rotate(360deg); } }
-@keyframes splashBounce {
-  0%, 100% { transform: translateY(0); opacity: 0.55; }
-  50% { transform: translateY(-6px); opacity: 1; }
-}
-
-/* hidden state (we will toggle this from JS) */
-.splash{
-  opacity: 1;
-  filter: blur(0px);
-  transition:
-    opacity 900ms ease-out,
-    filter 900ms ease-out;
-}
-
-.splash.is-hiding{
-  opacity: 0;
-  filter: blur(6px);
-  pointer-events: none;
-}
-
-
-.splash.is-hiding{
+/* Fade out state */
+.splash.is-hiding {
   opacity: 0;
   pointer-events: none;
 }
 
-.splash.is-hidden{
-  display: none;
+/* Fully hidden state */
+.splash.is-hidden {
+  display: none !important;
 }
 
-/* ROTATE OVERLAY – default hidden */
-#rotate-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 20, 40, 0.97);
-  color: #fff;
-  font-size: 1.3rem;
-  z-index: 10000;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 2rem;
-}
 
 /* ROTATE OVERLAY, default hidden */
 /* ROTATE OVERLAY – default hidden */
@@ -588,7 +692,332 @@ button {
 }
 
 
+.hidden { display: none !important; }
 
 
 
 
+
+
+/* =========================================
+   NEXT-GEN MOBILE MENU DESIGN
+   ========================================= */
+
+#home-screen {
+  position: fixed;
+  inset: 0;
+  background: #040914;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 9999;
+}
+
+.menu-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+#home-screen .menu-title {
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin-bottom: 10px;
+  
+  /* 1. Najprv nastavíme farbu/gradient */
+  background: linear-gradient(to bottom, #ffffff 40%, #88aaff 100%);
+  
+  /* 2. POTOM povieme, že sa má orezať na text */
+  background-clip: text;
+  -webkit-background-clip: text;
+  
+  /* 3. A nakoniec spriehľadníme pôvodnú farbu písma, aby sa ukázal gradient pod ním */
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  opacity: 0; /* Na začiatku je neviditeľný */
+  animation: entranceTitle 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes entranceTitle {
+  from { 
+    opacity: 0; 
+    transform: scale(0.8); /* Začne menší */
+    filter: blur(10px);    /* Začne rozmazaný pre snový efekt */
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1);   /* Skončí v plnej veľkosti */
+    filter: blur(0);       /* Úplne ostrý */
+  }
+}
+
+
+
+
+
+.menu-subtitle {
+  color: rgba(255,255,255,0.4);
+  font-size: 14px;
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+
+/* 1. KONTAJNER PRE KARTY */
+.menu-grid {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+  /* Animácia celého kontajnera zostáva */
+  animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 2. ZÁKLAD KARTY - Pridaný jemný efekt bez rizika zmiznutia */
+.category-card {
+  position: relative;
+  border: none !important;
+  border-radius: 30px;
+  padding: 24px !important;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  background: #121a2b !important;
+  transition: transform 0.2s ease, background 0.2s ease;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  
+  /* Odstránili sme opacity: 0, aby karty nikdy nezmizli */
+}
+
+/* 3. ŠPECIFICKÉ FARBY A PULZOVANIE (Tvoj pôvodný funkčný systém) */
+/* Quiz - Purple */
+.card-quiz { border-bottom: 4px solid #ffaa00 !important; } /* Amber Gold */
+.card-quiz .card-icon { background: rgba(255, 170, 0, 0.15); }
+.card-quiz .card-label { color: #ffcc66; }
+
+/* Flags - Pink */
+.card-flags { border-bottom: 4px solid #2d30ff !important; animation: pulseFlags 3s infinite 0.5s; }
+@keyframes pulseFlags {
+  0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 45, 133, 0.4); }
+}
+
+/* Map - Blue */
+.card-map { border-bottom: 4px solid #00d2ff !important; animation: pulseMap 3s infinite 1s; }
+@keyframes pulseMap {
+  0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  50% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); }
+}
+
+/* 4. OSTATNÉ PRVKY (Ikona, Text, Šípka) */
+.category-card:active {
+  transform: scale(0.96);
+}
+
+.card-glow {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(circle at 0% 0%, rgba(255,255,255,0.1), transparent 60%);
+  pointer-events: none;
+}
+
+.card-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  flex-shrink: 0;
+}
+
+/* Animácia ikony pri stlačení na mobile */
+.category-card:active .card-icon {
+  transform: scale(1.2) rotate(-8deg); /* Výraznejšie zväčšenie */
+  background: rgba(255, 255, 255, 0.2) !important;
+  transition: transform 0.05s ease-out; /* Bleskový štart (50ms) */
+}
+
+.card-content {
+  flex: 1;
+  text-align: left;
+}
+
+.card-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.card-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+}
+
+
+/* ZÁKLADNÝ ŠTÝL ŠÍPKY */
+.card-arrow {
+  position: relative;
+  width: 15px;
+  height: 15px;
+  
+  /* Vytvorenie hrotu šípky */
+  border-right: 4px solid currentColor; 
+  border-top: 4px solid currentColor;
+  transform: rotate(45deg); 
+
+  /* TOTO ODSTRÁNI TÚ MALÚ ŠÍPKU (TEXTOVÝ ZNAK) */
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent; /* Poistka pre text */
+
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-right: 25px; /* Trochu väčší odstup od kraja */
+}
+
+/* INDIVIDUÁLNE FARBY A ŽIARA */
+
+/* Quiz - Fialová */
+.card-quiz .card-arrow {
+  color: #a155ff !important;
+  filter: drop-shadow(0 0 8px rgba(161, 85, 255, 0.8));
+}
+
+/* Flags - Zelená */
+.card-flags .card-arrow {
+  color: #2ed573 !important;
+  filter: drop-shadow(0 0 8px rgba(46, 213, 115, 0.8));
+}
+
+/* Maps - Modrá */
+.card-map .card-arrow {
+  color: #00a8ff !important;
+  filter: drop-shadow(0 0 8px rgba(0, 168, 255, 0.8));
+}
+
+/* ANIMÁCIA PRI KLIKNUTÍ */
+.category-card:active .card-arrow {
+  transform: rotate(45deg) translate(5px, -5px) scale(1.2);
+  filter: brightness(1.5);
+}
+
+  
+
+
+
+
+
+/* INDIVIDUÁLNE FARBY */
+
+/* Quiz - Vibrant Violet */
+.card-quiz { border-bottom: 4px solid #7d44ff !important; }
+.card-quiz .card-icon { background: rgba(125, 68, 255, 0.2); }
+.card-quiz .card-label { color: #b08dff; }
+
+.card-quiz {
+  /* Pridáme 'glow' efekt, ktorý animácia bude meniť */
+  animation: pulseGlow 2s infinite ease-in-out !important;
+  border-color: #7d44ff !important;
+}
+
+@keyframes pulseGlow {
+  0% { 
+    box-shadow: 0 0 5px rgba(125, 68, 255, 0.4);
+    filter: brightness(1);
+  }
+  50% { 
+    /* Tu pridáme silné žiarenie */
+    box-shadow: 0 0 25px rgba(125, 68, 255, 0.8), inset 0 0 10px rgba(125, 68, 255, 0.3);
+    filter: brightness(1.2); /* Karta jemne zasvieti */
+    transform: scale(1.01); /* Mierne sa zväčší */
+  }
+  100% { 
+    box-shadow: 0 0 5px rgba(125, 68, 255, 0.4);
+    filter: brightness(1);
+  }
+}
+/* Flags - Neon Pink */
+/* Stredná karta - zmena na modernú smaragdovú zelenú */
+.card-flags { 
+  border-bottom: 4px solid #2ecc71 !important; 
+}
+
+.card-flags .card-icon { 
+  background: rgba(46, 204, 113, 0.15); 
+}
+
+.card-flags .card-label { 
+  color: #a8e6cf; 
+}
+
+/* FLAGS - Ružové pulzovanie */
+.card-flags {
+  animation: pulseFlags 3.5s infinite ease-in-out !important; /* Trochu iná rýchlosť, aby to nepulzovalo naraz */
+}
+@keyframes pulseFlags {
+  0%, 100% { box-shadow: 0 4px 15px rgba(46, 213, 115, 0.3); } /* Seafoam Green */
+  50% { box-shadow: 0 0 30px rgba(46, 213, 115, 0.6); }
+}
+
+/* Map - Electric Blue */
+.card-map { border-bottom: 4px solid #00d2ff !important; }
+.card-map .card-icon { background: rgba(0, 210, 255, 0.2); }
+.card-map .card-label { color: #70e4ff; }
+
+.card-map {
+  animation: pulseMap 4s infinite ease-in-out !important;
+}
+@keyframes pulseMap {
+  0%, 100% { box-shadow: 0 4px 15px rgba(0, 168, 255, 0.3); } /* Neon Blue */
+  50% { box-shadow: 0 0 30px rgba(0, 168, 255, 0.6); }
+}
+
+/* ABSOLÚTNE VYPNUTIE VŠETKÉHO, ČO NEMÁ BYŤ VIDIEŤ */
+
+/* Ak je menu skryté, nesmie tam byť ani pixel */
+#home-screen.hidden, 
+.home.hidden {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Oprava Start Screenu - aby prekryl úplne všetko pod sebou */
+#start-screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: #040914 !important; /* Tmavá farba tvojho webu */
+    z-index: 9999 !important; /* Extrémne vysoké číslo */
+    display: none; /* Zapne sa cez JS */
+}
+
+#start-screen.active {
+    display: flex !important;
+}
+
+/* Toto odstráni tie "duchárske" karty, ktoré presvitajú */
+.container, #quiz-screen, #result-screen {
+    z-index: 100;
+}

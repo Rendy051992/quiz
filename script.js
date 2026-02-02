@@ -1,3 +1,73 @@
+window.addEventListener("DOMContentLoaded", () => {
+  const splash = document.getElementById("splash")
+  const homeScreen = document.getElementById("home-screen")
+  const startScreen = document.getElementById("start-screen")
+
+  // A. OKAMŽITE po načítaní schováme všetko okrem splashu
+  if (homeScreen) homeScreen.style.display = "none";
+  if (startScreen) startScreen.classList.remove("active");
+
+  // B. SPLASH LOGIKA
+setTimeout(() => {
+  if (homeScreen) {
+    homeScreen.style.display = "flex";
+    homeScreen.classList.remove("hidden");
+  }
+
+  if (splash) splash.classList.add("is-hiding")
+
+  setTimeout(() => {
+    if (splash) splash.classList.add("is-hidden")
+  }, 400)
+}, 1500)
+
+
+// D. KLIKANIE NA KATEGÓRIE - SPRÁVNA VERZIA
+  document.querySelectorAll(".category-card, .category-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const category = btn.getAttribute("data-category") || "";
+
+      // 1. OŠETRENIE COMING SOON
+      if (category !== "quiz") {
+        alert("Coming soon");
+        return; // Zastaví kód, menu zostane zobrazené
+      }
+
+      // 2. LOGIKA PRE QUIZ
+      localStorage.setItem("selectedCategory", "quiz");
+
+      // Schováme hlavné menu (homeScreen)
+      if (homeScreen) {
+        homeScreen.style.display = "none";
+      }
+
+      // Ukážeme kartu "Get Ready" (startScreen)
+      if (startScreen) {
+        startScreen.classList.add("active");
+      }
+
+      // hide menu: try multiple safe targets
+btn.closest("#home-screen")?.classList.add("hidden")
+document.getElementById("home-screen")?.classList.add("hidden")
+document.querySelector(".home")?.classList.add("hidden")
+
+document.getElementById("home-screen")?.style.setProperty("display", "none", "important")
+document.querySelector(".home")?.style.setProperty("display", "none", "important")
+document
+  .querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn")
+  .forEach((el) => el.style.setProperty("display", "none", "important"))
+
+
+      if (startScreen) startScreen.classList.add("active")
+        document.querySelector(".menu-wrap")?.style.setProperty("display", "none", "important")
+
+    })
+  })
+})
+
+
+
+
 // DOM Elements, references to HTML elements
 const startScreen = document.getElementById("start-screen")
 const quizScreen = document.getElementById("quiz-screen")
@@ -45,6 +115,7 @@ const quizQuestions = [
     ],
   },
   {
+  
     question: "Which river is the longest in the world?",
     correctImage: "images/img2.webp",
     answers: [
@@ -338,6 +409,53 @@ const quizQuestions = [
   },
 ]
 
+const flagsQuestions = [
+  {
+    question: "Which country has this flag?",
+    correctImage: "images/flags/flag1.webp",
+    answers: [
+      { text: "France", correct: true },
+      { text: "Netherlands", correct: false },
+      { text: "Russia", correct: false },
+      { text: "Italy", correct: false },
+    ],
+  },
+  {
+    question: "Which country has this flag?",
+    correctImage: "images/flags/flag2.webp",
+    answers: [
+      { text: "Japan", correct: true },
+      { text: "Bangladesh", correct: false },
+      { text: "South Korea", correct: false },
+      { text: "China", correct: false },
+    ],
+  },
+];
+
+const mapQuestions = [
+  {
+    question: "Where is this place?",
+    correctImage: "images/maps/map1.webp",
+    answers: [
+      { text: "India", correct: true },
+      { text: "Brazil", correct: false },
+      { text: "Australia", correct: false },
+      { text: "Egypt", correct: false },
+    ],
+  },
+  {
+    question: "Where is this place?",
+    correctImage: "images/maps/map2.webp",
+    answers: [
+      { text: "Italy", correct: true },
+      { text: "Spain", correct: false },
+      { text: "Greece", correct: false },
+      { text: "Turkey", correct: false },
+    ],
+  },
+];
+
+
 // QUIZ STATE VARS
 let currentQuestionIndex = 0
 let score = 0
@@ -440,6 +558,7 @@ function onAnswerTap(event) {
     btn.classList.remove("incorrect")
   }
 
+  
   // FIX 3: paint selected directly (no fragile btn === selectedButton loop logic)
   selectedButton.classList.add(isCorrect ? "correct" : "incorrect")
 
@@ -467,31 +586,64 @@ function onAnswerTap(event) {
 }
 
 function showResults() {
-  quizScreen.classList.remove("active")
-  resultScreen.classList.add("active")
+  // 1. Skryjeme hru
+  const container = document.querySelector(".container");
+  if (container) container.style.display = "none";
+  quizScreen.classList.remove("active");
 
-  finalScoreSpan.textContent = String(score)
+  // 2. Aktivujeme Result Screen
+  resultScreen.classList.add("active");
+  resultScreen.style.display = "flex";
 
-  const percentage = (score / quizQuestions.length) * 100
-
+  // 3. Výpočet percentuálnej úspešnosti
+  const percentage = (score / quizQuestions.length) * 100;
+  
+  // 4. Logika pre result screen správy
+  let message = "";
   if (percentage === 100) {
-    resultMessage.textContent = "Perfect! You're a genius!"
+    message = "Perfect! You're a genius! 🏆";
   } else if (percentage >= 80) {
-    resultMessage.textContent = "Great job! You know your stuff!"
-  } else if (percentage >= 60) {
-    resultMessage.textContent = "Good effort! Keep learning!"
-  } else if (percentage >= 40) {
-    resultMessage.textContent = "Not bad! Try again to improve!"
+    message = "Great job! You know your stuff! ✨";
+  } else if (percentage >= 50) {
+    message = "Good effort! Keep learning! 📚";
+  } else if (percentage >= 20) {
+    message = "Not bad! Try again to improve! 💪";
   } else {
-    resultMessage.textContent = "Keep studying! You'll get better!"
+    message = "Keep studying! You'll get better! 🌍";
   }
+
+  // 5. Zapísanie textov do HTML (používame ID, ktoré sme si nastavili v HTML)
+  const resultMsgElement = document.getElementById("result-message");
+  const finalScoreElement = document.getElementById("final-score");
+  const maxScoreElement = document.getElementById("max-score");
+
+  if (resultMsgElement) resultMsgElement.textContent = message;
+  if (finalScoreElement) finalScoreElement.textContent = score;
+  if (maxScoreElement) maxScoreElement.textContent = quizQuestions.length;
 }
 
 function restartQuiz() {
-  resultScreen.classList.remove("active")
-  startQuiz()
+  // 1. Skryjeme Result Screen
+  resultScreen.classList.remove("active");
+  resultScreen.style.display = "none";
+
+  // 2. KĽÚČOVÝ KROK: Znova ukážeme hlavný kontajner, ktorý showResults() skryl
+  const container = document.querySelector(".container");
+  if (container) {
+    container.style.display = "flex"; // Toto vráti kvíz na obrazovku
+    container.style.width = "";      // Vyčistí prípadné zvyšky štýlov
+  }
+
+  // 3. Resetujeme body a index
+  currentQuestionIndex = 0;
+  score = 0;
+  if (scoreSpan) scoreSpan.textContent = "0";
+
+  // 4. Spustíme kvíz odznova
+  startQuiz();
 }
 
+/* 
 window.addEventListener("load", () => {
   const splash = document.getElementById("splash")
   if (!splash) return
@@ -507,6 +659,13 @@ window.addEventListener("load", () => {
     }, FADE_MS)
   }, MIN_MS)
 })
+*/
+
+
+
+
+
+
 
 
 
