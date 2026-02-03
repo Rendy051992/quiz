@@ -1,93 +1,104 @@
-<!doctype html> <!-- HTML5 document -->
-
-<html lang="en"> <!-- root HTML element, page language -->
-
-<head> <!-- metadata, not visible content -->
-
-  <meta charset="UTF-8" /> <!-- enables proper text encoding -->
-
-
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
-
-  <title>Quiz Game</title> <!-- browser tab title -->
-
-<link rel="stylesheet" href="style.css?v=3">
+  <title>Quiz Game</title>
+<link rel="stylesheet" href="style.css?v=4">
 </head>
+<body>
+ 
 
-<body> 
-
-<div id="rotate-overlay">Please rotate your device 📱</div>
-
-
-  
-    <div id="splash" class="splash">
+  <div class="splash" id="splash">
   <div class="bg"></div>
   <div class="overlay"></div>
-
-
+  <div class="loaderWrap">
+    <div class="dots">
+    </div>
+  </div>
 </div>
 
+  <div id="rotate-overlay">Please rotate your device 📱</div>
 
-  
-  <!-- visible page content -->
-
-  <div class="container"> <!-- main quiz wrapper -->
-
-    <div class="screen active" id="start-screen"> <!-- start screen, visible on load -->
-
-      <h1>Ready?</h1> <!-- quiz title -->
-
-      <p>Stop guessing. Start knowing</p> <!-- short intro text -->
-
-      <button id="start-btn">Let’s Go!</button> <!-- button to start the quiz -->
+  <section id="home-screen" class="home">
+    <div class="menu-header">
+      <h2 class="menu-title">GeoVerity</h2>
+      <p class="menu-subtitle">Ready to test your world knowledge?</p>
     </div>
 
-    <div class="screen" id="quiz-screen"> <!-- quiz screen, hidden initially -->
+    <div class="menu-grid">
+      <button class="category-card card-quiz" data-category="quiz" type="button">
+        <div class="card-glow"></div>
+        <div class="card-icon">🧠</div>
+        <div class="card-content">
+          <span class="card-label">TRIVIA</span>
+          <h3 class="card-title">Classic Quiz</h3>
+        </div>
+        <div class="card-arrow">→</div>
+      </button>
 
-      <div class="quiz-header"> <!-- top section of quiz -->
+     <button class="category-card card-flags" data-category="flags" type="button">
+  <div class="card-glow"></div>
+  
+  <div class="card-icon">🇬🇧</div> 
 
-        <img id="answer-image" alt="Correct answer image" /> <!-- image shown after answering -->
+  <div class="card-content">
+    <span class="card-label">VISUAL</span>
+    <h3 class="card-title">Flag Finder</h3>
+  </div>
+  <div class="card-arrow">→</div>
+</button>
 
+      <button class="category-card card-map" data-category="map" type="button">
+        <div class="card-glow"></div>
+        <div class="card-icon">🗺️</div>
+        <div class="card-content">
+          <span class="card-label">EXPLORE</span>
+          <h3 class="card-title">Map Master</h3>
+        </div>
+        <div class="card-arrow">→</div>
+      </button>
+    </div>
+  </section>
 
+  <div id="start-screen">
+    <div class="start-card">
+      <span class="ready-text">Get Ready</span>
+      <h1 id="selected-category-name">Classic Quiz</h1>
+      <div class="start-icon-wrap">🌍</div>
+      <button id="start-btn">LET'S GO</button>
+    </div>
+  </div>
 
-  <h2 id="question-text">Question goes here</h2> <!-- displays the current quiz question -->
+  <div class="container"> 
+<div class="screen" id="quiz-screen">
+      <div class="quiz-header">
+        <img id="answer-image" alt="Correct answer image" style="display:none;" />
+        <h2 id="question-text">Question goes here</h2>
+        <div class="quiz-info">
+          <p>Question <span id="current-question">1</span> of <span id="total-questions">5</span></p>
+          <p>Score: <span id="score">0</span></p>
+        </div>
+      </div>
 
-<div class="quiz-info"> <!-- container for question number and score -->
+      <div id="answers-container" class="answers-container"></div>
+      <button id="next-btn" disabled>Next</button>
 
-  <p> <!-- question counter text -->
-    Question <span id="current-question">1</span> <!-- current question number -->
-    of
-    <span id="total-questions">5</span> <!-- total number of questions -->
-  </p>
+      <div class="progress-bar">
+        <div id="progress" class="progress"></div>
+      </div>
+    </div>
+  </div> 
 
-  <p>Score: <span id="score">0</span></p> <!-- current score display -->
-</div>
-</div> <!-- end of quiz-header -->
+  <div id="result-screen">
+    <div class="result-card">
+      <h1>Quiz Results</h1>
+      <p id="result-message">Great job!</p>
+      <p id="final-text">You scored <span id="final-score">0</span> out of <span id="max-score">0</span></p>
+      <button id="restart-btn" class="primary-btn">Try Again!</button>
+    </div>
+  </div>
 
-<div id="answers-container" class="answers-container"> <!-- container for answer buttons -->
-  <!-- answer buttons are created here by JavaScript -->
-</div>
-
-<button id="next-btn" disabled>Next</button> <!-- goes to the next question, disabled until answer -->
-
-<div class="progress-bar"> <!-- container for the progress bar -->
-  <div id="progress" class="progress"></div> <!-- animated progress indicator -->
-</div>
-</div> <!-- end of quiz screen -->
-
-<div id="result-screen" class="screen"> <!-- result screen, hidden until quiz ends -->
-
-<h1>Quiz Results</h1>
-<p id="final-text">You scored <span id="final-score">0</span> out of <span id="max-score">0</span></p>
-<button id="restart-btn" class="primary-btn">Try Again!</button>
-
-
-</div>
-</div> <!-- end of main container -->
-
-
-   <script src="script.js?v=1"></script>
- 
-  </body>
+  <script src="script.js?v=1"></script>
+</body>
 </html>
