@@ -1,3 +1,74 @@
+
+
+
+
+
+// 1. NASTAVENIE PREMENNÝCH (Daj toto na úplný začiatok súboru k ostatným let/const)
+// Táto premenná si pamätá, či hráč chce vibrácie alebo nie
+let isVibrationOn = true; 
+
+// RECEPT 1: Jemné ťuknutie (Haptic) - na tlačidlá, kategórie, Next
+function hapticClick() {
+    if (isVibrationOn && navigator.vibrate) {
+        navigator.vibrate(60); // Len také bzz-tuk
+    }
+}
+
+// RECEPT 2: Silnejšie vibrovanie - pri správnej/nesprávnej odpovedi
+function feedbackVibration() {
+    if (isVibrationOn && navigator.vibrate) {
+        navigator.vibrate(200); // Cítiť to ako krátke zavibrovanie
+    }
+}
+
+// 2. FUNKCIA PRE OŽIVENIE IKON (Tento blok môžeš dať na koniec súboru)
+// Počkáme, kým sa načíta DOM, aby JS našiel tie ID-čka v HTML
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Získame prístup k ikonám pomocou ich ID
+    const vibrationBtn = document.getElementById('vibration-btn');
+    const infoBtn = document.getElementById('info-btn');
+
+  // LOGIKA PRE VIBRÁCIE
+    if (vibrationBtn) {
+        vibrationBtn.addEventListener('click', () => {
+            isVibrationOn = !isVibrationOn; 
+
+            if (isVibrationOn) {
+                feedbackVibration(); // Toto pridávame pre potvrdenie
+                vibrationBtn.src = 'icons/vibration_on.png';
+                console.log("Vibrácie: ZAPNUTÉ");
+            } else {
+                vibrationBtn.src = 'icons/vibration_off.png';
+                console.log("Vibrácie: VYPNUTÉ");
+            }
+        });
+    }
+
+    // LOGIKA PRE INFO TLAČIDLO
+    if (infoBtn) {
+        infoBtn.addEventListener('click', () => {
+            // Sem môžeš dopísať, čo sa má stať (napr. alert alebo otvorenie okna)
+            alert("GeoVerity v1.0\nCreated with ❤️");
+        });
+    }
+});
+
+// 3. POUŽITIE VIBRÁCIE V HRE
+// Túto funkciu (alebo jej vnútro) použi tam, kde vyhodnocuješ zlú odpoveď
+function triggerVibration() {
+    // Skontrolujeme, či sú vibrácie povolené v menu A či ich mobil podporuje
+    if (isVibrationOn && navigator.vibrate) {
+        // Mobil krátko zavibruje (200 miliseúnd)
+        navigator.vibrate(200);
+    }
+}
+
+
+
+
+
+
 window.addEventListener("DOMContentLoaded", () => {
   const splash = document.getElementById("splash")
   const homeScreen = document.getElementById("home-screen")
@@ -456,216 +527,201 @@ const mapQuestions = [
 ];
 
 
-// QUIZ STATE VARS
-let currentQuestionIndex = 0
-let score = 0
-let answersDisabled = false
+// --- 1. QUIZ STATE VARS ---
+let currentQuestionIndex = 0;
+let score = 0;
+let answersDisabled = false;
+let lastPointerDownAt = 0;
 
-// Dedupe for mobile: ignore click right after pointerdown
-let lastPointerDownAt = 0
+// Nastavenie textov na začiatku
+if (totalQuestionsSpan) totalQuestionsSpan.textContent = quizQuestions.length;
+if (maxScoreSpan) maxScoreSpan.textContent = quizQuestions.length;
 
-totalQuestionsSpan.textContent = quizQuestions.length
-maxScoreSpan.textContent = quizQuestions.length
+// --- 2. EVENT LISTENERS (Tlačidlá) ---
 
-startButton.addEventListener("click", startQuiz)
-restartButton.addEventListener("click", restartQuiz)
+// Start Button
+if (startButton) {
+    startButton.addEventListener("click", () => {
+        hapticClick();
+        startQuiz();
+    });
+}
 
-nextBtn.addEventListener("click", () => {
-  currentQuestionIndex++
+// Restart Button
+if (restartButton) {
+    restartButton.addEventListener("click", () => {
+        hapticClick();
+        restartQuiz();
+    });
+}
 
-  if (currentQuestionIndex < quizQuestions.length) {
-    showQuestion()
-  } else {
-    showResults()
-  }
-})
+// Next Button (Ošetrený cez ID pre istotu)
+const nextBtnElement = document.getElementById("next-btn");
+if (nextBtnElement) {
+    nextBtnElement.addEventListener("click", () => {
+        hapticClick();
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizQuestions.length) {
+            showQuestion();
+        } else {
+            showResults();
+        }
+    });
+}
+
+// --- 3. FUNKCIE ---
 
 function startQuiz() {
-  currentQuestionIndex = 0
-  score = 0
-  scoreSpan.textContent = "0"
+    currentQuestionIndex = 0;
+    score = 0;
+    if (scoreSpan) scoreSpan.textContent = "0";
 
-  startScreen.classList.remove("active")
-  quizScreen.classList.add("active")
+    if (startScreen) startScreen.classList.remove("active");
+    if (quizScreen) quizScreen.classList.add("active");
 
-  showQuestion()
+    showQuestion();
 }
 
 function resetAnswerUI() {
-  answersDisabled = false
-  answersContainer.classList.remove("answers-disabled")
-
-  answerImage.style.display = "none"
-  answerImage.src = ""
-
-  nextBtn.disabled = true
+    answersDisabled = false;
+    if (answersContainer) answersContainer.classList.remove("answers-disabled");
+    if (answerImage) {
+        answerImage.style.display = "none";
+        answerImage.src = "";
+    }
+    // Deaktivujeme Next button pri novej otázke
+    const nxt = document.getElementById("next-btn");
+    if (nxt) nxt.disabled = true;
 }
 
 function showQuestion() {
-  resetAnswerUI()
+    resetAnswerUI();
 
-  const currentQuestion = quizQuestions[currentQuestionIndex]
+    const currentQuestion = quizQuestions[currentQuestionIndex];
+    if (currentQuestionSpan) currentQuestionSpan.textContent = String(currentQuestionIndex + 1);
 
-  currentQuestionSpan.textContent = String(currentQuestionIndex + 1)
+    const progressPercent = (currentQuestionIndex / quizQuestions.length) * 100;
+    if (progressBar) progressBar.style.width = progressPercent + "%";
 
-  const progressPercent = (currentQuestionIndex / quizQuestions.length) * 100
-  progressBar.style.width = progressPercent + "%"
+    if (questionText) questionText.textContent = currentQuestion.question;
 
-  questionText.textContent = currentQuestion.question
+    if (answersContainer) {
+        answersContainer.innerHTML = "";
+        const shuffledAnswers = shuffleArray([...currentQuestion.answers]);
 
-  answersContainer.innerHTML = ""
+        shuffledAnswers.forEach(answer => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = answer.text;
+            button.classList.add("answer-btn");
+            button.dataset.correct = answer.correct ? "true" : "false";
 
-  const shuffledAnswers = shuffleArray([...currentQuestion.answers])
+            // Eventy pre mobil a PC
+            button.addEventListener("pointerdown", onAnswerTap, { passive: true });
+            button.addEventListener("click", onAnswerTap);
 
-  for (const answer of shuffledAnswers) {
-    const button = document.createElement("button")
-    button.type = "button"
-    button.textContent = answer.text
-    button.classList.add("answer-btn")
-    button.dataset.correct = answer.correct ? "true" : "false"
-
-    // FIX 1: instant feedback (pointerdown) + click fallback
-    // pointerdown = no "delay until you release finger"
-    button.addEventListener("pointerdown", onAnswerTap, { passive: true })
-    button.addEventListener("click", onAnswerTap)
-
-    answersContainer.appendChild(button)
-  }
+            answersContainer.appendChild(button);
+        });
+    }
 }
 
 function onAnswerTap(event) {
-  // FIX 2: prevent double-fire (click after pointerdown on mobile)
-  if (event.type === "pointerdown") {
-    lastPointerDownAt = Date.now()
-  } else if (event.type === "click") {
-    if (Date.now() - lastPointerDownAt < 700) return
-  }
+    hapticClick();
 
-  if (answersDisabled) return
+    // Mobile dedupe logic
+    const now = Date.now();
+    if (event.type === "pointerdown") {
+        lastPointerDownAt = now;
+    } else if (event.type === "click") {
+        if (now - lastPointerDownAt < 700) return;
+    }
 
-  const selectedButton = event.currentTarget
-  if (!selectedButton || !selectedButton.classList.contains("answer-btn")) return
+    if (answersDisabled) return;
 
-  answersDisabled = true
-  answersContainer.classList.add("answers-disabled")
-  nextBtn.disabled = false
+    const selectedButton = event.currentTarget;
+    if (!selectedButton) return;
 
-  const isCorrect = selectedButton.dataset.correct === "true"
+    answersDisabled = true;
+    if (answersContainer) answersContainer.classList.add("answers-disabled");
 
-  const buttons = Array.from(answersContainer.querySelectorAll(".answer-btn"))
-  for (const btn of buttons) {
-    btn.classList.remove("correct")
-    btn.classList.remove("incorrect")
-  }
+    // ODOMKNUTIE NEXT BUTTONU
+    const nxt = document.getElementById("next-btn");
+    if (nxt) nxt.disabled = false;
 
-  
-  // FIX 3: paint selected directly (no fragile btn === selectedButton loop logic)
-  selectedButton.classList.add(isCorrect ? "correct" : "incorrect")
+    const isCorrect = selectedButton.dataset.correct === "true";
+    selectedButton.classList.add(isCorrect ? "correct" : "incorrect");
 
-  // Always show the correct answer too (even when user is wrong)
-  const correctBtn = answersContainer.querySelector('[data-correct="true"]')
-  if (correctBtn) correctBtn.classList.add("correct")
+    const correctBtn = answersContainer.querySelector('[data-correct="true"]');
+    if (correctBtn) correctBtn.classList.add("correct");
 
-  if (isCorrect) {
-    score += 1
-    scoreSpan.textContent = String(score)
-  }
+    if (isCorrect) {
+        score++;
+        if (scoreSpan) scoreSpan.textContent = String(score);
+        feedbackVibration();
+    }
 
-  // Show image AFTER the highlight paints (prevents "red appears late" feeling)
-  const currentQuestion = quizQuestions[currentQuestionIndex]
-  if (currentQuestion.correctImage) {
-    answerImage.style.display = "block"
-
-    // 2x rAF: 1st frame paints red/green, 2nd frame swaps the image
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        answerImage.src = currentQuestion.correctImage
-      })
-    })
-  }
+    const currentQuestion = quizQuestions[currentQuestionIndex];
+    if (currentQuestion && currentQuestion.correctImage && answerImage) {
+        answerImage.style.display = "block";
+        answerImage.src = currentQuestion.correctImage;
+    }
 }
 
 function showResults() {
-  // 1. Skryjeme hru
-  const container = document.querySelector(".container");
-  if (container) container.style.display = "none";
-  quizScreen.classList.remove("active");
+    const container = document.querySelector(".container");
+    if (container) container.style.display = "none";
+    if (quizScreen) quizScreen.classList.remove("active");
 
-  // 2. Aktivujeme Result Screen
-  resultScreen.classList.add("active");
-  resultScreen.style.display = "flex";
+    if (resultScreen) {
+        resultScreen.classList.add("active");
+        resultScreen.style.display = "flex";
+    }
 
-  // 3. Výpočet percentuálnej úspešnosti
-  const percentage = (score / quizQuestions.length) * 100;
-  
-  // 4. Logika pre result screen správy
-  let message = "";
-  if (percentage === 100) {
-    message = "Perfect! You're a genius! 🏆";
-  } else if (percentage >= 80) {
-    message = "Great job! You know your stuff! ✨";
-  } else if (percentage >= 50) {
-    message = "Good effort! Keep learning! 📚";
-  } else if (percentage >= 20) {
-    message = "Not bad! Try again to improve! 💪";
-  } else {
-    message = "Keep studying! You'll get better! 🌍";
-  }
+    const percentage = (score / quizQuestions.length) * 100;
+    let message = "";
+    if (percentage === 100) message = "Perfect! You're a genius! 🏆";
+    else if (percentage >= 80) message = "Great job! You know your stuff! ✨";
+    else if (percentage >= 50) message = "Good effort! Keep learning! 📚";
+    else if (percentage >= 20) message = "Not bad! Try again to improve! 💪";
+    else message = "Keep studying! You'll get better! 🌍";
 
-  // 5. Zapísanie textov do HTML (používame ID, ktoré sme si nastavili v HTML)
-  const resultMsgElement = document.getElementById("result-message");
-  const finalScoreElement = document.getElementById("final-score");
-  const maxScoreElement = document.getElementById("max-score");
+    const resultMsgElement = document.getElementById("result-message");
+    const finalScoreElement = document.getElementById("final-score");
+    const maxScoreElement = document.getElementById("max-score");
 
-  if (resultMsgElement) resultMsgElement.textContent = message;
-  if (finalScoreElement) finalScoreElement.textContent = score;
-  if (maxScoreElement) maxScoreElement.textContent = quizQuestions.length;
+    if (resultMsgElement) resultMsgElement.textContent = message;
+    if (finalScoreElement) finalScoreElement.textContent = score;
+    if (maxScoreElement) maxScoreElement.textContent = quizQuestions.length;
 }
 
 function restartQuiz() {
-  // 1. Skryjeme Result Screen
-  resultScreen.classList.remove("active");
-  resultScreen.style.display = "none";
+    if (resultScreen) {
+        resultScreen.classList.remove("active");
+        resultScreen.style.display = "none";
+    }
 
-  // 2. KĽÚČOVÝ KROK: Znova ukážeme hlavný kontajner, ktorý showResults() skryl
-  const container = document.querySelector(".container");
-  if (container) {
-    container.style.display = "flex"; // Toto vráti kvíz na obrazovku
-    container.style.width = "";      // Vyčistí prípadné zvyšky štýlov
-  }
+    const container = document.querySelector(".container");
+    if (container) {
+        container.style.display = "flex";
+        container.style.width = "";
+    }
 
-  // 3. Resetujeme body a index
-  currentQuestionIndex = 0;
-  score = 0;
-  if (scoreSpan) scoreSpan.textContent = "0";
+    currentQuestionIndex = 0;
+    score = 0;
+    if (scoreSpan) scoreSpan.textContent = "0";
 
-  // 4. Spustíme kvíz odznova
-  startQuiz();
+    startQuiz();
 }
 
-/* 
+// Splash screen logika
 window.addEventListener("load", () => {
-  const splash = document.getElementById("splash")
-  if (!splash) return
-
-  const MIN_MS = 1500
-  const FADE_MS = 400
-
-  setTimeout(() => {
-    splash.classList.add("is-hiding")
+    const splash = document.getElementById("splash");
+    if (!splash) return;
 
     setTimeout(() => {
-      splash.classList.add("is-hidden")
-    }, FADE_MS)
-  }, MIN_MS)
-})
-*/
-
-
-
-
-
-
-
-
-
+        splash.classList.add("is-hiding");
+        setTimeout(() => {
+            splash.classList.add("is-hidden");
+        }, 400);
+    }, 1500);
+});
