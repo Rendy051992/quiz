@@ -635,9 +635,20 @@ body {
 inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bottom)) 0;  z-index: 0;
 
   background: url("./assets/splash.webp") center / cover no-repeat;
-  transform: scale(1.02);
   filter: saturate(1.05) contrast(1.05);
 }
+
+/* DEFAULT – všetky zariadenia (Android + iPhone)
+   Použije sa, ak žiadna media query nižšie neplatí */
+.splash .bg {
+  position: absolute;
+  inset: 0;
+  background-image: url("./assets/splash.webp");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+
 
 /* Dark overlay layer, keep it simple so no line appears */
 .splash .overlay {
@@ -1034,4 +1045,55 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 /* Toto odstráni tie "duchárske" karty, ktoré presvitajú */
 .container, #quiz-screen, #result-screen {
     z-index: 100;
+}
+
+
+
+/* =========================
+   RESPONSIVE FIX podľa pomeru strán
+   Cutoff: 524/1066 = 0.4915
+   Keď je zariadenie "širšie" než toto, splash vyzerá roztiahnuté
+   ========================= */
+
+/* Menšie, úzke telefóny (typicky OK):
+   Pixel, menší Samsung, väčšina bežných Androidov v portrait
+   ratio býva menšie než 524/1066, tu ostane cover */
+@media (max-aspect-ratio: 523/1066){
+  .splash .bg{
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+/* Širšie portrait displeje:
+   Galaxy Fold, niektoré Androidy, emulátor nastavený širšie,
+   desktop responsive preview
+   Tu prepneme na auto 100%, aby sa to neroztiahlo do strán */
+@media (min-aspect-ratio: 524/1066){
+  .splash .bg{
+    background-size: auto 100%;
+    background-position: center;
+  }
+}
+
+/* ULTRA NARROW – pod 520px (menšie Androidy, Fold v úzkom móde) */
+@media (max-width: 520px){
+  .splash .bg{
+    background-size: contain;
+    background-position: center;
+    transform: none;
+  }
+
+  /* aby “pásiky” vyzerali ako dizajn, nie bug */
+  .splash{
+    background-color: #040914;
+  }
+}
+
+/* Ultra-narrow screens, Galaxy Z Fold cover, malé Androidy */
+@media (max-width: 380px) {
+  .splash .bg{
+    background-size: 100% auto;   /* fit width, menej “do strán” */
+    background-position: center;  /* alebo center top, ak chceš viac hore */
+  }
 }
