@@ -1,11 +1,24 @@
 
 
 
-
-
 // 1. NASTAVENIE PREMENNÝCH (Daj toto na úplný začiatok súboru k ostatným let/const)
 // Táto premenná si pamätá, či hráč chce vibrácie alebo nie
 let isVibrationOn = true; 
+
+if (window.Capacitor) {
+    // Capacitor potrebuje chvíľu, aby sa načítal, preto je lepšie 
+    // použiť Capacitor.Plugins priamo v listenery alebo po nápise 'deviceready'
+    const App = window.Capacitor.Plugins.App;
+
+    App.addListener('backButton', () => {
+        console.log('Používateľ stlačil hardvérové tlačidlo SPÄŤ');
+        
+        // Ak sme v menu a nie je kam ísť späť, appka sa zavrie (štandard)
+        // Ak sme v kvíze, zavolá sa window.onpopstate, ktorý sme už opravili
+        window.history.back();
+    });
+}
+
 
 // RECEPT 1: Jemné ťuknutie (Haptic) - na tlačidlá, kategórie, Next
 function hapticClick() {
@@ -24,6 +37,8 @@ function feedbackVibration() {
 // 2. FUNKCIA PRE OŽIVENIE IKON (Tento blok môžeš dať na koniec súboru)
 // Počkáme, kým sa načíta DOM, aby JS našiel tie ID-čka v HTML
 document.addEventListener('DOMContentLoaded', () => {
+  // 1. Toto vlož hneď pod riadok document.addEventListener('DOMContentLoaded', () => {
+history.replaceState({ screen: 'home' }, "", "");
     
     // Získame prístup k ikonám pomocou ich ID
     const vibrationBtn = document.getElementById('vibration-btn');
@@ -97,12 +112,22 @@ setTimeout(() => {
   document.querySelectorAll(".category-card, .category-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const category = btn.getAttribute("data-category") || "";
+// Pridaj toto tam, kde sa prepína na Get Ready obrazovku
+history.pushState({ screen: 'start' }, "");      // 1. OŠETRENIE COMING SOON
+   if (category !== "quiz") {
 
-      // 1. OŠETRENIE COMING SOON
-      if (category !== "quiz") {
-        alert("Coming soon");
-        return; // Zastaví kód, menu zostane zobrazené
-      }
+  // haptic okamžite
+  if (navigator.vibrate) {
+    navigator.vibrate(20);
+  }
+
+  // zruši focus (aby nezostal žltý rámček)
+  btn.blur();
+
+  alert("Coming soon");
+  return;
+}
+
 
       // 2. LOGIKA PRE QUIZ
       localStorage.setItem("selectedCategory", "quiz");
@@ -143,6 +168,22 @@ document
 const startScreen = document.getElementById("start-screen")
 const quizScreen = document.getElementById("quiz-screen")
 const resultScreen = document.getElementById("result-screen")
+
+
+function pushScreen(screen) {
+  history.pushState({ screen }, "", "");
+}
+
+window.addEventListener("popstate", (e) => {
+  const screen = e.state?.screen;
+  if (!screen) return;
+  applyScreenState(screen);
+});
+
+window.addEventListener("load", () => {
+  history.replaceState({ screen: "home" }, "", "");
+});
+
 
 const startButton = document.getElementById("start-btn")
 
@@ -572,6 +613,7 @@ if (nextBtnElement) {
 // --- 3. FUNKCIE ---
 
 function startQuiz() {
+  history.pushState({ screen: 'quiz' }, "");
     currentQuestionIndex = 0;
     score = 0;
     if (scoreSpan) scoreSpan.textContent = "0";
@@ -725,3 +767,50 @@ window.addEventListener("load", () => {
         }, 400);
     }, 1500);
 });
+
+
+window.onpopstate = function(event) {
+    const home = document.getElementById('home-screen');
+    const start = document.getElementById('start-screen');
+    const quiz = document.getElementById('quiz-screen');
+    const result = document.getElementById('result-screen');
+    const container = document.querySelector('.container');
+    const menuWrap = document.querySelector('.menu-wrap');
+
+    // 1. Ak sme v kvíze alebo na výsledkoch -> späť na "Get Ready"
+    if ((quiz && quiz.classList.contains('active')) || (result && result.classList.contains('active'))) {
+        if (quiz) quiz.classList.remove('active');
+        if (result) result.classList.remove('active');
+        if (container) container.style.display = 'none';
+        if (start) {
+            start.style.display = 'flex';
+            start.classList.add('active');
+        }
+        history.pushState({ screen: 'home' }, ""); // Držíme "nárazník"
+    } 
+    // 2. Ak sme na "Get Ready" (start-screen) -> späť do HLAVNÉHO MENU
+    else if (start && (start.classList.contains('active') || start.style.display === 'flex')) {
+        // Schováme Get Ready kartu
+        start.classList.remove('active');
+        start.style.display = 'none';
+
+        // OŽIVÍME HLAVNÉ MENU (tu bola chyba)
+        if (home) {
+            home.classList.remove("hidden");
+            home.style.setProperty("display", "flex", "important"); // Musí byť flex, aby sa ukázalo
+            
+            // Musíme zobraziť aj tie vnútorné časti, ktoré si predtým schovala
+            document.querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap")
+                .forEach((el) => el.style.setProperty("display", "", "")); 
+        }
+        
+        // Znova pridáme históriu, aby ťa ďalšie stlačenie SPÄŤ nevyplo z appky
+        history.pushState({ screen: 'home' }, "");
+    }
+    else {
+        // Ak si už v menu, nepustíme ťa von
+        history.pushState({ screen: 'home' }, "");
+    }
+};
+
+
