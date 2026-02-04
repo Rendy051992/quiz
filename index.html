@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Quiz Game</title>
-<link rel="stylesheet" href="style.css?v=4">
-</head>
+<link rel="stylesheet" href="style.css?v=999"></head>
+<link rel="stylesheet" href="flags.css">
 <body>
  
 
@@ -15,50 +15,59 @@
   <div class="loaderWrap">
     <div class="dots">
     </div>
+
+
   </div>
 </div>
 
-  <div id="rotate-overlay">Please rotate your device 📱</div>
+<div id="rotate-overlay" style="display: none; position: fixed; inset: 0; background: #040914; color: white; z-index: 9999999; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-family: sans-serif;">
+    <img src="icons/rotate-icon.png" alt="Rotate Device" style="width: 120px; height: auto; margin-bottom: 20px;">
+    <p style="font-size: 1.5rem; font-weight: bold; margin: 0;">Please rotate your device</p>
+</div>  <section id="home-screen" class="home">
 
-  <section id="home-screen" class="home">
+  <div class="top-nav-bar">
+    <img src="icons/info.png" class="clean-icon" id="info-btn" alt="Info">
+    <img src="icons/vibration_on.png" class="clean-icon" id="vibration-btn" alt="Vibration">
+</div>
     <div class="menu-header">
+      <div class="top-controls">
+
+</div>
       <h2 class="menu-title">GeoVerity</h2>
       <p class="menu-subtitle">Ready to test your world knowledge?</p>
     </div>
 
     <div class="menu-grid">
-      <button class="category-card card-quiz" data-category="quiz" type="button">
-        <div class="card-glow"></div>
-        <div class="card-icon">🧠</div>
-        <div class="card-content">
-          <span class="card-label">TRIVIA</span>
-          <h3 class="card-title">Classic Quiz</h3>
-        </div>
-        <div class="card-arrow">→</div>
-      </button>
-
-     <button class="category-card card-flags" data-category="flags" type="button">
-  <div class="card-glow"></div>
-  
-  <div class="card-icon">🇬🇧</div> 
-
-  <div class="card-content">
-    <span class="card-label">VISUAL</span>
-    <h3 class="card-title">Flag Finder</h3>
-  </div>
-  <div class="card-arrow">→</div>
-</button>
-
-      <button class="category-card card-map" data-category="map" type="button">
-        <div class="card-glow"></div>
-        <div class="card-icon">🗺️</div>
-        <div class="card-content">
-          <span class="card-label">EXPLORE</span>
-          <h3 class="card-title">Map Master</h3>
-        </div>
-        <div class="card-arrow">→</div>
-      </button>
+  <button class="category-card card-quiz" data-category="quiz" onclick="hapticClick()">
+    <div class="card-glow"></div>
+    <div class="card-icon">🧠</div>
+    <div class="card-content">
+      <span class="card-label">TRIVIA</span>
+      <h3 class="card-title">Classic Quiz</h3>
     </div>
+    <div class="card-arrow">→</div>
+  </button>
+
+  <button class="category-card card-flags" data-category="flags" onclick="hapticClick()">
+    <div class="card-glow"></div>
+    <div class="card-icon">🇬🇧</div> 
+    <div class="card-content">
+      <span class="card-label">VISUAL</span>
+      <h3 class="card-title">Flag Finder</h3>
+    </div>
+    <div class="card-arrow">→</div>
+  </button>
+
+  <button class="category-card card-map" data-category="maps" onclick="hapticClick()">
+    <div class="card-glow"></div>
+    <div class="card-icon">🗺️</div>
+    <div class="card-content">
+      <span class="card-label">EXPLORE</span>
+      <h3 class="card-title">Map Master</h3>
+    </div>
+    <div class="card-arrow">→</div>
+  </button>
+</div>
   </section>
 
   <div id="start-screen">
@@ -66,8 +75,7 @@
       <span class="ready-text">Get Ready</span>
       <h1 id="selected-category-name">Classic Quiz</h1>
       <div class="start-icon-wrap">🌍</div>
-      <button id="start-btn">LET'S GO</button>
-    </div>
+<button id="start-btn" onclick="hapticClick()">LET'S GO</button>    </div>
   </div>
 
   <div class="container"> 
@@ -82,23 +90,26 @@
       </div>
 
       <div id="answers-container" class="answers-container"></div>
-      <button id="next-btn" disabled>Next</button>
-
-      <div class="progress-bar">
+<button id="next-btn" disabled>Next</button>      <div class="progress-bar">
         <div id="progress" class="progress"></div>
       </div>
     </div>
   </div> 
+
+  
+  
 
   <div id="result-screen">
     <div class="result-card">
       <h1>Quiz Results</h1>
       <p id="result-message">Great job!</p>
       <p id="final-text">You scored <span id="final-score">0</span> out of <span id="max-score">0</span></p>
-      <button id="restart-btn" class="primary-btn">Try Again!</button>
-    </div>
+<button id="restart-btn" class="restart-btn" onclick="hapticClick(); restartQuiz()">Play Again</button>
   </div>
 
+
+
   <script src="script.js?v=1"></script>
+  <script src="flags.js"></script>
 </body>
 </html>
