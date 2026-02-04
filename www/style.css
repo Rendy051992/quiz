@@ -639,7 +639,6 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
   position: fixed;
   inset: 0;
   background: #040914;
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;

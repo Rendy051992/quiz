@@ -84,9 +84,9 @@
 }
 
 .flag-card.wrong {
-    background-color: #711107 !important;
+    background-color: #e8240e !important;
     /* Žiadna biela, len silná červená */
-    border: 6px solid #841509 !important;
+    border: 6px solid #c0392b !important;
     box-shadow: 0 0 35px rgba(231, 76, 60, 0.9);
 }
 
@@ -185,7 +185,7 @@
 
 /* Subtitle "GET READY" (zelený ako v Classic Quiz) */
 .ready-subtitle {
-    color: #ccff00;
+    color: #44ff63;
     font-weight: 900;
     letter-spacing: 2px;
     font-size: 0.8rem;
@@ -231,3 +231,33 @@
     transform: scale(0.96);
 }
 
+/* Animácia skákania */
+@keyframes flagBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Animácia žiarenia (glow) */
+@keyframes flagGlow {
+    0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4)); }
+    50% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)); }
+}
+
+/* Trieda, ktorú aplikujeme na vlajku */
+.animated-flag {
+    animation: flagBounce 2s infinite ease-in-out, flagGlow 2s infinite ease-in-out;
+    border-radius: 12px; /* Aby to malo pekné rohy */
+    display: block;
+    margin: 0 auto 20px auto;
+}
+
+
+
+#flag-grid{
+  opacity: 1;
+  transition: opacity 160ms ease;
+}
+
+#flag-grid.is-swapping{
+  opacity: 0;
+}

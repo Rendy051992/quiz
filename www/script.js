@@ -119,34 +119,45 @@ document.querySelectorAll(".category-card, .category-btn").forEach((btn) => {
         const category = btn.getAttribute("data-category") || "";
 
         // 1. OŠETRENIE PRÍSTUPU
-       if (category === "flags") {
-    // Zmeníme 20ms na tvoj štandardný hapticClick (60ms)
+// 1. LOGIKA PRE FLAGS
+if (category === "flags") {
     if (typeof hapticClick === 'function') hapticClick(); 
-    
     btn.blur();
+    
+    // 1. ZÁPIS DO HISTÓRIE (bez tohto Späť nefunguje)
+    history.pushState({ screen: 'home' }, ""); 
+    
+    // 2. SKRYJEME MENU
+    const home = document.getElementById("home-screen");
+    if (home) {
+        home.classList.add("hidden");
+        home.style.setProperty("display", "none", "important");
+    }
+    document.querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap")
+        .forEach((el) => el.style.setProperty("display", "none", "important"));
+
+    // 3. UKÁŽEME KARTU
     showFlagGetReady();
     return;
 }
-        
-        if (category !== "quiz") {
-            // Ostatné kategórie (napr. capitals) zostávajú zablokované
-            if (navigator.vibrate) navigator.vibrate(20);
-            btn.blur();
-            alert("Coming soon");
-            return;
-        }
 
       // 2. LOGIKA PRE QUIZ
+      if (typeof hapticClick === 'function') hapticClick();
       localStorage.setItem("selectedCategory", "quiz");
+      
+      // PRIDANÉ: História pre Quiz
+      history.pushState({ screen: 'home' }, "");
 
-      // Schováme hlavné menu (homeScreen)
-      if (homeScreen) {
-        homeScreen.style.display = "none";
-      }
+      // Schováme hlavné menu
+      document.getElementById("home-screen")?.classList.add("hidden");
+      document.getElementById("home-screen")?.style.setProperty("display", "none", "important");
+      document.querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap")
+          .forEach((el) => el.style.setProperty("display", "none", "important"));
 
       // Ukážeme kartu "Get Ready" (startScreen)
       if (startScreen) {
-        startScreen.classList.add("active");
+          startScreen.style.display = "flex";
+          startScreen.classList.add("active");
       }
 
       // hide menu: try multiple safe targets
@@ -181,11 +192,7 @@ function pushScreen(screen) {
   history.pushState({ screen }, "", "");
 }
 
-window.addEventListener("popstate", (e) => {
-  const screen = e.state?.screen;
-  if (!screen) return;
-  applyScreenState(screen);
-});
+
 
 window.addEventListener("load", () => {
   history.replaceState({ screen: "home" }, "", "");
@@ -780,49 +787,6 @@ window.addEventListener("load", () => {
 });
 
 
-window.onpopstate = function(event) {
-    const home = document.getElementById('home-screen');
-    const start = document.getElementById('start-screen');
-    const quiz = document.getElementById('quiz-screen');
-    const result = document.getElementById('result-screen');
-    const container = document.querySelector('.container');
-    const menuWrap = document.querySelector('.menu-wrap');
-
-    // 1. Ak sme v kvíze alebo na výsledkoch -> späť na "Get Ready"
-    if ((quiz && quiz.classList.contains('active')) || (result && result.classList.contains('active'))) {
-        if (quiz) quiz.classList.remove('active');
-        if (result) result.classList.remove('active');
-        if (container) container.style.display = 'none';
-        if (start) {
-            start.style.display = 'flex';
-            start.classList.add('active');
-        }
-        history.pushState({ screen: 'home' }, ""); // Držíme "nárazník"
-    } 
-    // 2. Ak sme na "Get Ready" (start-screen) -> späť do HLAVNÉHO MENU
-    else if (start && (start.classList.contains('active') || start.style.display === 'flex')) {
-        // Schováme Get Ready kartu
-        start.classList.remove('active');
-        start.style.display = 'none';
-
-        // OŽIVÍME HLAVNÉ MENU (tu bola chyba)
-        if (home) {
-            home.classList.remove("hidden");
-            home.style.setProperty("display", "flex", "important"); // Musí byť flex, aby sa ukázalo
-            
-            // Musíme zobraziť aj tie vnútorné časti, ktoré si predtým schovala
-            document.querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap")
-                .forEach((el) => el.style.setProperty("display", "", "")); 
-        }
-        
-        // Znova pridáme históriu, aby ťa ďalšie stlačenie SPÄŤ nevyplo z appky
-        history.pushState({ screen: 'home' }, "");
-    }
-    else {
-        // Ak si už v menu, nepustíme ťa von
-        history.pushState({ screen: 'home' }, "");
-    }
-};
 
 
 function checkOrientation() {
@@ -842,3 +806,88 @@ window.addEventListener('orientationchange', checkOrientation);
 
 // Skontrolujeme hneď po načítaní
 checkOrientation();
+
+
+
+
+
+
+// --- JEDINÁ A OPRAVENÁ LOGIKA PRE TLAČIDLO SPÄŤ ---
+window.onpopstate = function(event) {
+    const home = document.getElementById('home-screen');
+    const quizReady = document.getElementById('start-screen'); 
+    const flagsReady = document.getElementById('flag-screen'); // Zmenené na ID pre istotu
+    const quizGame = document.getElementById('quiz-screen');
+    const result = document.getElementById('result-screen');
+    const container = document.querySelector(".container");
+
+    // 1. Ak sme v samostnej HRE (Quiz alebo Flags v priebehu otázok) alebo vo výsledkoch
+    const isQuizGameActive = quizGame && quizGame.classList.contains('active');
+    const isResultActive = result && (result.classList.contains('active') || result.style.display === 'flex');
+    
+    // Špeciálna kontrola pre rozbehnutú hru vlajok (ak tam nie je štartovacie tlačidlo)
+    const isFlagsGameActive = flagsReady && flagsReady.style.display === 'flex' && !document.getElementById('flag-start-btn');
+
+    if (isQuizGameActive || isFlagsGameActive || isResultActive) {
+        if (quizGame) quizGame.classList.remove('active');
+        if (result) {
+            result.classList.remove('active');
+            result.style.display = 'none';
+        }
+        if (container) container.style.display = "flex";
+
+        // Ak sme boli vo vlajkách alebo výsledkoch vlajok, vrátime sa na ich "Get Ready"
+        if (isFlagsGameActive || (isResultActive && !isQuizGameActive)) {
+            if (typeof showFlagGetReady === 'function') showFlagGetReady();
+        } else if (quizReady) {
+            quizReady.style.display = 'flex';
+            quizReady.classList.add('active');
+        }
+        
+        history.pushState({ screen: 'home' }, ""); 
+        return;
+    }
+
+    // 2. NÁVRAT Z KARTY "GET READY" DO MENU (TOTO TI NEŠLO)
+    // Skontrolujeme, či je vidno štartovacie tlačidlo vlajok ALEBO kvízu
+    const isFlagsReadyVisible = document.getElementById('flag-start-btn');
+    const isQuizReadyVisible = quizReady && (quizReady.style.display === 'flex' || quizReady.classList.contains('active'));
+
+    if (isFlagsReadyVisible || isQuizReadyVisible) {
+        if (flagsReady) {
+            flagsReady.style.display = 'none';
+            flagsReady.classList.remove('active');
+        }
+        if (quizReady) {
+            quizReady.style.display = 'none';
+            quizReady.classList.remove('active');
+        }
+
+        // OŽIVÍME MENU
+        if (home) {
+            home.classList.remove("hidden");
+            home.style.setProperty("display", "flex", "important");
+            
+            document.querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap")
+                .forEach((el) => {
+                    el.style.setProperty("display", "flex", "important");
+                    el.classList.remove("hidden");
+                });
+        }
+        history.pushState({ screen: 'home' }, "");
+    }
+};
+// --- 2. OPRAVA VIBRÁCIÍ A ORIENTÁCIE ---
+function checkOrientation() {
+    const overlay = document.getElementById('rotate-overlay');
+    if (!overlay) return;
+    if (window.innerHeight < window.innerWidth) {
+        overlay.style.setProperty('display', 'flex', 'important');
+    } else {
+        overlay.style.setProperty('display', 'none', 'important');
+    }
+}
+window.addEventListener('resize', checkOrientation);
+window.addEventListener('orientationchange', checkOrientation);
+checkOrientation();
+

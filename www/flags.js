@@ -1,3 +1,21 @@
+function preloadFlagImages() {
+  const urls = new Set();
+
+  flagData.forEach(q => {
+    q.options.forEach(file => {
+      urls.add(`flags/${file}`);
+    });
+  });
+
+  urls.forEach(url => {
+    const img = new Image();
+    img.src = url;
+  });
+}
+
+
+
+
 const flagData = [
     { name: "China", file: "cn.webp", options: ["cn.webp", "vn.webp", "tr.webp", "me.webp"] },
     { name: "United Kingdom", file: "gb.webp", options: ["is.webp", "gb.webp", "au.webp", "no.webp"] },
@@ -56,36 +74,41 @@ function showFlagGetReady() {
         document.body.appendChild(flagScreen);
     }
 
-    // --- OPRAVA 1: Vymažeme starý obsah a vycentrujeme ---
-    flagScreen.innerHTML = ''; // Toto odstráni tú kartu, čo presvitá spodok
+    flagScreen.classList.add('get-ready-screen'); 
+    flagScreen.classList.add('active');
+
+    // Vycentrujeme obrazovku
     flagScreen.style.display = 'flex';
-    flagScreen.style.alignItems = 'center'; // Vycentruje kartu zvisle
-    flagScreen.style.justifyContent = 'center'; // Vycentruje kartu vodorovne
+    flagScreen.style.alignItems = 'center'; 
+    flagScreen.style.justifyContent = 'center'; 
 
-    // Teraz vložíme samotné HTML karty
- flagScreen.innerHTML = `
-    <div class="quiz-container ready-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-        <span class="ready-subtitle">GET READY</span>
-        <h1 class="ready-title">Flag Finder</h1>
-        
-        <div class="ready-icon-container" style="margin: 20px 0 40px 0;">
-            <img src="icons/gb.png" class="ready-flag-img" alt="Flag" style="width: 120px; border-radius: 15px; box-shadow: 0 10px 30px rgba(214, 51, 132, 0.5); border: 2px solid rgba(255, 255, 255, 0.1);">
+    flagScreen.innerHTML = `
+        <div class="quiz-container ready-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+            <span class="ready-subtitle">GET READY</span>
+            <h1 class="ready-title" style="margin-bottom: 20px;">Flag Finder</h1>
+            
+            <div class="ready-icon-container" style="margin: 20px 0 40px 0;">
+                <img src="icons/gb.png" class="ready-flag-img animated-flag" alt="Flag" 
+                     style="width: 120px; border-radius: 15px;">
+            </div>
+
+            <button id="flag-start-btn" class="magenta-btn">LET'S GO</button>
         </div>
+    `;
 
-        <button id="flag-start-btn" class="magenta-btn">LET'S GO</button>
-    </div>
-`;
-
-   document.getElementById('flag-start-btn').onclick = function() {
-    // Pridáme krátku vibráciu pri kliknutí na tlačidlo
-    if (typeof hapticClick === 'function') hapticClick(); 
-    startFlagQuiz(); 
-};
+    // Musíme znova priradiť event listener na nové tlačidlo
+    document.getElementById('flag-start-btn').onclick = function() {
+        if (typeof hapticClick === 'function') hapticClick(); 
+        history.pushState({ screen: 'flags-game' }, ""); 
+        startFlagQuiz(); 
+    };
 }
 
 function startFlagQuiz() {
-    // 1. Skryjeme domovskú obrazovku, ale NIKDY nie '.container'
-    const home = document.getElementById('home-screen');
+    // PRIDANÉ: Povieme histórii, že už sme v samotnej hre
+    history.pushState({ screen: 'flags-game' }, "");
+
+    const home = document.getElementById('home-screen');    
     const quiz = document.getElementById('quiz-screen');
     if (home) home.style.display = 'none';
     if (quiz) quiz.style.display = 'none';
@@ -131,10 +154,13 @@ function startFlagQuiz() {
             }
         };
     }
+    preloadFlagImages();
     renderFlagQuestion();
 }
 
+
 function renderFlagQuestion() {
+
     const question = flagData[currentFlagIndex];
     const grid = document.getElementById('flag-grid');
     const label = document.getElementById('target-country-name');
@@ -143,35 +169,42 @@ function renderFlagQuestion() {
     const scoreDisplay = document.getElementById('flag-score-text');
     const nextBtn = document.getElementById('flag-next-btn');
 
-    // Reset stavu pred novou otázkou
-    canClickFlag = true;
-    label.innerText = question.name;
-    counter.innerText = `Question ${currentFlagIndex + 1} of ${flagData.length}`;
-    scoreDisplay.innerText = `Score: ${flagScore}`;
-    grid.innerHTML = '';
-    
-    // Zablokujeme tlačidlo NEXT, kým používateľ nevyberie vlajku
-    nextBtn.disabled = true;
+    // Fade OUT grid
+    grid.classList.add('is-swapping');
 
-    // Aktualizácia progres baru
-    progress.style.width = `${(currentFlagIndex / flagData.length) * 100}%`;
+    setTimeout(() => {
 
-    // --- MIEŠANIE VLAJOK ---
-    // Vytvoríme kópiu možností pomocou [...], aby sme nepokazili pôvodné flagData
-    // a následne ich náhodne zamiešame
-    const shuffledOptions = shuffleArray([...question.options]);
+        // Reset stavu pred novou otázkou
+        canClickFlag = true;
+        label.innerText = question.name;
+        counter.innerText = `Question ${currentFlagIndex + 1} of ${flagData.length}`;
+        scoreDisplay.innerText = `Score: ${flagScore}`;
+        grid.innerHTML = '';
 
-    // Vykreslenie zamiešaných vlajok do mriežky (grid)
-    shuffledOptions.forEach(flagFile => {
-        const card = document.createElement('div');
-        card.className = 'flag-card';
-        // Nastavíme obrázok vlajky
-        card.innerHTML = `<img src="flags/${flagFile}" alt="flag">`;
-        // Priradíme funkciu, ktorá skontroluje správnosť po kliknutí
-        card.onclick = () => checkFlagAnswer(flagFile, card);
-        grid.appendChild(card);
-    });
+        // Zablokujeme tlačidlo NEXT, kým používateľ nevyberie vlajku
+        nextBtn.disabled = true;
+
+        // Aktualizácia progres baru
+        progress.style.width = `${(currentFlagIndex / flagData.length) * 100}%`;
+
+        // --- MIEŠANIE VLAJOK ---
+        const shuffledOptions = shuffleArray([...question.options]);
+
+        // Vykreslenie zamiešaných vlajok do mriežky (grid)
+        shuffledOptions.forEach(flagFile => {
+            const card = document.createElement('div');
+            card.className = 'flag-card';
+            card.innerHTML = `<img src="flags/${flagFile}" alt="flag">`;
+            card.onclick = () => checkFlagAnswer(flagFile, card);
+            grid.appendChild(card);
+        });
+
+        // Fade IN grid
+        grid.classList.remove('is-swapping');
+
+    }, 160);
 }
+
 
 function checkFlagAnswer(selectedFile, card) {
     if (!canClickFlag) return;
