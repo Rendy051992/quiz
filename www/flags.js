@@ -1,9 +1,9 @@
 const flagData = [
     { name: "China", file: "cn.webp", options: ["cn.webp", "vn.webp", "tr.webp", "me.webp"] },
-    { name: "UK", file: "gb.webp", options: ["is.webp", "gb.webp", "au.webp", "no.webp"] },
+    { name: "United Kingdom", file: "gb.webp", options: ["is.webp", "gb.webp", "au.webp", "no.webp"] },
     { name: "France", file: "fr.webp", options: ["it.webp", "ru.webp", "fr.webp", "be.webp"] },
     { name: "Brazil", file: "br.webp", options: ["ar.webp", "jm.webp", "br.webp", "co.webp"] },
-    { name: "USA", file: "us.webp", options: ["us.webp", "lr.webp"] },
+    { name: "United States", file: "us.webp", options: ["us.webp", "lr.webp"] },
     { name: "Japan", file: "jp.webp", options: ["jp.webp", "pw.webp"] },
     { name: "Spain", file: "es.webp", options: ["pt.webp", "es.webp", "mx.webp", "ph.webp"] },
     { name: "Canada", file: "ca.webp", options: ["ca.webp", "pe.webp", "lb.webp", "ge.webp"] },

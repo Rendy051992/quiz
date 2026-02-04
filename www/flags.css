@@ -49,38 +49,45 @@
 }
 
 .flag-card {
-    height: 120px; /* Fixná výška, aby karty boli mohutnejšie */
-    background: #1c2431;
-    border-radius: 20px;
-    padding: 8px;
-    border: 2px solid #2a3447;
-    cursor: pointer;
-    transition: all 0.25s ease;
+    width: 100%;
+    /* 1. Nastavíme pomer strán karty na 3:2 (ako väčšina vlajok) */
+    aspect-ratio: 3 / 2; 
+    
+    /* 2. Pozadie a centrovanie */
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
     display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .flag-card img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: fill; /* Tvoje obľúbené vyplnenie (vajce) */
+    
+    /* TOTO OPRAVÍ PRESVITANIE: */
+    background-color: #ffffff; 
+    
     border-radius: 10px;
+    display: block;
 }
 
-/* STAVY ODPOVEDÍ */
+/* ZELENÁ - Správna odpoveď */
 .flag-card.correct {
-    border-color: #0c9a47 !important;
-    background: rgba(46, 204, 113, 0.15) !important;
-    box-shadow: 0 0 20px rgba(46, 204, 113, 0.6), 
-                inset 0 0 10px rgba(46, 204, 113, 0.4);
-    transform: scale(1.05);
+    background-color: #2ecc71 !important;
+    border: 6px solid #23b440 !important; /* Biely border dodá extra kontrast */
+    /* MASÍVNE SVIETENIE */
+    box-shadow: 0 0 30px rgba(46, 204, 113, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .flag-card.wrong {
-    border-color: #e52915 !important;
-    background: rgba(231, 76, 60, 0.15) !important;
-    box-shadow: 0 0 20px rgba(231, 76, 60, 0.6), 
-                inset 0 0 10px rgba(231, 76, 60, 0.4);
+    background-color: #711107 !important;
+    /* Žiadna biela, len silná červená */
+    border: 6px solid #841509 !important;
+    box-shadow: 0 0 35px rgba(231, 76, 60, 0.9);
 }
 
 /* 4. PROGRES BAR (Azúrový gradient) */
