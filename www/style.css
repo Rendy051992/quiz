@@ -600,21 +600,30 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 }
 
 
-/* ROTATE OVERLAY, default hidden */
-/* ROTATE OVERLAY – default hidden */
+/* --- OPRAVENÝ ROTATE OVERLAY --- */
 #rotate-overlay {
-  display: none;
+  display: none; /* Štandardne skryté v portréte */
   position: fixed;
   inset: 0;
-  background: rgba(10, 20, 40, 0.97);
+  background: radial-gradient(circle, #0f172a 0%, #040914 100%); /* Zladené s tvojím dizajnom */
   color: #fff;
-  font-size: 1.3rem;
-  z-index: 100000;
+  font-size: 2.5rem;
+  font-weight: bold;
+  z-index: 9999999; /* Extrémne vysoké, aby to prekrylo všetko */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding: 2rem;
 }
+
+/* Aktivácia pri otočení na šírku */
+@media screen and (orientation: landscape) {
+  #rotate-overlay {
+    display: flex !important; /* Vynúti zobrazenie pri landscape */
+  }
+}
+
 
 
 
@@ -675,7 +684,7 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 
 
 
-/* 4. DEFINÍCIA ANIMÁCIE (ak ju v kóde ešte nemáš, pridaj ju na koniec CSS) */
+/* 4. DEFINÍCIA ANIMÁCIE  */
 @keyframes entranceTitle {
   from {
     opacity: 0;
@@ -840,8 +849,8 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 
 /* Flags - Zelená */
 .card-flags .card-arrow {
-  color: #2ed573 !important;
-  filter: drop-shadow(0 0 8px rgba(46, 213, 115, 0.8));
+  color: #d63384 !important;
+  filter: drop-shadow(0 0 8px rgba(214, 51, 132, 0.8));
 }
 
 /* Maps - Modrá */
@@ -921,7 +930,7 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
   animation: pulseGlow 2s infinite ease-in-out !important;
   border-color: #7d44ff !important;
 }
-
+/* Definícia animácie pulseGlow */
 @keyframes pulseGlow {
   0% { 
     box-shadow: 0 0 5px rgba(125, 68, 255, 0.4);
@@ -944,21 +953,24 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
   border-bottom: 4px solid #2ecc71 !important; 
 }
 
-.card-flags .card-icon { 
-  background: rgba(46, 204, 113, 0.15); 
+/* Farba a animacia kateg FLAGS */
+
+.card-flags { 
+    /* Spodná linka v tlmenej magente */
+    border-bottom: 4px solid #d63384 !important; 
+    /* Jemnejšia animácia pre "dýchanie" karty */
+    animation: pulseFlags 3s infinite 0.5s; 
+    transition: all 0.3s ease;
 }
 
-.card-flags .card-label { 
-  color: #a8e6cf; 
-}
-
-/* FLAGS - Ružové pulzovanie */
-.card-flags {
-  animation: pulseFlags 3.5s infinite ease-in-out !important; /* Trochu iná rýchlosť, aby to nepulzovalo naraz */
-}
 @keyframes pulseFlags {
-  0%, 100% { box-shadow: 0 4px 15px rgba(46, 213, 115, 0.3); } /* Seafoam Green */
-  50% { box-shadow: 0 0 30px rgba(46, 213, 115, 0.6); }
+  0%, 100% { 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+  }
+  50% { 
+      /* Jemná magenta žiara - znížil som intenzitu z 0.6 na 0.4 */
+      box-shadow: 0 0 25px rgba(214, 51, 132, 0.4); 
+  }
 }
 
 /* Map - Electric Blue */

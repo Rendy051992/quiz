@@ -64,7 +64,12 @@ history.replaceState({ screen: 'home' }, "", "");
     if (infoBtn) {
         infoBtn.addEventListener('click', () => {
             // Sem môžeš dopísať, čo sa má stať (napr. alert alebo otvorenie okna)
-            alert("GeoVerity v1.0\nCreated with ❤️");
+            alert("🌍 GeoVerity v1.1\n" +
+        "__________________\n\n" +
+        "Developed by Renata\n\n" +
+        "Resources:\n" +
+        "• Flags: Flagpedia.net\n" +
+        "• Icons: Flaticon");
         });
     }
 });
@@ -108,26 +113,28 @@ setTimeout(() => {
 }, 1500)
 
 
-// D. KLIKANIE NA KATEGÓRIE - SPRÁVNA VERZIA
-  document.querySelectorAll(".category-card, .category-btn").forEach((btn) => {
+// D. KLIKANIE NA KATEGÓRIE - UPRAVENÁ VERZIA
+document.querySelectorAll(".category-card, .category-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const category = btn.getAttribute("data-category") || "";
-// Pridaj toto tam, kde sa prepína na Get Ready obrazovku
-history.pushState({ screen: 'start' }, "");      // 1. OŠETRENIE COMING SOON
-   if (category !== "quiz") {
+        const category = btn.getAttribute("data-category") || "";
 
-  // haptic okamžite
-  if (navigator.vibrate) {
-    navigator.vibrate(20);
-  }
-
-  // zruši focus (aby nezostal žltý rámček)
-  btn.blur();
-
-  alert("Coming soon");
-  return;
+        // 1. OŠETRENIE PRÍSTUPU
+       if (category === "flags") {
+    // Zmeníme 20ms na tvoj štandardný hapticClick (60ms)
+    if (typeof hapticClick === 'function') hapticClick(); 
+    
+    btn.blur();
+    showFlagGetReady();
+    return;
 }
-
+        
+        if (category !== "quiz") {
+            // Ostatné kategórie (napr. capitals) zostávajú zablokované
+            if (navigator.vibrate) navigator.vibrate(20);
+            btn.blur();
+            alert("Coming soon");
+            return;
+        }
 
       // 2. LOGIKA PRE QUIZ
       localStorage.setItem("selectedCategory", "quiz");
@@ -670,7 +677,7 @@ function showQuestion() {
 function onAnswerTap(event) {
     hapticClick();
 
-    // Mobile dedupe logic
+    // Mobile  logic
     const now = Date.now();
     if (event.type === "pointerdown") {
         lastPointerDownAt = now;
@@ -699,7 +706,11 @@ function onAnswerTap(event) {
     if (isCorrect) {
         score++;
         if (scoreSpan) scoreSpan.textContent = String(score);
-        feedbackVibration();
+        // Správna odpoveď: Dlhšie vibrovanie (200ms)
+        if (isVibrationOn && navigator.vibrate) navigator.vibrate(200);
+    } else {
+        // Nesprávna odpoveď: 2x krátke vibrovanie (50-50-50)
+        if (isVibrationOn && navigator.vibrate) navigator.vibrate([50, 50, 50]);
     }
 
     const currentQuestion = quizQuestions[currentQuestionIndex];
@@ -814,3 +825,20 @@ window.onpopstate = function(event) {
 };
 
 
+function checkOrientation() {
+    const overlay = document.getElementById('rotate-overlay');
+    if (window.innerHeight < window.innerWidth) {
+        // Sme v landscape (naležato)
+        overlay.style.setProperty('display', 'flex', 'important');
+    } else {
+        // Sme v portrait (nastojato)
+        overlay.style.setProperty('display', 'none', 'important');
+    }
+}
+
+// Sledujeme zmenu orientácie
+window.addEventListener('resize', checkOrientation);
+window.addEventListener('orientationchange', checkOrientation);
+
+// Skontrolujeme hneď po načítaní
+checkOrientation();
