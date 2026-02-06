@@ -11,6 +11,7 @@ html, body {
    Toto ovplyvňuje úplne všetko na stránke, všetky elementy
    ========================= */
 * {
+  outline: none !important;
   margin: 0; /* ruší defaultné okraje, aby layout nebol "posunutý" browserom */
   padding: 0; /* ruší defaultné vnútorné odsadenie */
   box-sizing: border-box; /* padding a border sa započítajú do šírky a výšky elementov */
@@ -34,12 +35,15 @@ body {
   overflow-x: hidden;
 
   min-height: 100svh;
+
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* ✅ kľúčová zmena */
 
-  padding-top: 0;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
+
 
 
 /* =========================
@@ -73,10 +77,12 @@ margin: 0 auto;    /* Zvyšok tvojho kódu (background, border atď.) ostáva ro
    Start screen, Quiz screen, Result screen
    ========================= */
 .screen {
-  display: none; /* defaultne sú všetky screeny skryté */
-  padding: 2rem; /* vnútorný padding pre celý screen */
-  text-align: center; /* centrovanie textu vo vnútri screenov */
+  overflow: visible;   /* ← TOTO JE FIX */
+  display: none;
+  padding: 2rem;
+  text-align: center;
 }
+
 
 .screen.active {
   display: block; /* iba aktívny screen je viditeľný */
@@ -755,7 +761,7 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 /* Flags - Pink */
 .card-flags { border-bottom: 4px solid #2d30ff !important; animation: pulseFlags 3s infinite 0.5s; }
 @keyframes pulseFlags {
-  0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  0%, 100% { box-shadow: 0 10px 30px rgba(224, 7, 7, 0.5); }
   50% { box-shadow: 0 0 20px rgba(255, 45, 133, 0.4); }
 }
 
@@ -781,11 +787,11 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 .card-icon {
   width: 60px;
   height: 60px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(233, 3, 156, 0.182); /*pozadie v kateg flags pod vlajkou*/
   border-radius: 22px;
   display: grid;
   place-items: center;
-  font-size: 30px;
+  font-size: 35px; /* velikost ikony v kategorii */
   flex-shrink: 0;
 }
 
@@ -803,9 +809,9 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 
 .card-label {
   display: block;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
-  color: rgba(255,255,255,0.4);
+  color: rgba(227, 15, 164, 0.4);
   margin-bottom: 4px;
   letter-spacing: 1px;
 }
@@ -838,7 +844,7 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
   margin-right: 25px; /* Trochu väčší odstup od kraja */
 }
 
-/* INDIVIDUÁLNE FARBY A ŽIARA */
+/* INDIVIDUÁLNE FARBY A ŽIARA arrows v kateg */
 
 /* Quiz - Fialová */
 .card-quiz .card-arrow {
@@ -920,7 +926,7 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 /* INDIVIDUÁLNE FARBY */
 
 /* Quiz - Vibrant Violet */
-.card-quiz { border-bottom: 4px solid #7d44ff !important; }
+.card-quiz { border-bottom: 4px solid #ffdd44 !important; }
 .card-quiz .card-icon { background: rgba(125, 68, 255, 0.2); }
 .card-quiz .card-label { color: #b08dff; }
 
@@ -946,20 +952,16 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
     filter: brightness(1);
   }
 }
-/* Flags - Neon Pink */
-/* Stredná karta - zmena na modernú smaragdovú zelenú */
-.card-flags { 
-  border-bottom: 4px solid #2ecc71 !important; 
-}
 
 /* Farba a animacia kateg FLAGS */
 
 .card-flags { 
     /* Spodná linka v tlmenej magente */
-    border-bottom: 4px solid #d63384 !important; 
+    border-bottom: 4px solid #d63384 !important; /*spodny ramcek cards*/
     /* Jemnejšia animácia pre "dýchanie" karty */
     animation: pulseFlags 3s infinite 0.5s; 
     transition: all 0.3s ease;
+    
 }
 
 @keyframes pulseFlags {
@@ -972,9 +974,11 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
   }
 }
 
+
+
 /* Map - Electric Blue */
 .card-map { border-bottom: 4px solid #00d2ff !important; }
-.card-map .card-icon { background: rgba(0, 210, 255, 0.2); }
+.card-map .card-icon { background: rgba(27, 202, 242, 0.2); }
 .card-map .card-label { color: #70e4ff; }
 
 .card-map {
@@ -1039,20 +1043,34 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 
 
 @media screen and (max-width: 600px) {
+@media screen and (max-width: 600px) {
+
   .container {
+    overflow: visible !important;
     display: flex !important;
     justify-content: center !important;
-    align-items: center !important;
+
+    /* ✅ THIS is the fix: stop vertical centering so the card won't get cut */
+    align-items: flex-start !important;
+
     width: 100% !important;
     min-height: 100svh !important;
+
+    /* ✅ give space for notch + top UI, so the card top is never clipped */
+    padding-top: calc(env(safe-area-inset-top) + 16px) !important;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 16px) !important;
+
     margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important; 
+    background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    box-sizing: border-box !important;
   }
+
+}
+
 
 
   .screen {
@@ -1165,3 +1183,90 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 #restart-btn:active {
     transform: scale(0.95) !important;
 }
+
+/* Odstráni žltý rámček okolo tlačidiel v Android appke pri kliknutí */
+button:focus, 
+button:active, 
+.flag-option:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/*----------------------------------------------------------------------------------------------------------------------*/
+
+#quiz-answer-status {
+  margin: 6px 0 12px 0;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-align: center;
+  min-height: 22px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+#quiz-answer-status.show {
+  opacity: 1;
+}
+
+#quiz-answer-status.correct {
+  color: #2ecc71;
+}
+
+#quiz-answer-status.wrong {
+  color: #ff3b30;
+}
+
+
+/* ONE CARD ONLY: card is #quiz-screen, .screen is NOT a card */
+@media screen and (max-width: 600px) {
+  .screen {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  #quiz-screen {
+    background: rgba(18, 26, 44, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+  }
+}
+@media screen and (max-width: 600px) {
+
+  .quiz-info{
+    display: grid !important;
+    grid-template-columns: max-content 1fr max-content !important;
+    align-items: center !important;
+    column-gap: 14px !important;
+    row-gap: 0 !important;
+    margin-top: 12px !important;
+    margin-bottom: 8px !important;
+    width: 100% !important;
+  }
+
+  .quiz-info p:first-child,
+  .quiz-info p:last-child{
+    white-space: nowrap !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+  }
+
+  .quiz-info p:first-child{ justify-self: start !important; }
+  .quiz-info p:last-child{ justify-self: end !important; }
+
+  #quiz-answer-status{
+    grid-column: 2 !important;
+    justify-self: center !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+  }
+
+}
+

@@ -78,23 +78,30 @@
 <button id="start-btn" onclick="hapticClick()">LET'S GO</button>    </div>
   </div>
 
-  <div class="container"> 
-<div class="screen" id="quiz-screen">
-      <div class="quiz-header">
-        <img id="answer-image" alt="Correct answer image" style="display:none;" />
-        <h2 id="question-text">Question goes here</h2>
-        <div class="quiz-info">
-          <p>Question <span id="current-question">1</span> of <span id="total-questions">5</span></p>
-          <p>Score: <span id="score">0</span></p>
-        </div>
-      </div>
+<div class="container">
+  <div class="screen" id="quiz-screen">
+    <div class="quiz-header">
+      <img id="answer-image" alt="Correct answer image" style="display:none;" />
 
-      <div id="answers-container" class="answers-container"></div>
-<button id="next-btn" disabled>Next</button>      <div class="progress-bar">
-        <div id="progress" class="progress"></div>
+      <h2 id="question-text">Question goes here</h2>
+
+      <div class="quiz-info">
+        <p>Question <span id="current-question">1</span> of <span id="total-questions">5</span></p>
+        <div id="quiz-answer-status"></div>
+        <p>Score: <span id="score">0</span></p>
       </div>
     </div>
-  </div> 
+
+    <div id="answers-container" class="answers-container"></div>
+
+    <button id="next-btn" disabled>Next</button>
+
+    <div class="progress-bar">
+      <div id="progress" class="progress"></div>
+    </div>
+  </div>
+</div>
+
 
   
   

@@ -64,45 +64,55 @@ let flagScore = 0;
 let canClickFlag = true;
 
 function showFlagGetReady() {
-    const home = document.getElementById('home-screen');
-    if (home) home.style.display = 'none';
 
-    let flagScreen = document.getElementById('flag-screen');
-    if (!flagScreen) {
-        flagScreen = document.createElement('div');
-        flagScreen.id = 'flag-screen';
-        document.body.appendChild(flagScreen);
-    }
+  // history: keď už sme flags-ready (napr. po BACK), nepridávaj ďalší state
+  if (history.state?.screen !== "flags-ready") {
+    history.pushState({ screen: "flags-ready" }, "", "");
+  }
 
-    flagScreen.classList.add('get-ready-screen'); 
-    flagScreen.classList.add('active');
+  const home = document.getElementById("home-screen");
+  if (home) home.style.display = "none";
 
-    // Vycentrujeme obrazovku
-    flagScreen.style.display = 'flex';
-    flagScreen.style.alignItems = 'center'; 
-    flagScreen.style.justifyContent = 'center'; 
+  let flagScreen = document.getElementById("flag-screen");
+  if (!flagScreen) {
+    flagScreen = document.createElement("div");
+    flagScreen.id = "flag-screen";
+    document.body.appendChild(flagScreen);
+  }
 
-    flagScreen.innerHTML = `
-        <div class="quiz-container ready-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-            <span class="ready-subtitle">GET READY</span>
-            <h1 class="ready-title" style="margin-bottom: 20px;">Flag Finder</h1>
-            
-            <div class="ready-icon-container" style="margin: 20px 0 40px 0;">
-                <img src="icons/gb.png" class="ready-flag-img animated-flag" alt="Flag" 
-                     style="width: 120px; border-radius: 15px;">
-            </div>
+  // reset, aby sa nemiešali staré triedy z hry
+  flagScreen.className = "get-ready-screen active";
 
-            <button id="flag-start-btn" class="magenta-btn">LET'S GO</button>
-        </div>
-    `;
+  // vycentrovanie
+  flagScreen.style.display = "flex";
+  flagScreen.style.alignItems = "center";
+  flagScreen.style.justifyContent = "center";
 
-    // Musíme znova priradiť event listener na nové tlačidlo
-    document.getElementById('flag-start-btn').onclick = function() {
-        if (typeof hapticClick === 'function') hapticClick(); 
-        history.pushState({ screen: 'flags-game' }, ""); 
-        startFlagQuiz(); 
+  // tvoj pôvodný dizajn
+  flagScreen.innerHTML = `
+    <div class="quiz-container ready-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+      <span class="ready-subtitle">GET READY</span>
+      <h1 class="ready-title" style="margin-bottom: 20px;">Flag Finder</h1>
+
+      <div class="ready-icon-container" style="margin: 20px 0 40px 0;">
+        <img src="icons/gb.png" class="ready-flag-img animated-flag" alt="Flag"
+             style="width: 120px; border-radius: 15px;">
+      </div>
+
+      <button id="flag-start-btn" class="magenta-btn">LET'S GO</button>
+    </div>
+  `;
+
+  // LET'S GO: NEpushujeme tu flags-game, lebo to robí startFlagQuiz()
+  const btn = document.getElementById("flag-start-btn");
+  if (btn) {
+    btn.onclick = function () {
+      if (typeof hapticClick === "function") hapticClick();
+      startFlagQuiz();
     };
+  }
 }
+
 
 function startFlagQuiz() {
     // PRIDANÉ: Povieme histórii, že už sme v samotnej hre
@@ -118,22 +128,24 @@ function startFlagQuiz() {
         flagScreen.style.display = 'flex';
         // Tu sa vkladá štruktúra hry
         flagScreen.innerHTML = `
-            <div class="quiz-container">
-                <div class="target-country-container">
-                    <h2 id="target-country-name">Loading...</h2>
+                <div class="quiz-container">
+                    <div class="target-country-container">
+                        <h2 id="target-country-name">Loading...</h2>
+                        <div id="answer-status"></div>
+
+                    </div>
+                    <div class="quiz-stats">
+                        <span id="flag-counter">Question 1 of ${flagData.length}</span>
+                        <span id="flag-score-text">Score: 0</span>
+                    </div>
+                    <div id="flag-grid" class="flag-grid"></div>
+                    <div class="progress-bar">
+                        <div id="flag-progress" class="progress" style="width: 0%;"></div>
+                    </div>
+                    <button id="flag-next-btn" disabled>NEXT</button>
                 </div>
-                <div class="quiz-stats">
-                    <span id="flag-counter">Question 1 of ${flagData.length}</span>
-                    <span id="flag-score-text">Score: 0</span>
-                </div>
-                <div id="flag-grid" class="flag-grid"></div>
-                <div class="progress-bar">
-                    <div id="flag-progress" class="progress" style="width: 0%;"></div>
-                </div>
-                <button id="flag-next-btn" disabled>NEXT</button>
-            </div>
-        `;
-    }
+            `;
+        }
 
     flagScore = 0;
     currentFlagIndex = 0;
@@ -161,48 +173,93 @@ function startFlagQuiz() {
 
 function renderFlagQuestion() {
 
+  const grid = document.getElementById('flag-grid');
+  const label = document.getElementById('target-country-name');
+  const progress = document.getElementById('flag-progress');
+  const counter = document.getElementById('flag-counter');
+  const scoreDisplay = document.getElementById('flag-score-text');
+  const nextBtn = document.getElementById('flag-next-btn');
+
+  if (!grid || !label || !progress || !counter || !scoreDisplay || !nextBtn) return;
+
+  // Fade OUT grid
+  grid.classList.add('is-swapping');
+
+  // počas prechodu zakáž kliky
+  canClickFlag = false;
+
+  setTimeout(() => {
+
+    // otázku si zober až tu, aby bola vždy aktuálna
     const question = flagData[currentFlagIndex];
-    const grid = document.getElementById('flag-grid');
-    const label = document.getElementById('target-country-name');
-    const progress = document.getElementById('flag-progress');
-    const counter = document.getElementById('flag-counter');
-    const scoreDisplay = document.getElementById('flag-score-text');
-    const nextBtn = document.getElementById('flag-next-btn');
 
-    // Fade OUT grid
-    grid.classList.add('is-swapping');
+    // Nastavenie novej otázky
+    label.innerText = question.name;
+    
+    counter.innerText = `Question ${currentFlagIndex + 1} of ${flagData.length}`;
+    scoreDisplay.innerText = `Score: ${flagScore}`;
 
-    setTimeout(() => {
+    const status = document.getElementById('answer-status');
+if (status) {
+  status.className = "";
+  status.textContent = "";
+}
 
-        // Reset stavu pred novou otázkou
-        canClickFlag = true;
-        label.innerText = question.name;
-        counter.innerText = `Question ${currentFlagIndex + 1} of ${flagData.length}`;
-        scoreDisplay.innerText = `Score: ${flagScore}`;
-        grid.innerHTML = '';
+    // Vyčistíme grid AŽ TERAZ (keď je schovaný)
+    grid.innerHTML = '';
 
-        // Zablokujeme tlačidlo NEXT, kým používateľ nevyberie vlajku
-        nextBtn.disabled = true;
+    // NEXT je znovu zakázané
+    nextBtn.disabled = true;
 
-        // Aktualizácia progres baru
-        progress.style.width = `${(currentFlagIndex / flagData.length) * 100}%`;
+    // Progress bar
+    progress.style.width = `${(currentFlagIndex / flagData.length) * 100}%`;
 
-        // --- MIEŠANIE VLAJOK ---
-        const shuffledOptions = shuffleArray([...question.options]);
+    // Zamiešame vlajky
+    const shuffledOptions = shuffleArray([...question.options]);
 
-        // Vykreslenie zamiešaných vlajok do mriežky (grid)
-        shuffledOptions.forEach(flagFile => {
-            const card = document.createElement('div');
-            card.className = 'flag-card';
-            card.innerHTML = `<img src="flags/${flagFile}" alt="flag">`;
-            card.onclick = () => checkFlagAnswer(flagFile, card);
-            grid.appendChild(card);
-        });
+    // počítame, koľko obrázkov je už ready
+    let loaded = 0;
+    const total = shuffledOptions.length;
 
-        // Fade IN grid
+    // bezpečnostný fallback, keby niektorý obrázok zlyhal alebo sa zasekol
+    const fallback = setTimeout(() => {
+      grid.classList.remove('is-swapping');
+      canClickFlag = true;
+    }, 900);
+
+    function markLoaded() {
+      loaded++;
+      if (loaded >= total) {
+        clearTimeout(fallback);
+
+        // Fade IN grid až keď sú všetky 4 obrázky načítané
         grid.classList.remove('is-swapping');
 
-    }, 160);
+        // až TERAZ povolíme klik
+        canClickFlag = true;
+      }
+    }
+
+    // Vykreslíme nové vlajky
+    shuffledOptions.forEach(flagFile => {
+      const card = document.createElement('div');
+      card.className = 'flag-card';
+
+      const img = document.createElement('img');
+      img.src = `flags/${flagFile}`;
+      img.alt = 'flag';
+
+      // keď sa img načíta alebo zlyhá, berieme to ako "hotovo"
+      img.onload = markLoaded;
+      img.onerror = markLoaded;
+
+      card.appendChild(img);
+      card.onclick = () => checkFlagAnswer(flagFile, card);
+
+      grid.appendChild(card);
+    });
+
+  }, 160);
 }
 
 
@@ -213,24 +270,35 @@ function checkFlagAnswer(selectedFile, card) {
     const question = flagData[currentFlagIndex];
     const nextBtn = document.getElementById('flag-next-btn'); // Hľadáme ho priamo tu
 
+    // ✅ PRIDANÉ: text CORRECT/WRONG pod country
+    const status = document.getElementById('answer-status');
+    const setStatus = (ok) => {
+        if (!status) return;
+        status.textContent = ok ? "CORRECT" : "WRONG";
+        status.className = "show " + (ok ? "correct" : "wrong");
+    };
+
     // Zafarbenie karty
-    if (selectedFile === question.file) {
-        card.classList.add('correct');
-        flagScore++;
-        const scoreElem = document.getElementById('flag-score-text');
-        if (scoreElem) scoreElem.innerText = `Score: ${flagScore}`;
-        if (navigator.vibrate) navigator.vibrate(200);
-    } else {
-        card.classList.add('wrong');
-        const allCards = document.querySelectorAll('.flag-card');
-        allCards.forEach(c => {
-            const img = c.querySelector('img');
-            if (img && img.src.includes(question.file)) {
-                c.classList.add('correct');
-            }
-        });
-        if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
-    }
+if (selectedFile === question.file) {
+    setStatus(true); // CORRECT
+    card.classList.add('correct');
+    flagScore++;
+    const scoreElem = document.getElementById('flag-score-text');
+    if (scoreElem) scoreElem.innerText = `Score: ${flagScore}`;
+    if (navigator.vibrate) navigator.vibrate(140); // ✔️ 1x silné
+} else {
+    setStatus(false); // WRONG
+    card.classList.add('wrong');
+    const allCards = document.querySelectorAll('.flag-card');
+    allCards.forEach(c => {
+        const img = c.querySelector('img');
+        if (img && img.src.includes(question.file)) {
+            c.classList.add('correct');
+        }
+    });
+    if (navigator.vibrate) navigator.vibrate([180, 90, 180]); // ❌ 2x silné
+}
+
 
     // --- KRITICKÝ BOD: Odomknutie tlačidla ---
     if (nextBtn) {
