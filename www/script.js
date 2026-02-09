@@ -1,24 +1,91 @@
-
-
+// Nastavenie počiatočného bodu histórie
+if (!window.history.state) {
+    window.history.replaceState({ screen: "menu" }, "", "");
+}
+// Hneď po načítaní aplikácie povieme, že sme v menu
+document.addEventListener("DOMContentLoaded", () => {
+    if (!window.history.state) {
+        history.replaceState({ screen: "menu" }, "", "");
+    }
+});
 
 // 1. NASTAVENIE PREMENNÝCH
 // Táto premenná si pamätá, či hráč chce vibrácie alebo nie
 let isVibrationOn = true; 
 
-if (window.Capacitor) {
-    // Capacitor potrebuje chvíľu, aby sa načítal, preto je lepšie 
-    // použiť Capacitor.Plugins priamo v listenery alebo po nápise 'deviceready'
-    const App = window.Capacitor.Plugins.App;
+// script.js - CENTRÁLNY MOZOG PRE TLAČIDLO SPÄŤ
 
-    App.addListener('backButton', () => {
-        console.log('Používateľ stlačil hardvérové tlačidlo SPÄŤ');
-        
-        // Ak sme v menu a nie je kam ísť späť, appka sa zavrie (štandard)
-        // Ak sme v kvíze, zavolá sa window.onpopstate, ktorý sme už opravili
-        window.history.back();
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Získame prístup k mobilnému systému
+    const App = window.Capacitor?.Plugins?.App;
+    if (!App) return;
+
+    // 2. Samotný listener pre tlačidlo Späť
+    App.addListener("backButton", (data) => {
+        console.log("Stlačené tlačidlo SPÄŤ");
+
+        const home = document.getElementById("home-screen");
+        const mapsScreen = document.getElementById("maps-screen");
+        const flagsReady = document.getElementById("flag-screen");
+        const quizReady = document.getElementById("start-screen");
+        const quizGame = document.getElementById("quiz-screen");
+        const resultScreen = document.getElementById("result-screen");
+
+        // --- PRIORITA 1: MAPA ---
+        // Kontrolujeme triedu na body ALEBO či je mapa viditeľná v CSS
+        const isMapActive = document.body.classList.contains("maps-mode") || 
+                           (mapsScreen && mapsScreen.style.display !== "none");
+
+        if (isMapActive) {
+            console.log("Zatváram mapu...");
+            if (typeof closeMaps === "function") {
+                closeMaps(); // Zavolá tvoju funkciu z maps.js
+            } else {
+                // Poistka ak by maps.js zlyhalo
+                document.body.classList.remove("maps-mode");
+                if (mapsScreen) mapsScreen.style.setProperty("display", "none", "important");
+                if (home) home.style.setProperty("display", "flex", "important");
+            }
+            return; // Zastavíme kód, aby nevypol aplikáciu
+        }
+
+        // --- PRIORITA 2: QUIZ / FLAGS (Get Ready alebo Result) ---
+        const isGetReady = (flagsReady && flagsReady.style.display !== "none") || 
+                           (quizReady && quizReady.style.display !== "none");
+        const isResult = (resultScreen && resultScreen.style.display !== "none");
+
+        if (isGetReady || isResult) {
+            console.log("Vraciam sa z obrazovky kvízu do menu...");
+            
+            // Schováme všetko okrem menu
+            [flagsReady, quizReady, quizGame, resultScreen].forEach(el => {
+                if (el) el.style.setProperty("display", "none", "important");
+            });
+
+            if (home) {
+                home.style.setProperty("display", "flex", "important");
+                home.classList.remove("hidden");
+            }
+            
+            // Vrátime históriu na menu
+            window.history.replaceState({ screen: "menu" }, "", "");
+            return;
+        }
+
+        // --- PRIORITA 3: MENU (Ukončenie aplikácie) ---
+        // Ak sme v menu, stlačenie Späť vypne appku
+        const s = window.history.state?.screen || "menu";
+        const isHomeVisible = home && home.style.display !== "none" && !home.classList.contains("hidden");
+
+        if (s === "menu" || isHomeVisible) {
+            console.log("Ukončujem aplikáciu...");
+            App.exitApp();
+        } else {
+            console.log("Krok späť v histórii...");
+            window.history.back();
+        }
     });
-}
-
+});
 
 // RECEPT 1: Jemné ťuknutie (Haptic) - na tlačidlá, kategórie, Next
 function hapticClick() {
@@ -42,14 +109,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (vibrationBtn) {
         vibrationBtn.addEventListener('click', () => {
             isVibrationOn = !isVibrationOn; 
+if (isVibrationOn) {
+    hapticClick(); // alebo tento riadok úplne zmaž
+    vibrationBtn.src = 'icons/vibration_on.png';
+    console.log("Vibrácie: ZAPNUTÉ");
+} else {
+    vibrationBtn.src = 'icons/vibration_off.png';
+    console.log("Vibrácie: VYPNUTÉ");
 
-            if (isVibrationOn) {
-                feedbackVibration(); // Toto pridávame pre potvrdenie
-                vibrationBtn.src = 'icons/vibration_on.png';
-                console.log("Vibrácie: ZAPNUTÉ");
-            } else {
-                vibrationBtn.src = 'icons/vibration_off.png';
-                console.log("Vibrácie: VYPNUTÉ");
             }
         });
     }
@@ -111,6 +178,20 @@ setTimeout(() => {
 document.querySelectorAll(".category-card, .category-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
         const category = btn.getAttribute("data-category") || "";
+        // MAPS – COMING SOON
+
+
+
+if (category === "maps") {
+  showMaps(); // DÔLEŽITÉ
+  return;
+}
+
+
+
+
+
+
 
         // 1. OŠETRENIE PRÍSTUPU
 // 1. LOGIKA PRE FLAGS
@@ -134,8 +215,16 @@ if (category === "flags") {
     return;
 }
 
-      // 2. LOGIKA PRE QUIZ
+// 2. LOGIKA PRE QUIZ
 if (typeof hapticClick === "function") hapticClick();
+
+// --- PRIDANÝ RESET MAPY (Dôležité!) ---
+document.body.classList.remove("maps-mode"); // Vypne mapový režim v CSS
+const mapScreen = document.getElementById("maps-screen");
+if (mapScreen) {
+    mapScreen.style.setProperty("display", "none", "important"); // Natvrdo schová mapu
+}
+// --------------------------------------
 
 history.pushState({ screen: "quiz-ready" }, "", "");
 localStorage.setItem("selectedCategory", "quiz");
@@ -300,7 +389,7 @@ const quizQuestions = [
     question: "Which desert is the largest hot desert in the world?",
     correctImage: "images/img8.webp",
     answers: [
-      { text: "Gobi", correct: false },
+      { text: "Antarctica", correct: false },
       { text: "Kalahari", correct: false },
       { text: "Sahara Desert", correct: true },
       { text: "Atacama", correct: false },
@@ -634,8 +723,14 @@ pushScreen("quiz-ready");
 }
 
 function resetAnswerUI() {
+  if (quizScreen) {
+  quizScreen.classList.add("picking");
+  quizScreen.classList.remove("answered");
+}
+
   answersDisabled = false;
   if (answersContainer) answersContainer.classList.remove("answers-disabled");
+
 
   if (answerImage) {
     answerImage.style.display = "none";
@@ -651,12 +746,23 @@ function resetAnswerUI() {
   if (status) {
     status.textContent = "";
     status.classList.remove("show", "correct", "wrong");
+    
   }
 }
 
 
 
 function showQuestion() {
+  document.querySelector(".container")?.classList.remove("answered-mode");
+  const c = document.querySelector(".container");
+if (c) c.classList.remove("answered-mode");
+
+if (quizScreen) {
+  quizScreen.classList.add("picking");
+  quizScreen.classList.remove("answered");
+}
+
+
     resetAnswerUI();
 
     const currentQuestion = quizQuestions[currentQuestionIndex];
@@ -688,214 +794,212 @@ function showQuestion() {
 }
 
 function onAnswerTap(event) {
-    hapticClick();
+  hapticClick();
 
-    // Mobile  logic
-    const now = Date.now();
-    if (event.type === "pointerdown") {
-        lastPointerDownAt = now;
-    } else if (event.type === "click") {
-        if (now - lastPointerDownAt < 700) return;
+  // Mobile logic
+  const now = Date.now();
+  if (event.type === "pointerdown") {
+    lastPointerDownAt = now;
+  } else if (event.type === "click") {
+    if (now - lastPointerDownAt < 700) return;
+  }
+
+  if (answersDisabled) return;
+
+  const selectedButton = event.currentTarget;
+  if (!selectedButton) return;
+
+  answersDisabled = true;
+
+  // answered-mode ON (iba raz, bezpečne)
+  document.querySelector(".container")?.classList.add("answered-mode");
+
+
+  if (answersContainer) answersContainer.classList.add("answers-disabled");
+
+  // posun len pred odpoveďou, po odpovedi vrátiť naspäť
+  if (quizScreen) {
+    quizScreen.classList.remove("picking");
+    quizScreen.classList.add("answered");
+  }
+
+  // ODOMKNUTIE NEXT BUTTONU
+  const nxt = document.getElementById("next-btn");
+  if (nxt) nxt.disabled = false;
+
+  const isCorrect = selectedButton.dataset.correct === "true";
+  selectedButton.classList.add(isCorrect ? "correct" : "incorrect");
+
+  const correctBtn = answersContainer?.querySelector('[data-correct="true"]');
+  if (correctBtn) correctBtn.classList.add("correct");
+
+  const status = document.getElementById("quiz-answer-status");
+
+  // QUIZ ANSWER RESULT
+  if (isCorrect) {
+    if (status) {
+      status.textContent = "CORRECT";
+      status.className = "show correct";
     }
 
-    if (answersDisabled) return;
-
-    const selectedButton = event.currentTarget;
-    if (!selectedButton) return;
-
-    answersDisabled = true;
-    if (answersContainer) answersContainer.classList.add("answers-disabled");
-
-    // ODOMKNUTIE NEXT BUTTONU
-    const nxt = document.getElementById("next-btn");
-    if (nxt) nxt.disabled = false;
-
-    const isCorrect = selectedButton.dataset.correct === "true";
-    selectedButton.classList.add(isCorrect ? "correct" : "incorrect");
-
-
-    const correctBtn = answersContainer.querySelector('[data-correct="true"]');
-    if (correctBtn) correctBtn.classList.add("correct");
-
-
-    const status = document.getElementById("quiz-answer-status");
-
-// ===== QUIZ ANSWER RESULT (IDENTICKÉ ako Flags) =====
-if (isCorrect) {
-  if (status) status.textContent = "CORRECT", status.className = "show correct";
-
-    // ✔️ CORRECT
     score++;
     if (scoreSpan) scoreSpan.textContent = String(score);
 
     if (isVibrationOn && navigator.vibrate) navigator.vibrate(140);
-} else {
-  if (status) status.textContent = "WRONG", status.className = "show wrong";
-
-    // ❌ WRONG
-    if (isVibrationOn && navigator.vibrate) navigator.vibrate([180, 90, 180]);
-}
-
-// Ukáž správny obrázok (ak ho máš)
-const currentQuestion = quizQuestions[currentQuestionIndex];
-if (currentQuestion && currentQuestion.correctImage && answerImage) {
-   answerImage.classList.add("show");
-answerImage.src = currentQuestion.correctImage;
-answerImage.style.display = "block";
-answerImage.style.visibility = "visible";
-
-
-}
-
-
-function showResults() {
-    const container = document.querySelector(".container");
-    if (container) container.style.display = "none";
-    if (quizScreen) quizScreen.classList.remove("active");
-
-    if (resultScreen) {
-        resultScreen.classList.add("active");
-        resultScreen.style.display = "flex";
+  } else {
+    if (status) {
+      status.textContent = "WRONG";
+      status.className = "show wrong";
     }
 
-    const percentage = (score / quizQuestions.length) * 100;
-    let message = "";
-    if (percentage === 100) message = "Perfect! You're a genius! 🏆";
-    else if (percentage >= 80) message = "Great job! You know your stuff! ✨";
-    else if (percentage >= 50) message = "Good effort! Keep learning! 📚";
-    else if (percentage >= 20) message = "Not bad! Try again to improve! 💪";
-    else message = "Keep studying! You'll get better! 🌍";
+    if (isVibrationOn && navigator.vibrate) navigator.vibrate([180, 90, 180]);
+  }
 
-    const resultMsgElement = document.getElementById("result-message");
-    const finalScoreElement = document.getElementById("final-score");
-    const maxScoreElement = document.getElementById("max-score");
+  // Ukáž správny obrázok (ak ho máš)
+  const currentQuestion = quizQuestions[currentQuestionIndex];
+  if (currentQuestion && currentQuestion.correctImage && answerImage) {
+    answerImage.classList.add("show");
+    answerImage.src = currentQuestion.correctImage;
+    answerImage.style.display = "block";
+    answerImage.style.visibility = "visible";
+  }
+}
 
-    if (resultMsgElement) resultMsgElement.textContent = message;
-    if (finalScoreElement) finalScoreElement.textContent = score;
-    if (maxScoreElement) maxScoreElement.textContent = quizQuestions.length;
+function showResults() {
+  const container = document.querySelector(".container");
+  if (container) container.style.display = "none";
+  if (quizScreen) quizScreen.classList.remove("active");
+
+  if (resultScreen) {
+    resultScreen.classList.add("active");
+    resultScreen.style.display = "flex";
+  }
+
+  const percentage = (score / quizQuestions.length) * 100;
+  let message = "";
+  if (percentage === 100) message = "Perfect! You're a genius! 🏆";
+  else if (percentage >= 80) message = "Great job! You know your stuff! ✨";
+  else if (percentage >= 50) message = "Good effort! Keep learning! 📚";
+  else if (percentage >= 20) message = "Not bad! Try again to improve! 💪";
+  else message = "Keep studying! You'll get better! 🌍";
+
+  const resultMsgElement = document.getElementById("result-message");
+  const finalScoreElement = document.getElementById("final-score");
+  const maxScoreElement = document.getElementById("max-score");
+
+  if (resultMsgElement) resultMsgElement.textContent = message;
+  if (finalScoreElement) finalScoreElement.textContent = score;
+  if (maxScoreElement) maxScoreElement.textContent = quizQuestions.length;
 }
 
 function restartQuiz() {
-    if (resultScreen) {
-        resultScreen.classList.remove("active");
-        resultScreen.style.display = "none";
-    }
+  if (resultScreen) {
+    resultScreen.classList.remove("active");
+    resultScreen.style.display = "none";
+  }
 
-    const container = document.querySelector(".container");
-    if (container) {
-        container.style.display = "flex";
-        container.style.width = "";
-    }
+  const container = document.querySelector(".container");
+  if (container) {
+    container.style.display = "flex";
+    container.style.width = "";
+  }
 
-    currentQuestionIndex = 0;
-    score = 0;
-    if (scoreSpan) scoreSpan.textContent = "0";
+  currentQuestionIndex = 0;
+  score = 0;
+  if (scoreSpan) scoreSpan.textContent = "0";
 
-    startQuiz();
+  startQuiz();
 }
 
 // Splash screen logika
 window.addEventListener("load", () => {
-    const splash = document.getElementById("splash");
-    if (!splash) return;
+  const splash = document.getElementById("splash");
+  if (!splash) return;
 
+  setTimeout(() => {
+    splash.classList.add("is-hiding");
     setTimeout(() => {
-        splash.classList.add("is-hiding");
-        setTimeout(() => {
-            splash.classList.add("is-hidden");
-        }, 400);
-    }, 1500);
+      splash.classList.add("is-hidden");
+    }, 400);
+  }, 1500);
 });
 
-
-
-
+// ORIENTATION (len 1x)
 function checkOrientation() {
-    const overlay = document.getElementById('rotate-overlay');
-    if (window.innerHeight < window.innerWidth) {
-        // Sme v landscape (naležato)
-        overlay.style.setProperty('display', 'flex', 'important');
-    } else {
-        // Sme v portrait (nastojato)
-        overlay.style.setProperty('display', 'none', 'important');
-    }
+  const overlay = document.getElementById("rotate-overlay");
+  if (!overlay) return;
+
+  const isLandscape = window.innerWidth > window.innerHeight;
+  const inMaps = document.body.classList.contains("maps-mode");
+
+  // MAPS: povolený landscape, zakázaný portrait
+// MAPS, nič nezakazujeme, overlay v Maps nikdy nezobrazuj
+if (inMaps) {
+  overlay.style.setProperty("display", "none", "important");
+  overlay.style.pointerEvents = "none";
+  return;
+}
+  if (inMaps) {
+    overlay.style.setProperty("display", isLandscape ? "none" : "flex", "important");
+    overlay.style.pointerEvents = isLandscape ? "none" : "auto";
+    return;
+  }
+
+  // OSTATNÉ: zakázaný landscape, povolený portrait
+  overlay.style.setProperty("display", isLandscape ? "flex" : "none", "important");
+  overlay.style.pointerEvents = isLandscape ? "auto" : "none";
 }
 
-// Sledujeme zmenu orientácie
-window.addEventListener('resize', checkOrientation);
-window.addEventListener('orientationchange', checkOrientation);
-
-// Skontrolujeme hneď po načítaní
+window.addEventListener("resize", checkOrientation);
+window.addEventListener("orientationchange", checkOrientation);
 checkOrientation();
 
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-    // 2. NÁVRAT Z KARTY "GET READY" DO MENU (TOTO TI NEŠLO)
-    // Skontrolujeme, či je vidno štartovacie tlačidlo vlajok ALEBO kvízu
-    const isFlagsReadyVisible = document.getElementById('flag-start-btn');
-    const isQuizReadyVisible = quizReady && (quizReady.style.display === 'flex' || quizReady.classList.contains('active'));
-
-    if (isFlagsReadyVisible || isQuizReadyVisible) {
-        if (flagsReady) {
-            flagsReady.style.display = 'none';
-            flagsReady.classList.remove('active');
-        }
-        if (quizReady) {
-            quizReady.style.display = 'none';
-            quizReady.classList.remove('active');
-        }
-
-        // OŽIVÍME MENU
-        if (home) {
-            home.classList.remove("hidden");
-            home.style.setProperty("display", "flex", "important");
-            
-            document.querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap")
-                .forEach((el) => {
-                    el.style.setProperty("display", "flex", "important");
-                    el.classList.remove("hidden");
-                });
-        }
-    }
-};
-
-// --- 2. OPRAVA VIBRÁCIÍ A ORIENTÁCIE ---
-function checkOrientation() {
-    const overlay = document.getElementById('rotate-overlay');
-    if (!overlay) return;
-    if (window.innerHeight < window.innerWidth) {
-        overlay.style.setProperty('display', 'flex', 'important');
-    } else {
-        overlay.style.setProperty('display', 'none', 'important');
-    }
-}
-window.addEventListener('resize', checkOrientation);
-window.addEventListener('orientationchange', checkOrientation);
-checkOrientation();
-
-
-
-
+// BACK BUTTON
 window.onpopstate = function (event) {
   const s = event.state?.screen || "menu";
 
+  // MAPS
+  if (s === "maps") {
+    document.body.classList.add("maps-mode");
+    if (typeof checkOrientation === "function") checkOrientation();
+
+    if (typeof hideAllScreens === "function") hideAllScreens();
+    const ms = document.getElementById("maps-screen");
+    if (ms) ms.style.display = "block";
+
+    if (typeof startNewMapRound === "function") startNewMapRound();
+    return;
+  }
+
+
+  //---------------------------------------------------------------------------------------------------------------------------------
+
   // MENU
   if (s === "menu") {
+    document.body.classList.remove("maps-mode");
+    if (typeof checkOrientation === "function") checkOrientation();
+
     const home = document.getElementById("home-screen");
     const start = document.getElementById("start-screen");
     const quiz = document.getElementById("quiz-screen");
     const flag = document.getElementById("flag-screen");
     const result = document.getElementById("result-screen");
 
-    if (start) { start.style.display = "none"; start.classList.remove("active"); }
+    if (start) {
+      start.style.display = "none";
+      start.classList.remove("active");
+    }
     if (quiz) quiz.classList.remove("active");
-    if (flag) { flag.style.display = "none"; flag.classList.remove("active"); }
-    if (result) { result.style.display = "none"; result.classList.remove("active"); }
+    if (flag) {
+      flag.style.display = "none";
+      flag.classList.remove("active");
+    }
+    if (result) {
+      result.style.display = "none";
+      result.classList.remove("active");
+    }
 
     if (home) {
       home.classList.remove("hidden");
@@ -917,7 +1021,10 @@ window.onpopstate = function (event) {
 
     if (home) home.style.setProperty("display", "none", "important");
     if (quiz) quiz.classList.remove("active");
-    if (start) { start.style.display = "flex"; start.classList.add("active"); }
+    if (start) {
+      start.style.display = "flex";
+      start.classList.add("active");
+    }
     return;
   }
 
@@ -925,7 +1032,11 @@ window.onpopstate = function (event) {
   if (s === "quiz") {
     const start = document.getElementById("start-screen");
     const quiz = document.getElementById("quiz-screen");
-    if (start) { start.style.display = "none"; start.classList.remove("active"); }
+
+    if (start) {
+      start.style.display = "none";
+      start.classList.remove("active");
+    }
     if (quiz) quiz.classList.add("active");
     return;
   }
@@ -942,33 +1053,3 @@ window.onpopstate = function (event) {
     return;
   }
 };
-
-
-
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  try {
-    const App = window.Capacitor?.Plugins?.App;
-    if (!App) return;
-
-    App.addListener("backButton", () => {
-      const s = window.history.state?.screen || "menu";
-
-      // ak nie sme v menu, chod o krok späť v histórii
-      if (s !== "menu") {
-        window.history.back();
-        return;
-      }
-
-      // ak sme už v menu, zavri appku
-      App.exitApp();
-    });
-  } catch (e) {
-    console.log("BackButton listener error", e);
-  }
-});
-
-
-

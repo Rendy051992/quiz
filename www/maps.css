@@ -1,0 +1,274 @@
+/* =========================
+   MAPS SCREEN (FULLSCREEN)
+   ========================= */
+
+#maps-screen{
+  display:none;
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100dvh;
+
+  background:
+    radial-gradient(circle at 50% 25%, #162a47 0%, #0f1b33 45%, #0b1220 100%);
+
+  z-index:9999;
+  overflow:hidden;
+
+  border:0;
+  outline:0;
+  box-shadow:none;
+
+  /* iOS touch stability */
+  -webkit-user-select:none;
+  user-select:none;z-index:10000000;
+
+  -webkit-touch-callout:none;
+}
+
+body.maps-mode #maps-screen{
+  display:block !important;
+}
+
+/* =========================
+   HEADER UI (NEHÝBE SA)
+   ========================= */
+
+#map-question{
+  position:absolute;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+
+  background:rgba(0,0,0,0.72);
+  color:#eaf3ff;
+  padding:10px 22px;
+  border-radius:999px;
+  font-weight:600;
+  letter-spacing:0.2px;
+  box-shadow:0 0 22px rgba(92, 186, 255, 0.18);
+
+  z-index:1001;
+
+  /* UI nemá blokovať mapu */
+  pointer-events:none;
+}
+
+#map-info{
+  position:absolute;
+  top:62px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(520px, 92vw);
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+
+  color:rgba(190, 218, 245, 0.85);
+  font-size:14px;
+
+  z-index:1001;
+
+  pointer-events:none;
+}
+
+#map-info p{
+  margin:0;
+}
+
+/* MAPS progress bar */
+#map-progress{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  top:98px;
+  width:min(520px, 92vw);
+  height:10px;
+
+  border-radius:999px;
+  background:rgba(255,255,255,0.12);
+  overflow:hidden;
+
+  z-index:1001;
+  pointer-events:none;
+}
+
+
+#map-progress-fill{
+  width:0%;
+  height:100%;
+  border-radius:999px;
+
+  /* neon gradient – farba sa mení podľa šírky */
+  background: linear-gradient(
+    90deg,
+    #2f80ff 0%,
+    #3fd2ff 40%,
+    #6b7cff 70%,
+    #9b5cff 100%
+  );
+
+  box-shadow:
+    0 0 10px rgba(47,128,255,0.6),
+    0 0 20px rgba(63,210,255,0.45);
+
+  transition: width 0.3s ease;
+}
+
+
+/* =========================
+   MAP LAYOUT (WRAPPERS)
+   ========================= */
+
+#map-wrap{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 55%),
+    transparent;
+
+  border:0;
+  outline:0;
+  box-shadow:none;
+
+  z-index:1;
+}
+
+#map-viewport{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  touch-action:none;
+  padding:0;
+  box-sizing:border-box;
+}
+
+
+/* transform layer = jediný element, čo sa hýbe a zoomuje */
+#map-transform{
+  position:absolute;
+  top:0;
+  left:0;
+
+  transform-origin:0 0;
+  will-change:transform;
+
+  pointer-events:auto;
+
+  border:0;
+  outline:0;
+  box-shadow:none;
+}
+
+/* SVG mapa, pevná “mapa veľkosť”, škáluje sa cez #map-transform */
+#world-map{
+  width:1010px;
+  height:666px;
+  display:block;
+
+  background:transparent;
+  border:0;
+  outline:0;
+  box-shadow:none;
+
+  filter:brightness(1.08) contrast(1.02);
+
+  pointer-events:auto;
+}
+
+/* Paths musia byť klikateľné */
+#world-map path{
+  pointer-events:auto;
+}
+
+/* countries styling */
+#maps-screen path{
+  fill:#4b637d;
+
+  stroke:rgba(12, 20, 35, 0.55);
+  stroke-width:0.6;
+  transition:fill 0.18s, filter 0.18s;
+}
+
+#maps-screen path.correct{
+  fill:#49b4ff !important;
+}
+
+#maps-screen path.wrong{
+  fill:#ef4444 !important;
+}
+
+
+
+#map-zoom-controls{
+  display:none !important;
+}
+
+
+
+
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/* =========================
+   MAPS START - NEON BLUE (MOBILE ONLY)
+   ========================= */
+
+#maps-start-screen .start-card button,
+#maps-start-btn {
+  background: linear-gradient(
+    135deg,
+    #2f80ff 0%,
+    #4fd1ff 45%,
+    #2f80ff 100%
+  );
+
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+
+  padding: 15px 32px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+
+  cursor: pointer;
+  outline: none;
+
+  /* NEON GLOW – stále zapnutý */
+  box-shadow:
+    0 0 16px rgba(79, 209, 255, 0.65),
+    0 0 34px rgba(47, 128, 255, 0.55),
+    0 12px 30px rgba(47, 128, 255, 0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.28);
+
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* TAP / ACTIVE – jediná interakcia na mobile */
+#maps-start-screen .start-card button:active,
+#maps-start-btn:active {
+  transform: scale(0.96);
+
+  box-shadow:
+    0 0 10px rgba(79, 209, 255, 0.45),
+    0 0 22px rgba(47, 128, 255, 0.4),
+    0 6px 16px rgba(47, 128, 255, 0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.2);
+}
+
+/* MAPS start screen title – white like Classic Quiz */
+#maps-start-screen h1 {
+  color: #ffffff;
+}

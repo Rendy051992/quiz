@@ -13,49 +13,58 @@ function preloadFlagImages() {
   });
 }
 
+function safeVibrate(pattern) {
+  // ak je globálne vypnutá vibrácia, nič neurob
+  if (typeof isVibrationOn !== "undefined" && !isVibrationOn) return;
+
+  // ak vibrácie existujú, vykonaj ich
+  if (navigator.vibrate) {
+    navigator.vibrate(pattern);
+  }
+}
 
 
 
 const flagData = [
-    { name: "China", file: "cn.webp", options: ["cn.webp", "vn.webp", "tr.webp", "me.webp"] },
-    { name: "United Kingdom", file: "gb.webp", options: ["is.webp", "gb.webp", "au.webp", "no.webp"] },
-    { name: "France", file: "fr.webp", options: ["it.webp", "ru.webp", "fr.webp", "be.webp"] },
-    { name: "Brazil", file: "br.webp", options: ["ar.webp", "jm.webp", "br.webp", "co.webp"] },
+    { name: "China", file: "cn.webp", options: ["cn.webp", "vn.webp", "tr.webp", "im.webp"] },
+    { name: "United Kingdom", file: "gb.webp", options: ["fk.webp", "gb.webp", "au.webp", "gs.webp"] },
+    { name: "France", file: "fr.webp", options: ["cu.webp", "ru.webp", "fr.webp", "rs.webp"] },
+    { name: "Brazil", file: "br.webp", options: ["bd.webp", "pt.webp", "br.webp", "cx.webp"] },
     { name: "United States", file: "us.webp", options: ["us.webp", "lr.webp"] },
     { name: "Japan", file: "jp.webp", options: ["jp.webp", "pw.webp"] },
-    { name: "Spain", file: "es.webp", options: ["pt.webp", "es.webp", "mx.webp", "ph.webp"] },
+    { name: "Spain", file: "es.webp", options: ["ug.webp", "es.webp", "de.webp", "me.webp"] },
     { name: "Canada", file: "ca.webp", options: ["ca.webp", "pe.webp", "lb.webp", "ge.webp"] },
-    { name: "Germany", file: "de.webp", options: ["be.webp", "de.webp", "at.webp", "hu.webp"] },
-    { name: "Greece", file: "gr.webp", options: ["uy.webp", "gr.webp", "il.webp", "fi.webp"] },
+    { name: "Philippines", file: "ph.webp", options: ["sx.webp", "ph.webp", "cl.webp", "cz.webp"] },
+    { name: "Greece", file: "gr.webp", options: ["uy.webp", "gr.webp", "ni.webp", "fi.webp"] },
     { name: "Australia", file: "au.webp", options: ["au.webp", "nz.webp"] },
-    { name: "Indonesia", file: "id.webp", options: ["id.webp", "mc.webp"] },
+    { name: "Indonesia", file: "id.webp", options: ["id.webp", "sg.webp"] },
     { name: "Ireland", file: "ie.webp", options: ["ie.webp", "ci.webp"] },
-    { name: "South Korea", file: "kr.webp", options: ["kp.webp", "th.webp", "kr.webp", "tw.webp"] },
+    { name: "South Korea", file: "kr.webp", options: ["kp.webp", "mt.webp", "kr.webp", "jp.webp"] },
     { name: "Switzerland", file: "ch.webp", options: ["at.webp", "ch.webp", "dk.webp", "to.webp"] },
-    { name: "Kenya", file: "ke.webp", options: ["za.webp", "ng.webp", "ke.webp", "et.webp"] },
-    { name: "Italy", file: "it.webp", options: ["ie.webp", "mx.webp", "hu.webp", "it.webp"] },
+    { name: "Kenya", file: "ke.webp", options: ["sz.webp", "ly.webp", "ke.webp", "mw.webp"] },
+    { name: "Hungary", file: "hu.webp", options: ["tj.webp", "mx.webp", "hu.webp", "it.webp"] },
     { name: "Egypt", file: "eg.webp", options: ["iq.webp", "sy.webp", "ye.webp", "eg.webp"] },
-    { name: "Saudi Arabia", file: "sa.webp", options: ["pk.webp", "ly.webp", "sa.webp", "dz.webp"] },
-    { name: "United Arab Emirates", file: "ae.webp", options: ["ae.webp", "jo.webp"] },
+    { name: "Saudi Arabia", file: "sa.webp", options: ["pk.webp", "tm.webp", "sa.webp", "dz.webp"] },
+    { name: "United Arab Emirates", file: "ae.webp", options: ["ae.webp", "kw.webp"] },
     { name: "Turkey", file: "tr.webp", options: ["tr.webp", "tn.webp"] },
     { name: "Morocco", file: "ma.webp", options: ["vn.webp", "ma.webp", "so.webp", "al.webp"] },
-    { name: "Israel", file: "il.webp", options: ["gr.webp", "fi.webp", "ar.webp", "il.webp"] },
-    { name: "South Africa", file: "za.webp", options: ["za.webp", "jm.webp", "zw.webp", "bz.webp"] },
+    { name: "Ghana", file: "gh.webp", options: ["sn.webp", "cm.webp", "et.webp", "gh.webp"] },
+    { name: "South Africa", file: "za.webp", options: ["za.webp", "jm.webp", "tz.webp", "kn.webp"] },
     { name: "Palestine", file: "ps.webp", options: ["ps.webp", "jo.webp"] },
     { name: "India", file: "in.webp", options: ["in.webp", "ne.webp"] },
-    { name: "Vietnam", file: "vn.webp", options: ["cn.webp", "vn.webp", "me.webp", "hk.webp"] },
+    { name: "Venezuela", file: "ve.webp", options: ["co.webp", "ve.webp", "ad.webp", "ec.webp"] },
     { name: "Argentina", file: "ar.webp", options: ["uy.webp", "ar.webp", "sv.webp", "ni.webp"] },
     { name: "Netherlands", file: "nl.webp", options: ["nl.webp", "lu.webp"] },
     { name: "Thailand", file: "th.webp", options: ["th.webp", "cr.webp"] },
     { name: "Sweden", file: "se.webp", options: ["dk.webp", "no.webp", "se.webp", "is.webp"] },
-    { name: "Poland", file: "pl.webp", options: ["pl.webp", "id.webp"] },
-    { name: "Portugal", file: "pt.webp", options: ["es.webp", "pt.webp", "bb.webp", "gs.webp"] },
+    { name: "Poland", file: "pl.webp", options: ["pl.webp", "mc.webp"] },
+    { name: "Nigeria", file: "ng.webp", options: ["nf.webp", "ng.webp", "bd.webp", "dz.webp"] },
     { name: "Ukraine", file: "ua.webp", options: ["se.webp", "ua.webp", "kz.webp", "rw.webp"] },
     { name: "Belgium", file: "be.webp", options: ["be.webp", "de.webp"] },
     { name: "Slovakia", file: "sk.webp", options: ["sk.webp", "si.webp"] },
     { name: "Norway", file: "no.webp", options: ["no.webp", "is.webp"] },
     { name: "Romania", file: "ro.webp", options: ["ro.webp", "td.webp"] },
-    { name: "Nepal", file: "np.webp", options: ["in.webp", "np.webp", "bt.webp", "tt.webp"] },
+    { name: "Nepal", file: "np.webp", options: ["ws.webp", "np.webp", "ao.webp", "tt.webp"] },
     { name: "Mexico", file: "mx.webp", options: ["mx.webp", "it.webp"] }
 ];
 
@@ -285,7 +294,8 @@ if (selectedFile === question.file) {
     flagScore++;
     const scoreElem = document.getElementById('flag-score-text');
     if (scoreElem) scoreElem.innerText = `Score: ${flagScore}`;
-    if (navigator.vibrate) navigator.vibrate(140); // ✔️ 1x silné
+    safeVibrate(140);
+
 } else {
     setStatus(false); // WRONG
     card.classList.add('wrong');
@@ -296,7 +306,7 @@ if (selectedFile === question.file) {
             c.classList.add('correct');
         }
     });
-    if (navigator.vibrate) navigator.vibrate([180, 90, 180]); // ❌ 2x silné
+safeVibrate([180, 90, 180]);
 }
 
 
