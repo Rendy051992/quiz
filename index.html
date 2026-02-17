@@ -1,122 +1,330 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Quiz Game</title>
-<link rel="stylesheet" href="style.css?v=999"></head>
-<link rel="stylesheet" href="flags.css">
-<body>
- 
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Quiz Game</title>
 
-  <div class="splash" id="splash">
-  <div class="bg"></div>
-  <div class="overlay"></div>
-  <div class="loaderWrap">
-    <div class="dots">
-    </div>
+    <link rel="stylesheet" href="style.css?v=999" />
+    <link rel="stylesheet" href="flags.css" />
+    <link rel="stylesheet" href="globe.css" />
+    <!-- môj štýl pre 3D glóbus -->
+  </head>
 
-
-  </div>
-</div>
-
-<div id="rotate-overlay" style="display: none; position: fixed; inset: 0; background: #040914; color: white; z-index: 9999999; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-family: sans-serif;">
-    <img src="icons/rotate-icon.png" alt="Rotate Device" style="width: 120px; height: auto; margin-bottom: 20px;">
-    <p style="font-size: 1.5rem; font-weight: bold; margin: 0;">Please rotate your device</p>
-</div>  <section id="home-screen" class="home">
-
-  <div class="top-nav-bar">
-    <img src="icons/info.png" class="clean-icon" id="info-btn" alt="Info">
-    <img src="icons/vibration_on.png" class="clean-icon" id="vibration-btn" alt="Vibration">
-</div>
-    <div class="menu-header">
-      <div class="top-controls">
-
-</div>
-      <h2 class="menu-title">GeoVerity</h2>
-      <p class="menu-subtitle">Ready to test your world knowledge?</p>
-    </div>
-
-    <div class="menu-grid">
-  <button class="category-card card-quiz" data-category="quiz" onclick="hapticClick()">
-    <div class="card-glow"></div>
-    <div class="card-icon">🧠</div>
-    <div class="card-content">
-      <span class="card-label">TRIVIA</span>
-      <h3 class="card-title">Classic Quiz</h3>
-    </div>
-    <div class="card-arrow">→</div>
-  </button>
-
-  <button class="category-card card-flags" data-category="flags" onclick="hapticClick()">
-    <div class="card-glow"></div>
-    <div class="card-icon">🇬🇧</div> 
-    <div class="card-content">
-      <span class="card-label">VISUAL</span>
-      <h3 class="card-title">Flag Finder</h3>
-    </div>
-    <div class="card-arrow">→</div>
-  </button>
-
-  <button class="category-card card-map" data-category="maps" onclick="hapticClick()">
-    <div class="card-glow"></div>
-    <div class="card-icon">🗺️</div>
-    <div class="card-content">
-      <span class="card-label">EXPLORE</span>
-      <h3 class="card-title">Map Master</h3>
-    </div>
-    <div class="card-arrow">→</div>
-  </button>
-</div>
-  </section>
-
-  <div id="start-screen">
-    <div class="start-card">
-      <span class="ready-text">Get Ready</span>
-      <h1 id="selected-category-name">Classic Quiz</h1>
-      <div class="start-icon-wrap">🌍</div>
-<button id="start-btn" onclick="hapticClick()">LET'S GO</button>    </div>
-  </div>
-
-<div class="container">
-  <div class="screen" id="quiz-screen">
-    <div class="quiz-header">
-      <img id="answer-image" alt="Correct answer image" style="display:none;" />
-
-      <h2 id="question-text">Question goes here</h2>
-
-      <div class="quiz-info">
-        <p>Question <span id="current-question">1</span> of <span id="total-questions">5</span></p>
-        <div id="quiz-answer-status"></div>
-        <p>Score: <span id="score">0</span></p>
+  <body class="preboot">
+    <div class="splash" id="splash">
+      <div class="bg"></div>
+      <div class="overlay"></div>
+      <div class="loaderWrap">
+        <div class="dots"></div>
       </div>
     </div>
 
-    <div id="answers-container" class="answers-container"></div>
-
-    <button id="next-btn" disabled>Next</button>
-
-    <div class="progress-bar">
-      <div id="progress" class="progress"></div>
+    <div
+      id="rotate-overlay"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: #040914;
+        color: white;
+        z-index: 9999999;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family: sans-serif;
+      "
+    >
+      <img
+        src="icons/rotate-icon.png"
+        alt="Rotate Device"
+        style="width: 120px; height: auto; margin-bottom: 20px"
+      />
+      <p style="font-size: 1.5rem; font-weight: bold; margin: 0">
+        Please rotate your device
+      </p>
     </div>
+
+    <section id="home-screen" class="home">
+      <div class="top-nav-bar">
+        <img src="icons/info.png" class="clean-icon" id="info-btn" alt="Info" />
+        <img
+          src="icons/vibration_on.png"
+          class="clean-icon"
+          id="vibration-btn"
+          alt="Vibration"
+        />
+      </div>
+
+      <div class="menu-header">
+        <div class="top-controls"></div>
+        <h2 class="menu-title">GeoVerity</h2>
+        <p class="menu-subtitle">Ready to test your world knowledge?</p>
+      </div>
+
+      <div class="menu-grid">
+        <button
+          class="category-card card-quiz"
+          data-category="quiz"
+          onclick="hapticClick()"
+        >
+          <div class="card-glow"></div>
+          <div class="card-icon">🧠</div>
+          <div class="card-content">
+            <span class="card-label">TRIVIA</span>
+            <h3 class="card-title">Classic Quiz</h3>
+          </div>
+          <div class="card-arrow">→</div>
+        </button>
+
+        <button
+          class="category-card card-flags"
+          data-category="flags"
+          onclick="hapticClick()"
+        >
+          <div class="card-glow"></div>
+          <div class="card-icon">🇬🇧</div>
+          <div class="card-content">
+            <span class="card-label">VISUAL</span>
+            <h3 class="card-title">Flag Finder</h3>
+          </div>
+          <div class="card-arrow">→</div>
+        </button>
+
+        <button
+          class="category-card card-map"
+          data-category="maps"
+          onclick="hapticClick()"
+        >
+          <div class="card-glow"></div>
+          <div class="card-icon">🗺️</div>
+          <div class="card-content">
+            <span class="card-label">EXPLORE</span>
+            <h3 class="card-title">Map Master</h3>
+          </div>
+          <div class="card-arrow">→</div>
+        </button>
+      </div>
+    </section>
+
+    <!-- CLASSIC QUIZ START -->
+    <div id="start-screen" class="start-screen">
+      <div class="start-card">
+        <span class="ready-text">Get Ready</span>
+        <h1 id="selected-category-name">Classic Quiz</h1>
+        <div class="start-icon-wrap">🌍</div>
+        <button id="start-btn" onclick="hapticClick()">LET'S GO</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="screen" id="quiz-screen">
+        <div class="quiz-header">
+          <img
+            id="answer-image"
+            alt="Correct answer image"
+            style="display: none"
+          />
+          <h2 id="question-text">Question goes here</h2>
+
+          <div class="quiz-info">
+            <p>
+              <span id="current-question">1</span> of
+              <span id="total-questions">5</span>
+            </p>
+            <div id="quiz-answer-status"></div>
+            <p>Score: <span id="score">0</span></p>
+          </div>
+        </div>
+
+        <div id="answers-container" class="answers-container"></div>
+
+        <button id="next-btn" disabled>Next</button>
+
+        <div class="progress-bar">
+          <div id="progress" class="progress"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="result-screen">
+      <div class="result-card">
+        <h1>Quiz Results</h1>
+        <p id="result-message">Great job!</p>
+        <p id="final-text">
+          You scored <span id="final-score">0</span> out of
+          <span id="max-score">0</span>
+        </p>
+        <button
+          id="restart-btn"
+          class="restart-btn"
+          onclick="
+            hapticClick();
+            restartQuiz();
+          "
+        >
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- GLOBE SCREEN -->
+    <!-- ========================= -->
+ <section id="globe-screen" style="display: none">
+
+  <!-- ✅ MAP MASTER START SCREEN -->
+  <div id="globe-start-screen" class="globe-start-screen">
+    <div class="globe-start-card">
+      <div class="globe-start-ready">GET READY</div>
+      <div class="globe-start-title">Maps</div>
+      <div class="globe-start-icon">🗺️</div>
+      <button id="globe-start-btn" class="globe-start-btn" type="button">
+        LET'S GO
+      </button>
+    </div>
+  </div>
+
+<div id="globe-result-screen" class="globe-result-screen" aria-hidden="true">
+  <!-- ja som overlay pre výsledky, budem nad celým globe screen -->
+  <div class="result-card" role="dialog" aria-modal="true">
+    <!-- ja som kartička s výsledkami -->
+    <h1>Quiz Results</h1>
+    <p id="globe-result-message">Not bad! Try again to improve! 💪</p>
+    <p>
+      You scored <span id="globe-final-score">0</span> out of
+      <span id="globe-max-score">30</span>
+    </p>
+    <button id="globe-restart-btn" class="restart-btn" type="button">
+      Play Again
+    </button>
   </div>
 </div>
 
 
-  
-  
+      <!-- FULLSCREEN LOADER (ID musí zostať globe-loader kvôli globe.js showLoader/hideLoader) -->
+      <div id="globe-loader" aria-hidden="true">
+        <div class="loader-center">
+          <div class="spinner">
+            <div class="spinner1"></div>
+          </div>
 
-  <div id="result-screen">
-    <div class="result-card">
-      <h1>Quiz Results</h1>
-      <p id="result-message">Great job!</p>
-      <p id="final-text">You scored <span id="final-score">0</span> out of <span id="max-score">0</span></p>
-<button id="restart-btn" class="restart-btn" onclick="hapticClick(); restartQuiz()">Play Again</button>
-  </div>
+          <!-- Text je mimo spinnera, takže sa ti nikdy nerozbije layout globe canvas -->
+          <div class="loader-text">
+            Loading<span class="dots"
+              ><span>.</span><span>.</span><span>.</span></span
+            >
+          </div>
+        </div>
+      </div>
 
+     <div id="country-label">
+  <img id="country-flag" />
+  <span id="country-name"></span>
+</div>
 
+      <!-- floating label nad krajinou -->
 
-  <script src="script.js?v=1"></script>
-  <script src="flags.js"></script>
-</body>
+      <div id="globe-hud">
+        <!-- Question text -->
+        <div id="globe-question"></div>
+
+        <div id="globe-status">
+          <div id="globe-meta">
+            <div id="globe-qcount">1 of 30</div>
+            <div id="globe-score">Score: 0</div>
+          </div>
+
+          <div id="globe-progress">
+            <div id="globe-progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- Borders control -->
+        <div class="borders-control" id="globe-borders-toggle">
+          <span class="borders-label">Counntry borders</span>
+
+          <div class="reactor-widget">
+            <div class="reactor-switch">
+              <input type="checkbox" id="reactor" />
+              <label for="reactor" aria-label="Borders toggle">
+                <span class="reactor-switch__core"></span>
+                <span class="reactor-switch__beam"></span>
+                <span class="reactor-switch__thumb"></span>
+                <span class="reactor-switch__state reactor-switch__state--off"
+                  >OFF</span
+                >
+                <span class="reactor-switch__state reactor-switch__state--on"
+                  >ON</span
+                >
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="globe-next-btn" type="button" disabled>Next</button>
+      <!-- ✅ Next button -->
+
+      <button id="globe-play-again">Play Again</button>
+      <!-- tu mám tlačidlo na reštart quizu -->
+
+      <!-- Globe canvas mount point -->
+      <div id="globe-canvas"></div>
+    </section>
+
+    <!-- INFO ICON (HTML ONLY) -->
+    <div id="info-modal" class="info-modal hidden">
+      <div class="info-backdrop"></div>
+
+      <div class="info-box">
+        <h2>🌍 GeoVerity v1.1</h2>
+
+        <p>Developed by Renata</p>
+
+        <h3>Resources:</h3>
+        <p>World map (SVG): Victor Cazanave (CC BY 4.0)</p>
+        <p>
+          Flags:
+          <a href="https://flagpedia.net" target="_blank" rel="noopener">
+            Flagpedia.net
+          </a>
+        </p>
+
+        <p>
+          Icons:
+          <a href="https://www.flaticon.com" target="_blank" rel="noopener">
+            Flaticon
+          </a>
+        </p>
+
+        <h3>Privacy Policy:</h3>
+
+        <div class="info-actions">
+          <a
+            class="info-policy-link"
+            href="https://rendy051992.github.io/quiz/privacy.html"
+            target="_blank"
+            rel="noopener"
+          >
+            Open Privacy Policy
+          </a>
+
+          <button id="info-close" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js?v=778"></script>
+
+    <script src="flags.js"></script>
+    <!-- <script src="maps.js?v=999"></script> -->
+    <script src="https://unpkg.com/three/build/three.min.js"></script>
+    <script src="https://unpkg.com/globe.gl"></script>
+    <script src="globe.js?v=4.23"></script>
+  </body>
 </html>

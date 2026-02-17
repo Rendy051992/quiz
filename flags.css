@@ -327,3 +327,77 @@
 #answer-status {
   margin-top: 6px;
 }
+
+
+/*------------------------------------------------------------------------------------------------------------------------/*
+
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* =========================
+   ONE GLOW SYSTEM, ALWAYS UNDER FLAGS + PROGRESS
+   ========================= */
+
+/* Vytvor stabilnú vrstvu pre celý quiz */
+#quiz-screen{
+  position: relative !important;
+  isolation: isolate !important;
+}
+
+/* Progress bar je vždy nad všetkým */
+.progress-bar,
+.progress-fill{
+  position: relative !important;
+  z-index: 50 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Grid pre flags musí byť izolovaný, aby sa vrstvy nemiešali */
+.flags-grid,
+.flag-grid{
+  position: relative !important;
+  isolation: isolate !important;
+  z-index: 10 !important;
+}
+
+/* Všetky flag tiles sú nad glow */
+.flag-option,
+.flag-btn{
+  position: relative !important;
+  z-index: 20 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Vybraná vlajka ide o vrstvu nižšie než ostatné (aby jej glow šiel POD nimi) */
+.flag-option.correct,
+.flag-option.wrong,
+.flag-btn.correct,
+.flag-btn.wrong{
+  z-index: 15 !important;
+}
+
+/* Glow bez filter blur, len box-shadow (stabilnejšie vrstvy) */
+.flag-option.correct::before,
+.flag-option.wrong::before,
+.flag-btn.correct::before,
+.flag-btn.wrong::before{
+  content: "" !important;
+  position: absolute !important;
+  inset: -18px !important;
+  border-radius: 18px !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+}
+
+/* Farby glowa cez box-shadow */
+.flag-option.correct::before,
+.flag-btn.correct::before{
+  box-shadow: 0 0 26px 14px rgba(0, 255, 170, 0.45) !important;
+}
+
+.flag-option.wrong::before,
+.flag-btn.wrong::before{
+  box-shadow: 0 0 26px 14px rgba(255, 0, 0, 0.45) !important;
+}

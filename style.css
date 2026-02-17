@@ -1,7 +1,16 @@
+/* STOP first paint flash */
+body.preboot #home-screen {
+  display: none !important;
+}
+
+
+
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+    overflow: hidden !important;
+
 }
 
 
@@ -56,8 +65,8 @@ body {
     position: relative;
     overflow: hidden;
     
-    /* PRIDAJ TENTO RIADOK: */
-margin: 0 auto;    /* Zvyšok tvojho kódu (background, border atď.) ostáva rovnaký */
+   
+margin: 0 auto;    /* (background, border atď.) ostáva rovnaký */
     background: rgba(18, 26, 44, 0.55);
     border: 1px solid rgba(120, 180, 255, 0.22);
     border-radius: 18px;
@@ -86,6 +95,7 @@ margin: 0 auto;    /* Zvyšok tvojho kódu (background, border atď.) ostáva ro
 
 .screen.active {
   display: block; /* iba aktívny screen je viditeľný */
+ 
 }
 
 /* =========================
@@ -331,12 +341,12 @@ margin: 0 auto;    /* Zvyšok tvojho kódu (background, border atď.) ostáva ro
    ========================= */
 #answer-image {
   width: 200px; /* šírka obrázka v quiz screene */
-  height: 200px; /* výška obrázka */
-  object-fit: cover; /* oreže obrázok, aby vyplnil box */
+  height: 120px;  object-fit: cover; /* oreže obrázok, aby vyplnil box */
   object-position: center; /* drží stred obrázka */
   display: block; /* aby sa dalo centrovať marginom */
   margin: 0 auto 16px auto; /* centrovanie a medzera pod obrázkom */
   border-radius: 12px; /* zaoblenie obrázka */
+  
 }
 
 /* =========================
@@ -1042,7 +1052,7 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
 
 
 
-@media screen and (max-width: 600px) {
+
 @media screen and (max-width: 600px) {
 
   .container {
@@ -1057,7 +1067,6 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
     min-height: 100svh !important;
 
     /* ✅ give space for notch + top UI, so the card top is never clipped */
-    padding-top: calc(env(safe-area-inset-top) + 16px) !important;
     padding-bottom: calc(env(safe-area-inset-bottom) + 16px) !important;
 
     margin: 0 !important;
@@ -1105,7 +1114,7 @@ inset: calc(0px - env(safe-area-inset-top)) 0 calc(0px - env(safe-area-inset-bot
     font-size: 1.3rem !important;
     line-height: 1.3 !important;
   }
-}
+
 
 /* Špeciálne pre extrémne úzke mobily (ak by A10 blbla) */
 @media screen and (max-width: 400px) {
@@ -1196,12 +1205,13 @@ button:active,
 
 #quiz-answer-status {
   margin: 6px 0 12px 0;
-  font-weight: 700;
+  font-weight: 700; /* alreat wrong an correct */
   letter-spacing: 2px;
   text-align: center;
   min-height: 22px;
   opacity: 0;
   transition: opacity 120ms ease;
+  margin-bottom: 10px;
 }
 
 #quiz-answer-status.show {
@@ -1216,8 +1226,13 @@ button:active,
   color: #ff3b30;
 }
 
+#quiz-screen.answered {
+  transform: translateY(40px) !important;
+}
 
-/* ONE CARD ONLY: card is #quiz-screen, .screen is NOT a card */
+
+
+/* ONE CARD ONLY, card is #quiz-screen, .screen is NOT a card */
 @media screen and (max-width: 600px) {
   .screen {
     background: transparent !important;
@@ -1235,10 +1250,8 @@ button:active,
     backdrop-filter: blur(15px) !important;
     -webkit-backdrop-filter: blur(15px) !important;
   }
-}
-@media screen and (max-width: 600px) {
 
-  .quiz-info{
+  .quiz-info {
     display: grid !important;
     grid-template-columns: max-content 1fr max-content !important;
     align-items: center !important;
@@ -1250,16 +1263,16 @@ button:active,
   }
 
   .quiz-info p:first-child,
-  .quiz-info p:last-child{
+  .quiz-info p:last-child {
     white-space: nowrap !important;
     margin: 0 !important;
     line-height: 1 !important;
   }
 
-  .quiz-info p:first-child{ justify-self: start !important; }
-  .quiz-info p:last-child{ justify-self: end !important; }
+  .quiz-info p:first-child { justify-self: start !important; }
+  .quiz-info p:last-child { justify-self: end !important; }
 
-  #quiz-answer-status{
+  #quiz-answer-status {
     grid-column: 2 !important;
     justify-self: center !important;
     text-align: center !important;
@@ -1267,6 +1280,313 @@ button:active,
     padding: 0 !important;
     line-height: 1 !important;
   }
-
 }
 
+/* pred odpoveďou posunúť dole */
+#quiz-screen.picking {
+  transform: translateY(calc(6vh + 40px));
+}
+
+/* po odpovedi reset */
+#quiz-screen.answered {
+  transform: none !important;
+}
+
+/* SMALL PHONES, Galaxy A10 etc */
+@media (max-width: 380px), (max-height: 700px) {
+
+  /* container je wrapper, nie karta */
+  .container {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* POSUN celej karty v APK */
+  #quiz-screen {
+    margin-top: 12px !important;
+    max-height: calc(100svh - 12px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* LEN po odpovedi jemný posun */
+  #quiz-screen.answered {
+    margin-top: 28px !important;
+  }
+
+  /* answered-mode, nech sa containerom nehýbe */
+  .container.answered-mode {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    transform: none !important;
+    max-height: 100svh;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* vnútro môže scrollovať */
+  .container.answered-mode #quiz-screen {
+    padding: 18px !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container.answered-mode #answer-image {
+    width: 170px !important;
+    height: 86px !important;
+    margin: 6px auto 10px auto !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    object-fit: cover;
+  }
+
+  .container.answered-mode #question-text {
+    font-size: 1.10rem !important;
+    margin-bottom: 10px !important;
+  }
+
+  .container.answered-mode .quiz-info {
+    margin-top: 18px !important;
+    margin-bottom: 16px !important;
+    font-size: 13px !important;
+  }
+
+  .container.answered-mode .answers-container {
+    margin-top: auto !important;
+    gap: 14px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .container.answered-mode .answer-btn {
+    padding: 12px 12px !important;
+  }
+
+  .container.answered-mode #next-btn {
+    padding: 14px !important;
+    font-size: 16px !important;
+    margin-top: 22px !important;
+  }
+
+  .container.answered-mode .progress-bar {
+    height: 10px !important;
+    margin-top: 26px !important;
+  }
+}
+
+#quiz-screen {
+  margin-top: 36px !important;
+}
+
+
+#quiz-screen .quiz-info{
+  margin-bottom: 22px !important;
+}
+
+#quiz-screen .answers-container{
+  margin-top: 22px !important;
+}
+
+#quiz-screen #next-btn{
+  margin-top: 22px !important;
+}
+
+#quiz-screen .progress-bar{
+  margin-top: 22px !important;
+}
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------*/
+/* QUIZ INFO: vždy presný stred pre CORRECT/WRONG, bez rozbitia layoutu */
+.quiz-info{
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Left: 1 of 30 */
+.quiz-info p:first-child{
+  justify-self: start !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Center: CORRECT / WRONG */
+#quiz-answer-status{
+  justify-self: center !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+/* Right: Score */
+.quiz-info p:last-child{
+  justify-self: end !important;
+  white-space: nowrap !important;
+  padding-right: 12px !important;
+}
+/*-------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* SAFE AREA: aby header info + vibration icons nešiel do status baru */
+.top-nav-bar{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  display: flex;
+  justify-content: space-between;
+
+  padding: 12px 16px;
+  padding-top: calc(12px + env(safe-area-inset-top));
+}
+
+
+
+/* MAPS: rotate overlay musí byť 100% vypnutý, aby nerobil čiary */
+body.maps-mode #rotate-overlay{
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+
+
+/*-----------------------------------------------------------------------------------------------------------------------*/
+
+/* ===== INFO MODAL, default hidden ===== */
+.info-modal.hidden{
+  display: none;                 /* ✅ najdôležitejší riadok, aby nič nerozbilo layout */
+}
+
+.info-modal{
+  position: fixed;               /* ✅ nebude súčasť layoutu, nebude tlačiť quiz */
+  inset: 0;
+  z-index: 999999;               /* ✅ bude nad všetkým */
+}
+
+.info-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);  /* ✅ tmavé pozadie */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.info-box{
+  position: absolute;
+  left: 50%;
+  top: calc(env(safe-area-inset-top, 0px) + 80px);
+  transform: translateX(-50%);
+
+  width: min(560px, 92vw);
+  max-height: min(70vh, 520px);
+  overflow: auto;
+
+  background: rgba(10, 16, 28, 0.78);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+  color: #eaf3ff;
+  padding: 16px;
+}
+
+.info-box a{
+  color: #7cc4ff;
+  text-decoration: underline;
+  word-break: break-word;
+}
+
+#info-close{
+  margin-top: 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 110px;
+  height: 42px;
+
+  border-radius: 999px;
+
+  background: linear-gradient(180deg, rgba(120,190,255,0.35), rgba(60,120,255,0.18)) !important;
+  border: 1px solid rgba(140,210,255,0.35) !important;
+
+  color: #eaf3ff !important;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+
+  box-shadow:
+    0 14px 34px rgba(0,0,0,0.55),
+    0 0 24px rgba(92,186,255,0.22),
+    inset 0 0 0 1px rgba(255,255,255,0.08);
+
+  cursor: pointer;
+}
+
+#info-close:active{
+  transform: scale(0.96);
+}
+
+/* link + close vedľa seba bez prekrývania */
+.info-actions{
+  margin-top: 10px;
+
+  display: flex;                 /* ✅ urobí row */
+  align-items: center;
+  justify-content: space-between;/* ✅ link vľavo, close vpravo */
+  gap: 12px;                     /* ✅ medzera medzi nimi */
+}
+
+.info-policy-link{
+  flex: 1;                       /* ✅ link zoberie voľné miesto */
+  min-width: 0;                  /* ✅ dovolí zalomiť text */
+  word-break: break-word;
+  
+}
+
+/* Close nech sa nikdy “nepretlačí” cez link */
+#info-close{
+  flex: 0 0 auto;                /* ✅ vždy si drží svoju šírku */
+  margin-top: 0;                 /* ✅ aby nepadal nižšie */
+}
+
+/* FORCE: zmenší medzeru medzi "Privacy Policy" a linkom */
+#info-modal .info-box h3{
+  margin-top: 42px !important;
+  margin-bottom: 4px !important;
+}
+
+/* FORCE: nech link + Close nie sú zbytočne nízko */
+#info-modal .info-actions{
+  margin-top: 0px !important;
+}
+
+
+
+.info-box h2 {
+  margin-bottom: 6px;   /* malá medzera pod názvom GeoVerity, aby nebol nalepený text pod tým */
+}
+
+.info-box p:first-of-type {
+  margin-top: 0;        /* zruší hornú medzeru, aby odstupy neboli chaotické */
+  opacity: 0.75;        /* text je trochu svetlejší, pôsobí ako sekundárna informácia */
+  font-size: 14px;      /* menší font, aby bolo jasné, že to nie je hlavný nadpis */
+}
+
+
+/* Developed by renata text*/
+
+.info-box p:first-of-type {
+  margin-left: 30px;   /* posunie text o 12px doprava */
+}
