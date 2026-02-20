@@ -1,3 +1,10 @@
+/* STOP first paint flash */
+body.preboot #home-screen {
+  display: none !important;
+}
+
+
+
 html, body {
   height: 100%;
   margin: 0;
@@ -58,8 +65,8 @@ body {
     position: relative;
     overflow: hidden;
     
-    /* PRIDAJ TENTO RIADOK: */
-margin: 0 auto;    /* Zvyšok tvojho kódu (background, border atď.) ostáva rovnaký */
+   
+margin: 0 auto;    /* (background, border atď.) ostáva rovnaký */
     background: rgba(18, 26, 44, 0.55);
     border: 1px solid rgba(120, 180, 255, 0.22);
     border-radius: 18px;
@@ -1452,3 +1459,129 @@ body.maps-mode #rotate-overlay{
   box-shadow: none !important;
   outline: 0 !important;
 }
+
+
+
+/*-----------------------------------------------------------------------------------------------------------------------*/
+
+/* ===== INFO MODAL, default hidden ===== */
+.info-modal.hidden{
+  display: none;                 /* ✅ najdôležitejší riadok, aby nič nerozbilo layout */
+}
+
+.info-modal{
+  position: fixed;               /* ✅ nebude súčasť layoutu, nebude tlačiť quiz */
+  inset: 0;
+  z-index: 999999;               /* ✅ bude nad všetkým */
+}
+
+.info-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);  /* ✅ tmavé pozadie */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.info-box{
+  position: absolute;
+  left: 50%;
+  top: calc(env(safe-area-inset-top, 0px) + 80px);
+  transform: translateX(-50%);
+
+  width: min(560px, 92vw);
+  max-height: min(70vh, 520px);
+  overflow: auto;
+
+  background: rgba(10, 16, 28, 0.78);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+  color: #eaf3ff;
+  padding: 16px;
+}
+
+.info-box a{
+  color: #7cc4ff;
+  text-decoration: underline;
+  word-break: break-word;
+}
+
+#info-close{
+  margin-top: 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 110px;
+  height: 42px;
+
+  border-radius: 999px;
+
+  background: linear-gradient(180deg, rgba(120,190,255,0.35), rgba(60,120,255,0.18)) !important;
+  border: 1px solid rgba(140,210,255,0.35) !important;
+
+  color: #eaf3ff !important;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+
+  box-shadow:
+    0 14px 34px rgba(0,0,0,0.55),
+    0 0 24px rgba(92,186,255,0.22),
+    inset 0 0 0 1px rgba(255,255,255,0.08);
+
+  cursor: pointer;
+}
+
+#info-close:active{
+  transform: scale(0.96);
+}
+
+/* link + close vedľa seba bez prekrývania */
+.info-actions{
+  margin-top: 10px;
+
+  display: flex;                 /* ✅ urobí row */
+  align-items: center;
+  justify-content: space-between;/* ✅ link vľavo, close vpravo */
+  gap: 12px;                     /* ✅ medzera medzi nimi */
+}
+
+.info-policy-link{
+  flex: 1;                       /* ✅ link zoberie voľné miesto */
+  min-width: 0;                  /* ✅ dovolí zalomiť text */
+  word-break: break-word;
+  
+}
+
+/* Close nech sa nikdy “nepretlačí” cez link */
+#info-close{
+  flex: 0 0 auto;                /* ✅ vždy si drží svoju šírku */
+  margin-top: 0;                 /* ✅ aby nepadal nižšie */
+}
+
+/* FORCE: zmenší medzeru medzi "Privacy Policy" a linkom */
+#info-modal .info-box h3{
+  margin-top: 42px !important;
+  margin-bottom: 14px !important;
+}
+
+/* FORCE: nech link + Close nie sú zbytočne nízko */
+#info-modal .info-actions{
+  margin-top: 0px !important;
+}
+
+
+
+.info-box h2 {
+  margin-bottom: 6px;   /* malá medzera pod názvom GeoVerity, aby nebol nalepený text pod tým */
+}
+
+.info-box p:first-of-type{
+  margin-top: 0;
+  margin-left: 30px;
+  opacity: 0.75;
+  font-size: 14px;
+}
+

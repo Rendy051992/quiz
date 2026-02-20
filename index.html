@@ -276,55 +276,59 @@
       <!-- Globe canvas mount point -->
       <div id="globe-canvas"></div>
     </section>
+<!-- INFO MODAL (HTML ONLY) -->
+<div id="info-modal" class="info-modal hidden">
+  <div class="info-backdrop"></div>
 
-    <!-- INFO ICON (HTML ONLY) -->
-    <div id="info-modal" class="info-modal hidden">
-      <div class="info-backdrop"></div>
+  <div class="info-box">
+    <h2>🌍 GeoVerity v1.1</h2>
 
-      <div class="info-box">
-        <h2>🌍 GeoVerity v1.1</h2>
+    <p>Developed by Renata</p>
 
-        <p>Developed by Renata</p>
+    <h3>Credits</h3>
 
-        <h3>Resources:</h3>
-        <p>World map (SVG): Victor Cazanave (CC BY 4.0)</p>
-        <p>
-          Flags:
-          <a href="https://flagpedia.net" target="_blank" rel="noopener">
-            Flagpedia.net
-          </a>
-        </p>
+    <p>Map data: Natural Earth</p>
+    <p>Earth textures: NASA Visible Earth</p>
+    <p>3D engine: Three.js, Globe.gl (MIT License)</p>
 
-        <p>
-          Icons:
-          <a href="https://www.flaticon.com" target="_blank" rel="noopener">
-            Flaticon
-          </a>
-        </p>
+    <p>
+      Flags:
+      <a href="https://flagpedia.net" target="_blank" rel="noopener noreferrer">
+        Flagpedia.net
+      </a>
+    </p>
 
-        <h3>Privacy Policy:</h3>
+    <p>
+      Icons:
+      <a href="https://www.flaticon.com" target="_blank" rel="noopener noreferrer">
+        Flaticon
+      </a>
+    </p>
 
-        <div class="info-actions">
-          <a
-            class="info-policy-link"
-            href="https://rendy051992.github.io/quiz/privacy.html"
-            target="_blank"
-            rel="noopener"
-          >
-            Open Privacy Policy
-          </a>
+    <h3>Privacy Policy</h3>
 
-          <button id="info-close" type="button">Close</button>
-        </div>
-      </div>
+    <div class="info-actions">
+      <a
+        class="info-policy-link"
+        href="https://rendy051992.github.io/quiz/privacy.html"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Open Privacy Policy
+      </a>
+
+      <button id="info-close" type="button">Close</button>
     </div>
+  </div>
+</div>
 
     <script src="script.js?v=778"></script>
 
     <script src="flags.js"></script>
-    <!-- <script src="maps.js?v=999"></script> -->
-    <script src="https://unpkg.com/three/build/three.min.js"></script>
-    <script src="https://unpkg.com/globe.gl"></script>
-    <script src="globe.js?v=4.23"></script>
+  <script src="vendor/three.module.min.js"></script>
+<script src="vendor/globe.gl.min.js"></script>
+<script src="vendor/turf.min.js"></script>   <!-- TU -->
+<script src="globe.js?v=4.23"></script>
+
   </body>
 </html>

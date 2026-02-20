@@ -1,316 +1,386 @@
-// Nastavenie počiatočného bodu histórie
-if (!window.history.state) {
-    window.history.replaceState({ screen: "menu" }, "", "");
+function initAppStart() {
+  // funkcia ktorá bude obsahovať kód po načítaní app
+  // Hneď po načítaní aplikácie povieme, že sme v menu
 }
-// Hneď po načítaní aplikácie povieme, že sme v menu
-document.addEventListener("DOMContentLoaded", () => {
-    if (!window.history.state) {
-        history.replaceState({ screen: "menu" }, "", "");
-    }
-});
 
 // 1. NASTAVENIE PREMENNÝCH
 // Táto premenná si pamätá, či hráč chce vibrácie alebo nie
-let isVibrationOn = true; 
+let isVibrationOn = true;
 
-// script.js - CENTRÁLNY MOZOG PRE TLAČIDLO SPÄŤ
+function initSplash() {
+  // splash logika zabalená do funkcie
+  const splash = document.getElementById("splash"); // splash wrapper v HTML
+  const homeScreen = document.getElementById("home-screen"); // tvoje menu
+  const startScreen = document.getElementById("start-screen"); // start screen (ak existuje)
 
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Získame prístup k mobilnému systému
-    const App = window.Capacitor?.Plugins?.App;
-    if (!App) return;
+  if (homeScreen) homeScreen.style.display = "none"; // hneď skry menu, nech vidno len splash
+  if (startScreen) startScreen.classList.remove("active"); // zruš active start screen, aby neprekrýval
 
-    // 2. Samotný listener pre tlačidlo Späť
-    App.addListener("backButton", (data) => {
-        console.log("Stlačené tlačidlo SPÄŤ");
+  setTimeout(() => {
+    // počkaj chvíľu, potom splash schovaj
+    if (homeScreen) {
+      homeScreen.style.display = "flex"; // ukáž menu
+      homeScreen.classList.remove("hidden"); // poistka, ak používaš hidden class
+    }
 
-        const home = document.getElementById("home-screen");
-        const mapsScreen = document.getElementById("maps-screen");
-        const flagsReady = document.getElementById("flag-screen");
-        const quizReady = document.getElementById("start-screen");
-        const quizGame = document.getElementById("quiz-screen");
-        const resultScreen = document.getElementById("result-screen");
+    if (splash) splash.classList.add("is-hiding"); // animácia schovania splashu
+    document.body.classList.remove("preboot"); // odomkni body po splashi
 
-        // --- PRIORITA 1: MAPA ---
-        // Kontrolujeme triedu na body ALEBO či je mapa viditeľná v CSS
-        const isMapActive = document.body.classList.contains("maps-mode") || 
-                           (mapsScreen && mapsScreen.style.display !== "none");
+    setTimeout(() => {
+      // po animácii splash úplne skry
+      if (splash) splash.classList.add("is-hidden"); // úplne ho odstráň z view
+    }, 400);
+  }, 1500);
+}
 
-        if (isMapActive) {
-            console.log("Zatváram mapu...");
-            if (typeof closeMaps === "function") {
-                closeMaps(); // Zavolá tvoju funkciu z maps.js
-            } else {
-                // Poistka ak by maps.js zlyhalo
-                document.body.classList.remove("maps-mode");
-                if (mapsScreen) mapsScreen.style.setProperty("display", "none", "important");
-                if (home) home.style.setProperty("display", "flex", "important");
-            }
-            return; // Zastavíme kód, aby nevypol aplikáciu
-        }
+function showHomeMenuClean() { /* ja vrátim celé menu do pôvodného stavu */
+  const home = document.getElementById("home-screen"); /* ja nájdem menu */
+  if (home) { /* ja skontrolujem že existuje */
+    home.classList.remove("hidden"); /* ja zruším hidden */
+    home.style.removeProperty("display"); /* ja zruším natvrdo display */
+    home.style.setProperty("display", "flex", "important"); /* ja menu ukážem */
+  }
 
-        // --- PRIORITA 2: QUIZ / FLAGS (Get Ready alebo Result) ---
-        const isGetReady = (flagsReady && flagsReady.style.display !== "none") || 
-                           (quizReady && quizReady.style.display !== "none");
-        const isResult = (resultScreen && resultScreen.style.display !== "none");
+  const start = document.getElementById("start-screen"); /* ja nájdem classic get ready */
+  if (start) { /* ja skontrolujem že existuje */
+    start.classList.remove("active"); /* ja vypnem active */
+    start.style.removeProperty("display"); /* ja zruším natvrdo display */
+    start.style.setProperty("display", "none", "important"); /* ja ho schovám */
+  }
 
-        if (isGetReady || isResult) {
-            console.log("Vraciam sa z obrazovky kvízu do menu...");
-            
-            // Schováme všetko okrem menu
-            [flagsReady, quizReady, quizGame, resultScreen].forEach(el => {
-                if (el) el.style.setProperty("display", "none", "important");
-            });
+  const flag = document.getElementById("flag-screen"); /* ja nájdem flags screen */
+  if (flag) { /* ja skontrolujem že existuje */
+    flag.style.removeProperty("display"); /* ja zruším natvrdo display */
+    flag.style.setProperty("display", "none", "important"); /* ja ho schovám */
+  }
 
-            if (home) {
-                home.style.setProperty("display", "flex", "important");
-                home.classList.remove("hidden");
-            }
-            
-            // Vrátime históriu na menu
-            window.history.replaceState({ screen: "menu" }, "", "");
-            return;
-        }
+  const quiz = document.getElementById("quiz-screen"); /* ja nájdem classic quiz screen */
+  if (quiz) { /* ja skontrolujem že existuje */
+    quiz.style.removeProperty("display"); /* ja zruším natvrdo display */
+    quiz.style.setProperty("display", "none", "important"); /* ja ho schovám */
+  }
 
-        // --- PRIORITA 3: MENU (Ukončenie aplikácie) ---
-        // Ak sme v menu, stlačenie Späť vypne appku
-        const s = window.history.state?.screen || "menu";
-        const isHomeVisible = home && home.style.display !== "none" && !home.classList.contains("hidden");
+  const res = document.getElementById("result-screen"); /* ja nájdem result */
+  if (res) { /* ja skontrolujem že existuje */
+    res.style.removeProperty("display"); /* ja zruším natvrdo display */
+    res.style.setProperty("display", "none", "important"); /* ja ho schovám */
+  }
 
-        if (s === "menu" || isHomeVisible) {
-            console.log("Ukončujem aplikáciu...");
-            App.exitApp();
-        } else {
-            console.log("Krok späť v histórii...");
-            window.history.back();
-        }
-    });
-});
+  const maps = document.getElementById("globe-screen"); /* ja nájdem globe screen */
+  if (maps) { /* ja skontrolujem že existuje */
+    maps.style.removeProperty("display"); /* ja zruším natvrdo display */
+    maps.style.setProperty("display", "none", "important"); /* ja ho schovám */
+  }
+
+  document.querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap").forEach((el) => { /* ja nájdem všetky menu veci */
+    el.style.removeProperty("display"); /* ja zruším natvrdo display none */
+  });
+}
+
+
+// --- PRIORITA 2: QUIZ / FLAGS (Get Ready alebo Result) ---
+function initAndroidBackButton() {
+  // back button logika v 1 funkcii
+  const App = window.Capacitor?.Plugins?.App; // Capacitor App plugin
+  if (!App) return; // na webe nič nerobíme
+
+  App.addListener("backButton", () => {
+    // Android hardware BACK
+
+    const s = window.history.state?.screen || "menu"; // kde som (fallback menu)
+
+    const globeScreen = document.getElementById("globe-screen"); /* ja nájdem Map Master screen */
+
+if (globeScreen && globeScreen.style.display !== "none") { /* ja som v Map Master hre */
+  if (typeof window.restartGlobeQuiz === "function") window.restartGlobeQuiz(); /* ja resetnem Map Master */
+  showHomeMenuClean(); /* ja ukážem menu */
+  history.pushState({ screen: "menu" }, "", ""); /* ja nastavím menu stav */
+  return; /* ja skončím, nech nerobím ďalšie back kroky */
+}
+
+
+    // ===== PRIORITA: ak som v Get Ready alebo Result, vždy sa vrátim do menu =====
+    const flagsReady = document.getElementById("flag-screen"); // Flags Get Ready aj Flags Game je v tomto
+    const quizReady = document.getElementById("start-screen"); // Classic Quiz Get Ready
+
+    const quizGame = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const home = document.getElementById("home-screen");
+
+  const isGetReady =
+  (flagsReady && flagsReady.style.display !== "none") ||
+  (quizReady && (quizReady.classList.contains("active") || quizReady.style.display !== "none"));
+
+
+    const isResult = resultScreen && resultScreen.style.display !== "none";
+
+if (isGetReady || isResult) {
+  if (typeof window.restartGlobeQuiz === "function") window.restartGlobeQuiz(); /* ja resetnem globe pri odchode do menu */
+  showHomeMenuClean();
+  history.pushState({ screen: "menu" }, "", "");
+  return;
+}
+
+
+
+    // ===== ak som na menu, zavri appku =====
+    if (s === "menu") {
+      App.exitApp();
+      return;
+    }
+
+    // ===== inak normálny krok späť =====
+    window.history.back();
+  });
+}
 
 // RECEPT 1: Jemné ťuknutie (Haptic) - na tlačidlá, kategórie, Next
 function hapticClick() {
-    if (isVibrationOn && navigator.vibrate) {
-        navigator.vibrate(60); // Len také bzz-tuk
-    }
+  if (isVibrationOn && navigator.vibrate) {
+    navigator.vibrate(60); // Len také bzz-tuk
+  }
 }
 
+// =========================
+// INIT UI ICONS (JEDINÝ DOMContentLoaded v tomto súbore)
+// =========================
+function initInfoModal() {
+  // init pre Info modal
+  const infoBtn = document.getElementById("info-btn"); // tlačidlo Info
+  const modal = document.getElementById("info-modal"); // modal okno
+  const close = document.getElementById("info-close"); // X button
 
+  if (!infoBtn || !modal || !close) return; // ak niečo chýba, nič nerobím
 
-// 2. FUNKCIA PRE OŽIVENIE IKON (Tento blok môžeš dať na koniec súboru)
-// Počkáme, kým sa načíta DOM, aby JS našiel tie ID-čka v HTML
-document.addEventListener('DOMContentLoaded', () => {
-  // 1. Toto vlož hneď pod riadok document.addEventListener('DOMContentLoaded', () => {
-    
-    // Získame prístup k ikonám pomocou ich ID
-    const vibrationBtn = document.getElementById('vibration-btn');
-    const infoBtn = document.getElementById('info-btn');
+  infoBtn.addEventListener("click", () => {
+    // otvorím modal
+    modal.classList.add("open"); // pridám triedu open
+  });
 
-  // LOGIKA PRE VIBRÁCIE
-    if (vibrationBtn) {
-        vibrationBtn.addEventListener('click', () => {
-            isVibrationOn = !isVibrationOn; 
-if (isVibrationOn) {
-    hapticClick(); // alebo tento riadok úplne zmaž
-    vibrationBtn.src = 'icons/vibration_on.png';
-    console.log("Vibrácie: ZAPNUTÉ");
-} else {
-    vibrationBtn.src = 'icons/vibration_off.png';
-    console.log("Vibrácie: VYPNUTÉ");
+  close.addEventListener("click", () => {
+    // zavriem modal
+    modal.classList.remove("open"); // odstránim triedu open
+  });
 
-            }
-        });
-    }
+  modal.addEventListener("click", (e) => {
+    // klik mimo obsahu zatvorí modal
+    if (e.target === modal) modal.classList.remove("open"); // klik na pozadie
+  });
+}
 
-    // LOGIKA PRE INFO TLAČIDLO
-    if (infoBtn) {
-        infoBtn.addEventListener('click', () => {
-            // Sem môžeš dopísať, čo sa má stať (napr. alert alebo otvorenie okna)
-            alert("🌍 GeoVerity v1.1\n" +
-        "__________________\n\n" +
-        "Developed by Renata\n\n" +
-        "Resources:\n" +
-        "• Flags: Flagpedia.net\n" +
-        "• Icons: Flaticon");
-        });
-    }
-});
-
+// =========================
 // 3. POUŽITIE VIBRÁCIE V HRE
-// Túto funkciu (alebo jej vnútro) použi tam, kde vyhodnocuješ zlú odpoveď
+// Túto funkciu volaj pri zlej odpovedi
+// =========================
 function triggerVibration() {
-    // Skontrolujeme, či sú vibrácie povolené v menu A či ich mobil podporuje
-    if (isVibrationOn && navigator.vibrate) {
-        // Mobil krátko zavibruje (200 miliseúnd)
-        navigator.vibrate(200);
-    }
+  // ✅ vibruj iba keď je ON a mobil to podporuje
+  if (isVibrationOn && navigator.vibrate) {
+    navigator.vibrate(200); // krátka vibrácia 200ms
+  }
 }
-
-
-
-
-
 
 window.addEventListener("DOMContentLoaded", () => {
-  const splash = document.getElementById("splash")
-  const homeScreen = document.getElementById("home-screen")
-  const startScreen = document.getElementById("start-screen")
+  const splash = document.getElementById("splash");
+  const homeScreen = document.getElementById("home-screen");
+  const startScreen = document.getElementById("start-screen");
 
   // A. OKAMŽITE po načítaní schováme všetko okrem splashu
   if (homeScreen) homeScreen.style.display = "none";
   if (startScreen) startScreen.classList.remove("active");
 
   // B. SPLASH LOGIKA
-setTimeout(() => {
-  if (homeScreen) {
-    homeScreen.style.display = "flex";
-    homeScreen.classList.remove("hidden");
-  }
-
-  if (splash) splash.classList.add("is-hiding")
-
   setTimeout(() => {
-    if (splash) splash.classList.add("is-hidden")
-  }, 400)
-}, 1500)
-
-
-// D. KLIKANIE NA KATEGÓRIE - UPRAVENÁ VERZIA
-document.querySelectorAll(".category-card, .category-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-        const category = btn.getAttribute("data-category") || "";
-        // MAPS – COMING SOON
-
-
-
-if (category === "maps") {
-  showMaps(); // DÔLEŽITÉ
-  return;
-}
-
-
-
-
-
-
-
-        // 1. OŠETRENIE PRÍSTUPU
-// 1. LOGIKA PRE FLAGS
-if (category === "flags") {
-    if (typeof hapticClick === 'function') hapticClick(); 
-    btn.blur();
-    
-    // 1. ZÁPIS DO HISTÓRIE (bez tohto Späť nefunguje)
-    
-    // 2. SKRYJEME MENU
-    const home = document.getElementById("home-screen");
-    if (home) {
-        home.classList.add("hidden");
-        home.style.setProperty("display", "none", "important");
+    if (homeScreen) {
+      homeScreen.style.display = "flex";
+      homeScreen.classList.remove("hidden");
     }
-    document.querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap")
+
+    if (splash) splash.classList.add("is-hiding");
+    document.body.classList.remove("preboot");
+
+    setTimeout(() => {
+      if (splash) splash.classList.add("is-hidden");
+    }, 400);
+  }, 1500);
+
+  // D. KLIKANIE NA KATEGÓRIE - UPRAVENÁ VERZIA
+  document.querySelectorAll(".category-card, .category-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const category = btn.getAttribute("data-category") || "";
+      // MAPS – COMING SOON
+      if (category === "maps") {
+        // klik na Map Master
+
+        history.pushState({ screen: "maps" }, "", ""); // ja si zapíšem Map Master do histórie, aby Back mal kam ísť
+
+        window.showMaps(); // ukážem globe-screen (a schovám menu)
+      }
+
+      // 1. OŠETRENIE PRÍSTUPU
+      // 1. LOGIKA PRE FLAGS
+      if (category === "flags") {
+        if (typeof hapticClick === "function") hapticClick();
+        btn.blur();
+
+        // 1. ZÁPIS DO HISTÓRIE (bez tohto Späť nefunguje)
+
+        // 2. SKRYJEME MENU
+        const home = document.getElementById("home-screen");
+        if (home) {
+          home.classList.add("hidden");
+          home.style.setProperty("display", "none", "important");
+        }
+        document
+          .querySelectorAll(
+            ".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap",
+          )
+          .forEach((el) =>
+            el.style.setProperty("display", "none", "important"),
+          );
+
+        // 3. UKÁŽEME KARTU
+        showFlagGetReady();
+        return;
+      }
+
+      // 2. LOGIKA PRE QUIZ
+      if (typeof hapticClick === "function") hapticClick();
+
+      // --- PRIDANÝ RESET MAPY (Dôležité!) ---
+      document.body.classList.remove("maps-mode"); // Vypne mapový režim v CSS
+      const mapScreen = document.getElementById("maps-screen");
+      if (mapScreen) {
+        mapScreen.style.setProperty("display", "none", "important"); // Natvrdo schová mapu
+      }
+      // --------------------------------------
+
+      history.pushState({ screen: "quiz-ready" }, "", "");
+      localStorage.setItem("selectedCategory", "quiz");
+
+      // schov menu
+      document.getElementById("home-screen")?.classList.add("hidden");
+      document
+        .getElementById("home-screen")
+        ?.style.setProperty("display", "none", "important");
+      document
+        .querySelectorAll(
+          ".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap",
+        )
         .forEach((el) => el.style.setProperty("display", "none", "important"));
 
-    // 3. UKÁŽEME KARTU
-    showFlagGetReady();
-    return;
-}
-
-// 2. LOGIKA PRE QUIZ
-if (typeof hapticClick === "function") hapticClick();
-
-// --- PRIDANÝ RESET MAPY (Dôležité!) ---
-document.body.classList.remove("maps-mode"); // Vypne mapový režim v CSS
-const mapScreen = document.getElementById("maps-screen");
-if (mapScreen) {
-    mapScreen.style.setProperty("display", "none", "important"); // Natvrdo schová mapu
-}
-// --------------------------------------
-
-history.pushState({ screen: "quiz-ready" }, "", "");
-localStorage.setItem("selectedCategory", "quiz");
-
-// schov menu
-document.getElementById("home-screen")?.classList.add("hidden");
-document.getElementById("home-screen")?.style.setProperty("display", "none", "important");
-document
-  .querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap")
-  .forEach((el) => el.style.setProperty("display", "none", "important"));
-
-// ukaz Get Ready
-if (startScreen) {
-  startScreen.style.display = "flex";
-  startScreen.classList.add("active");
-}
-
+      // ukaz Get Ready
+      if (startScreen) {
+        startScreen.style.display = "flex";
+        startScreen.classList.add("active");
+      }
 
       // hide menu: try multiple safe targets
-btn.closest("#home-screen")?.classList.add("hidden")
-document.getElementById("home-screen")?.classList.add("hidden")
-document.querySelector(".home")?.classList.add("hidden")
+      btn.closest("#home-screen")?.classList.add("hidden");
+      document.getElementById("home-screen")?.classList.add("hidden");
+      document.querySelector(".home")?.classList.add("hidden");
 
-document.getElementById("home-screen")?.style.setProperty("display", "none", "important")
-document.querySelector(".home")?.style.setProperty("display", "none", "important")
-document
-  .querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn")
-  .forEach((el) => el.style.setProperty("display", "none", "important"))
+      document
+        .getElementById("home-screen")
+        ?.style.setProperty("display", "none", "important");
+      document
+        .querySelector(".home")
+        ?.style.setProperty("display", "none", "important");
+      document
+        .querySelectorAll(
+          ".menu-title, .menu-grid, .category-card, .category-btn",
+        )
+        .forEach((el) => el.style.setProperty("display", "none", "important"));
 
-
-      if (startScreen) startScreen.classList.add("active")
-        document.querySelector(".menu-wrap")?.style.setProperty("display", "none", "important")
-
-    })
-  })
-})
-
-
-
+      if (startScreen) startScreen.classList.add("active");
+      document
+        .querySelector(".menu-wrap")
+        ?.style.setProperty("display", "none", "important");
+    });
+  });
+});
 
 // DOM Elements, references to HTML elements
-const startScreen = document.getElementById("start-screen")
-const quizScreen = document.getElementById("quiz-screen")
-const resultScreen = document.getElementById("result-screen")
+const startScreen = document.getElementById("start-screen");
+const quizScreen = document.getElementById("quiz-screen");
+const resultScreen = document.getElementById("result-screen");
 
+// ===== MAPS RESULT (uses the same result screen as Classic/Flags) =====
 
 function pushScreen(screen) {
   history.pushState({ screen }, "", "");
 }
 
+function initVibrationToggle() {
+  // ja nastavím vibro ikonku ON, OFF + klik
+  const btn = document.getElementById("vibration-btn"); // ja nájdem ikonku v HTML
+  if (!btn) return; // ja skončím ak ikonka neexistuje
 
+  const saved = localStorage.getItem("gv_vibration"); // ja načítam uložený stav
+  if (saved !== null) isVibrationOn = saved === "1"; // ja nastavím globálny prepínač
+
+  const applyIcon = () => {
+    // ja vždy prekreslím ikonku podľa stavu
+    btn.src = isVibrationOn
+      ? "icons/vibration_on.png"
+      : "icons/vibration_off.png"; // ja prepnem obrázok
+    btn.alt = isVibrationOn ? "Vibration on" : "Vibration off"; // ja prepnem alt text
+    btn.setAttribute("aria-pressed", isVibrationOn ? "true" : "false"); // ja dám správny a11y stav
+  };
+
+  applyIcon(); // ja nastavím ikonku hneď po štarte
+
+  btn.addEventListener("click", () => {
+    // ja reagujem na klik
+    isVibrationOn = !isVibrationOn; // ja prepnem ON, OFF
+    localStorage.setItem("gv_vibration", isVibrationOn ? "1" : "0"); // ja si to uložím
+    applyIcon(); // ja hneď zmením ikonku
+    if (isVibrationOn && navigator.vibrate) navigator.vibrate(20); // ja krátko zavibrujem ako potvrdenie
+  });
+}
 
 document.addEventListener("DOMContentLoaded", () => {
-  history.replaceState({ screen: "menu" }, "", "");
+  if (!window.history.state) {
+    history.replaceState({ screen: "menu" }, "", "");
+  }
+
+  initSplash(); // 👈 pridaj splash
+  initAndroidBackButton(); // Android back
+  initInfoModal(); // info modal
+  // initUIIcons(); // dočasne vypnuté – test výkonu  initVibrationToggle(); // ja zapnem vibro ikonku ON, OFF
+
+  initVibrationToggle(); // ja zapnem vibro ikonku ON, OFF
+
+  // initWhateverElse(); // ✅ dočasne vypnuté, lebo nie je definovaná a padá celý script
 });
 
+const startButton = document.getElementById("start-btn");
 
+const questionText = document.getElementById("question-text");
+const answersContainer = document.getElementById("answers-container");
 
-const startButton = document.getElementById("start-btn")
+const currentQuestionSpan = document.getElementById("current-question");
+const totalQuestionsSpan = document.getElementById("total-questions");
 
-const questionText = document.getElementById("question-text")
-const answersContainer = document.getElementById("answers-container")
+const scoreSpan = document.getElementById("score");
+const finalScoreSpan = document.getElementById("final-score");
+const maxScoreSpan = document.getElementById("max-score");
 
-const currentQuestionSpan = document.getElementById("current-question")
-const totalQuestionsSpan = document.getElementById("total-questions")
+const resultMessage = document.getElementById("result-message");
+const restartButton = document.getElementById("restart-btn");
 
-const scoreSpan = document.getElementById("score")
-const finalScoreSpan = document.getElementById("final-score")
-const maxScoreSpan = document.getElementById("max-score")
+const progressBar = document.getElementById("progress");
+const answerImage = document.getElementById("answer-image");
 
-const resultMessage = document.getElementById("result-message")
-const restartButton = document.getElementById("restart-btn")
-
-const progressBar = document.getElementById("progress")
-const answerImage = document.getElementById("answer-image")
-
-const nextBtn = document.getElementById("next-btn")
+const nextBtn = document.getElementById("next-btn");
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    const tmp = array[i]
-    array[i] = array[j]
-    array[j] = tmp
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = array[i];
+    array[i] = array[j];
+    array[j] = tmp;
   }
-  return array
+  return array;
 }
 
 const quizQuestions = [
@@ -325,7 +395,6 @@ const quizQuestions = [
     ],
   },
   {
-  
     question: "Which river is the longest in the world?",
     correctImage: "images/img2.webp",
     answers: [
@@ -537,7 +606,8 @@ const quizQuestions = [
     ],
   },
   {
-    question: "Which country has coastline on both the Atlantic and Indian Oceans?",
+    question:
+      "Which country has coastline on both the Atlantic and Indian Oceans?",
     correctImage: "images/img23.webp",
     answers: [
       { text: "Mozambique", correct: false },
@@ -617,7 +687,7 @@ const quizQuestions = [
       { text: "Mendoza", correct: false },
     ],
   },
-]
+];
 
 const flagsQuestions = [
   {
@@ -665,7 +735,6 @@ const mapQuestions = [
   },
 ];
 
-
 // --- 1. QUIZ STATE VARS ---
 let currentQuestionIndex = 0;
 let score = 0;
@@ -680,57 +749,82 @@ if (maxScoreSpan) maxScoreSpan.textContent = quizQuestions.length;
 
 // Start Button
 if (startButton) {
-    startButton.addEventListener("click", () => {
-        hapticClick();
-        startQuiz();
-    });
+  startButton.addEventListener("click", () => {
+    hapticClick();
+    startQuiz();
+  });
 }
 
 // Restart Button
 if (restartButton) {
-    restartButton.addEventListener("click", () => {
-        hapticClick();
-        restartQuiz();
-    });
+  restartButton.addEventListener("click", () => {
+    hapticClick();
+    restartQuiz();
+  });
 }
 
 // Next Button (Ošetrený cez ID pre istotu)
 const nextBtnElement = document.getElementById("next-btn");
 if (nextBtnElement) {
-    nextBtnElement.addEventListener("click", () => {
-        hapticClick();
-        currentQuestionIndex++;
-        if (currentQuestionIndex < quizQuestions.length) {
-            showQuestion();
-        } else {
-            showResults();
-        }
-    });
+  nextBtnElement.addEventListener("click", () => {
+    hapticClick();
+    currentQuestionIndex++;
+    if (currentQuestionIndex < quizQuestions.length) {
+      showQuestion();
+    } else {
+      showResults();
+    }
+  });
 }
 
 // --- 3. FUNKCIE ---
+function startQuiz() { /* ja spustím classic quiz */
+  pushScreen("quiz"); /* ja zapíšem do histórie že som v quiz */
 
-function startQuiz() {
-pushScreen("quiz-ready");
-    currentQuestionIndex = 0;
-    score = 0;
-    if (scoreSpan) scoreSpan.textContent = "0";
+  currentQuestionIndex = 0; /* ja začnem od 1. otázky */
+  score = 0; /* ja vynulujem skóre */
+  if (scoreSpan) scoreSpan.textContent = "0"; /* ja nastavím Score 0 */
 
-    if (startScreen) startScreen.classList.remove("active");
-    if (quizScreen) quizScreen.classList.add("active");
+  if (startScreen) { /* ja schovám Get Ready */
+    startScreen.classList.remove("active"); /* ja zruším active */
+    startScreen.style.setProperty("display", "none", "important"); /* ja schovám aj keby tam ostalo display */
+  }
 
-    showQuestion();
+  if (quizScreen) { /* ja ukážem quiz obrazovku */
+    quizScreen.classList.add("active"); /* ja zapnem active */
+    quizScreen.style.setProperty("display", "block", "important"); /* ja ukážem aj keby bola natvrdo schovaná */
+  }
+
+  showQuestion(); /* ja zobrazím 1. otázku */
 }
+
+
+function restartGlobeQuiz_script(){
+
+  currentQuestionIndex = 0; /* ja vrátim otázku na 1 */
+  quizScore = 0; /* ja vrátim skóre na 0 */
+  answerLocked = false; /* ja dovolím klikanie */
+  highlightCorrectFeature = null; /* ja zruším zelené zvýraznenie */
+  highlightWrongFeature = null; /* ja zruším červené zvýraznenie */
+  bubbleData = []; /* ja zruším bubliny */
+
+  const scoreEl = document.getElementById("globe-score"); /* ja nájdem score text */
+  if (scoreEl) scoreEl.textContent = "Score: 0"; /* ja nastavím 0 */
+
+  if (typeof updateGlobeProgress === "function") updateGlobeProgress(); /* ja obnovím progress */
+  if (typeof showGlobeQuestion === "function") showGlobeQuestion(); /* ja ukážem prvú otázku */
+}
+
+
 
 function resetAnswerUI() {
   if (quizScreen) {
-  quizScreen.classList.add("picking");
-  quizScreen.classList.remove("answered");
-}
+    quizScreen.classList.add("picking");
+    quizScreen.classList.remove("answered");
+  }
 
   answersDisabled = false;
   if (answersContainer) answersContainer.classList.remove("answers-disabled");
-
 
   if (answerImage) {
     answerImage.style.display = "none";
@@ -746,51 +840,48 @@ function resetAnswerUI() {
   if (status) {
     status.textContent = "";
     status.classList.remove("show", "correct", "wrong");
-    
   }
 }
-
-
 
 function showQuestion() {
   document.querySelector(".container")?.classList.remove("answered-mode");
   const c = document.querySelector(".container");
-if (c) c.classList.remove("answered-mode");
+  if (c) c.classList.remove("answered-mode");
 
-if (quizScreen) {
-  quizScreen.classList.add("picking");
-  quizScreen.classList.remove("answered");
-}
+  if (quizScreen) {
+    quizScreen.classList.add("picking");
+    quizScreen.classList.remove("answered");
+  }
 
+  resetAnswerUI();
 
-    resetAnswerUI();
+  const currentQuestion = quizQuestions[currentQuestionIndex];
+  if (currentQuestionSpan)
+    currentQuestionSpan.textContent = String(currentQuestionIndex + 1);
 
-    const currentQuestion = quizQuestions[currentQuestionIndex];
-    if (currentQuestionSpan) currentQuestionSpan.textContent = String(currentQuestionIndex + 1);
+  const progressPercent = (currentQuestionIndex / quizQuestions.length) * 100;
+  if (progressBar) progressBar.style.width = progressPercent + "%";
 
-    const progressPercent = (currentQuestionIndex / quizQuestions.length) * 100;
-    if (progressBar) progressBar.style.width = progressPercent + "%";
+  if (questionText) questionText.textContent = currentQuestion.question;
 
-    if (questionText) questionText.textContent = currentQuestion.question;
+  if (answersContainer) {
+    answersContainer.innerHTML = "";
+    const shuffledAnswers = shuffleArray([...currentQuestion.answers]);
 
-    if (answersContainer) {
-        answersContainer.innerHTML = "";
-        const shuffledAnswers = shuffleArray([...currentQuestion.answers]);
+    shuffledAnswers.forEach((answer) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = answer.text;
+      button.classList.add("answer-btn");
+      button.dataset.correct = answer.correct ? "true" : "false";
 
-        shuffledAnswers.forEach(answer => {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.textContent = answer.text;
-            button.classList.add("answer-btn");
-            button.dataset.correct = answer.correct ? "true" : "false";
+      // Eventy pre mobil a PC
+      button.addEventListener("pointerdown", onAnswerTap, { passive: true });
+      button.addEventListener("click", onAnswerTap);
 
-            // Eventy pre mobil a PC
-            button.addEventListener("pointerdown", onAnswerTap, { passive: true });
-            button.addEventListener("click", onAnswerTap);
-
-            answersContainer.appendChild(button);
-        });
-    }
+      answersContainer.appendChild(button);
+    });
+  }
 }
 
 function onAnswerTap(event) {
@@ -813,7 +904,6 @@ function onAnswerTap(event) {
 
   // answered-mode ON (iba raz, bezpečne)
   document.querySelector(".container")?.classList.add("answered-mode");
-
 
   if (answersContainer) answersContainer.classList.add("answers-disabled");
 
@@ -911,19 +1001,6 @@ function restartQuiz() {
   startQuiz();
 }
 
-// Splash screen logika
-window.addEventListener("load", () => {
-  const splash = document.getElementById("splash");
-  if (!splash) return;
-
-  setTimeout(() => {
-    splash.classList.add("is-hiding");
-    setTimeout(() => {
-      splash.classList.add("is-hidden");
-    }, 400);
-  }, 1500);
-});
-
 // ORIENTATION (len 1x)
 function checkOrientation() {
   const overlay = document.getElementById("rotate-overlay");
@@ -933,20 +1010,28 @@ function checkOrientation() {
   const inMaps = document.body.classList.contains("maps-mode");
 
   // MAPS: povolený landscape, zakázaný portrait
-// MAPS, nič nezakazujeme, overlay v Maps nikdy nezobrazuj
-if (inMaps) {
-  overlay.style.setProperty("display", "none", "important");
-  overlay.style.pointerEvents = "none";
-  return;
-}
+  // MAPS, nič nezakazujeme, overlay v Maps nikdy nezobrazuj
   if (inMaps) {
-    overlay.style.setProperty("display", isLandscape ? "none" : "flex", "important");
+    overlay.style.setProperty("display", "none", "important");
+    overlay.style.pointerEvents = "none";
+    return;
+  }
+  if (inMaps) {
+    overlay.style.setProperty(
+      "display",
+      isLandscape ? "none" : "flex",
+      "important",
+    );
     overlay.style.pointerEvents = isLandscape ? "none" : "auto";
     return;
   }
 
   // OSTATNÉ: zakázaný landscape, povolený portrait
-  overlay.style.setProperty("display", isLandscape ? "flex" : "none", "important");
+  overlay.style.setProperty(
+    "display",
+    isLandscape ? "flex" : "none",
+    "important",
+  );
   overlay.style.pointerEvents = isLandscape ? "auto" : "none";
 }
 
@@ -970,9 +1055,12 @@ window.onpopstate = function (event) {
     if (ms) ms.style.display = "block";
 
     if (typeof startNewMapRound === "function") startNewMapRound();
+    if (typeof window.restartGlobeQuiz === "function") { /* ja skontrolujem, že reset existuje */
+  window.restartGlobeQuiz(); /* ja resetnem globe quiz, aby neostal posledný stav */
+}
+
     return;
   }
-
 
   //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -986,6 +1074,14 @@ window.onpopstate = function (event) {
     const quiz = document.getElementById("quiz-screen");
     const flag = document.getElementById("flag-screen");
     const result = document.getElementById("result-screen");
+
+    const globe = document.getElementById("globe-screen"); // ja nájdem 3D globe screen
+    const globeStart = document.getElementById("globe-start-screen"); // ja nájdem globe start
+    const globeResult = document.getElementById("globe-result-screen"); // ja nájdem globe result
+if (globe) globe.style.setProperty("display", "none", "important"); /* ja schovám globe screen */
+if (globeStart) globeStart.style.removeProperty("display"); /* ja nezabetónujem start na display none */
+if (globeResult) globeResult.style.removeProperty("display"); /* ja nezabetónujem result na display none */
+
 
     if (start) {
       start.style.display = "none";
@@ -1007,8 +1103,10 @@ window.onpopstate = function (event) {
     }
 
     document
-      .querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap")
-      .forEach((el) => el.style.setProperty("display", "", "important"));
+      .querySelectorAll(
+        ".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap",
+      )
+      .forEach((el) => el.style.removeProperty("display"));
 
     return;
   }
@@ -1053,3 +1151,108 @@ window.onpopstate = function (event) {
     return;
   }
 };
+
+// =========================
+// INFO MODAL – OPEN / CLOSE
+// =========================
+
+function initInfoModal() {
+  // funkcia pre info modal
+
+  const infoBtn = document.getElementById("info-btn"); // ikonka info
+  const infoModal = document.getElementById("info-modal"); // celé okno
+  const infoClose = document.getElementById("info-close"); // Close tlačidlo
+  const infoBackdrop = infoModal?.querySelector(".info-backdrop"); // tmavé pozadie
+
+  // OTVORENIE
+  if (infoBtn && infoModal) {
+    infoBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      infoModal.classList.remove("hidden");
+    });
+  }
+
+  // ZATVORENIE – Close button
+  if (infoClose && infoModal) {
+    infoClose.addEventListener("click", () => {
+      infoModal.classList.add("hidden");
+    });
+  }
+
+  // ZATVORENIE – klik na tmavé pozadie
+  if (infoBackdrop && infoModal) {
+    infoBackdrop.addEventListener("click", () => {
+      infoModal.classList.add("hidden");
+    });
+  }
+} // koniec initInfoModal
+
+window.showMaps = function () {
+  /* ja otvorím Map Master vždy čisto a od začiatku */
+  const globeScreen =
+    document.getElementById("globe-screen"); /* ja nájdem 3D globe screen */
+  if (!globeScreen) return; /* ak ho nenájdem, nič nerobím */
+
+  /* ja schovám všetky ostatné screeny */
+  const screens = [
+    "home-screen",
+    "quiz-screen",
+    "start-screen",
+    "flag-screen",
+    "result-screen",
+    "maps-screen",
+  ];
+
+  screens.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.setProperty("display", "none", "important");
+  });
+
+  /* ja ukážem globe */
+  globeScreen.style.setProperty("display", "block", "important");
+
+  /* ja schovám výsledok ak ostal */
+  const globeResult = document.getElementById("globe-result-screen");
+  if (globeResult)
+    globeResult.style.setProperty("display", "none", "important");
+
+  /* ja ukážem start overlay */
+  const globeStart = document.getElementById("globe-start-screen");
+  if (globeStart) globeStart.classList.add("show");
+
+  /* ja resetnem quiz */
+  if (typeof restartGlobeQuiz === "function") restartGlobeQuiz();
+
+  /* ja zapíšem history aby BACK fungoval */
+history.replaceState({ screen: "globe-start" }, "", "");
+
+};
+
+//-------------------------------------------------------------------------------------------------------------------------------------------
+
+// ===== GLOBE PRELOAD pri štarte (na pozadí) =====
+(function () {
+  if (window.__globePreloadStarted) return;
+  window.__globePreloadStarted = true;
+
+  const start = () => {
+    requestAnimationFrame(() => {
+      document.body.classList.add("globe-preload"); // nech má globe reálnu veľkosť, ale je neviditeľný
+
+      Promise.resolve(window.initGlobeOnce?.()) // počkaj na reálny koniec initu
+        .catch(() => {}) // nech to nezabije appku, ak sa niečo pokazí
+        .finally(() => {
+          document.body.classList.remove("globe-preload"); // zlož až keď je hotovo
+        });
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start, { once: true });
+  } else {
+    start();
+  }
+})();
+
+
+

@@ -33,23 +33,50 @@ function initSplash() {
   }, 1500);
 }
 
-// script.js - CENTRÁLNY MOZOG PRE TLAČIDLO SPÄŤ
-function initAndroidBackButton() {
-  // zabalím back button logiku do funkcie
-  const App = window.Capacitor?.Plugins?.App; // vezmem Capacitor App plugin
-  if (!App) return; // ak nie je (web), nič nerobím
+function showHomeMenuClean() { /* ja vrátim celé menu do pôvodného stavu */
+  const home = document.getElementById("home-screen"); /* ja nájdem menu */
+  if (home) { /* ja skontrolujem že existuje */
+    home.classList.remove("hidden"); /* ja zruším hidden */
+    home.style.removeProperty("display"); /* ja zruším natvrdo display */
+    home.style.setProperty("display", "flex", "important"); /* ja menu ukážem */
+  }
 
-  App.addListener("backButton", () => {
-    // listener pre Android hardware BACK
-    const s = window.history.state?.screen || "menu"; // zistím, kde som (fallback menu)
-    if (s === "menu") {
-      // ak som na menu
-      App.exitApp(); // zavriem appku
-      return; // stop
-    }
-    window.history.back(); // inak normálny krok späť
+  const start = document.getElementById("start-screen"); /* ja nájdem classic get ready */
+  if (start) { /* ja skontrolujem že existuje */
+    start.classList.remove("active"); /* ja vypnem active */
+    start.style.removeProperty("display"); /* ja zruším natvrdo display */
+    start.style.setProperty("display", "none", "important"); /* ja ho schovám */
+  }
+
+  const flag = document.getElementById("flag-screen"); /* ja nájdem flags screen */
+  if (flag) { /* ja skontrolujem že existuje */
+    flag.style.removeProperty("display"); /* ja zruším natvrdo display */
+    flag.style.setProperty("display", "none", "important"); /* ja ho schovám */
+  }
+
+  const quiz = document.getElementById("quiz-screen"); /* ja nájdem classic quiz screen */
+  if (quiz) { /* ja skontrolujem že existuje */
+    quiz.style.removeProperty("display"); /* ja zruším natvrdo display */
+    quiz.style.setProperty("display", "none", "important"); /* ja ho schovám */
+  }
+
+  const res = document.getElementById("result-screen"); /* ja nájdem result */
+  if (res) { /* ja skontrolujem že existuje */
+    res.style.removeProperty("display"); /* ja zruším natvrdo display */
+    res.style.setProperty("display", "none", "important"); /* ja ho schovám */
+  }
+
+  const maps = document.getElementById("globe-screen"); /* ja nájdem globe screen */
+  if (maps) { /* ja skontrolujem že existuje */
+    maps.style.removeProperty("display"); /* ja zruším natvrdo display */
+    maps.style.setProperty("display", "none", "important"); /* ja ho schovám */
+  }
+
+  document.querySelectorAll(".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap").forEach((el) => { /* ja nájdem všetky menu veci */
+    el.style.removeProperty("display"); /* ja zruším natvrdo display none */
   });
 }
+
 
 // --- PRIORITA 2: QUIZ / FLAGS (Get Ready alebo Result) ---
 function initAndroidBackButton() {
@@ -62,32 +89,39 @@ function initAndroidBackButton() {
 
     const s = window.history.state?.screen || "menu"; // kde som (fallback menu)
 
+    const globeScreen = document.getElementById("globe-screen"); /* ja nájdem Map Master screen */
+
+if (globeScreen && globeScreen.style.display !== "none") { /* ja som v Map Master hre */
+  if (typeof window.restartGlobeQuiz === "function") window.restartGlobeQuiz(); /* ja resetnem Map Master */
+  showHomeMenuClean(); /* ja ukážem menu */
+  history.pushState({ screen: "menu" }, "", ""); /* ja nastavím menu stav */
+  return; /* ja skončím, nech nerobím ďalšie back kroky */
+}
+
+
     // ===== PRIORITA: ak som v Get Ready alebo Result, vždy sa vrátim do menu =====
-    const flagsReady = document.getElementById("flags-ready");
-    const quizReady = document.getElementById("quiz-ready");
+    const flagsReady = document.getElementById("flag-screen"); // Flags Get Ready aj Flags Game je v tomto
+    const quizReady = document.getElementById("start-screen"); // Classic Quiz Get Ready
+
     const quizGame = document.getElementById("quiz-screen");
     const resultScreen = document.getElementById("result-screen");
     const home = document.getElementById("home-screen");
 
-    const isGetReady =
-      (flagsReady && flagsReady.style.display !== "none") ||
-      (quizReady && quizReady.style.display !== "none");
+  const isGetReady =
+  (flagsReady && flagsReady.style.display !== "none") ||
+  (quizReady && (quizReady.classList.contains("active") || quizReady.style.display !== "none"));
+
 
     const isResult = resultScreen && resultScreen.style.display !== "none";
 
-    if (isGetReady || isResult) {
-      [flagsReady, quizReady, quizGame, resultScreen].forEach((el) => {
-        if (el) el.style.setProperty("display", "none", "important");
-      });
+if (isGetReady || isResult) {
+  if (typeof window.restartGlobeQuiz === "function") window.restartGlobeQuiz(); /* ja resetnem globe pri odchode do menu */
+  showHomeMenuClean();
+  history.pushState({ screen: "menu" }, "", "");
+  return;
+}
 
-      if (home) {
-        home.style.setProperty("display", "flex", "important");
-        home.classList.remove("hidden");
-      }
 
-      history.pushState({ screen: "menu" }, "", ""); // nastav menu do histórie
-      return; // tu je return OK, lebo sme vo funkcii callback
-    }
 
     // ===== ak som na menu, zavri appku =====
     if (s === "menu") {
@@ -177,9 +211,9 @@ window.addEventListener("DOMContentLoaded", () => {
       if (category === "maps") {
         // klik na Map Master
 
-        window.showMaps(); // ukážem globe-screen (a schovám menu)
+        history.pushState({ screen: "maps" }, "", ""); // ja si zapíšem Map Master do histórie, aby Back mal kam ísť
 
-    
+        window.showMaps(); // ukážem globe-screen (a schovám menu)
       }
 
       // 1. OŠETRENIE PRÍSTUPU
@@ -276,29 +310,33 @@ function pushScreen(screen) {
   history.pushState({ screen }, "", "");
 }
 
-function initVibrationToggle() { // ja nastavím vibro ikonku ON, OFF + klik
+function initVibrationToggle() {
+  // ja nastavím vibro ikonku ON, OFF + klik
   const btn = document.getElementById("vibration-btn"); // ja nájdem ikonku v HTML
   if (!btn) return; // ja skončím ak ikonka neexistuje
 
   const saved = localStorage.getItem("gv_vibration"); // ja načítam uložený stav
   if (saved !== null) isVibrationOn = saved === "1"; // ja nastavím globálny prepínač
 
-  const applyIcon = () => { // ja vždy prekreslím ikonku podľa stavu
-    btn.src = isVibrationOn ? "icons/vibration_on.png" : "icons/vibration_off.png"; // ja prepnem obrázok
+  const applyIcon = () => {
+    // ja vždy prekreslím ikonku podľa stavu
+    btn.src = isVibrationOn
+      ? "icons/vibration_on.png"
+      : "icons/vibration_off.png"; // ja prepnem obrázok
     btn.alt = isVibrationOn ? "Vibration on" : "Vibration off"; // ja prepnem alt text
     btn.setAttribute("aria-pressed", isVibrationOn ? "true" : "false"); // ja dám správny a11y stav
   };
 
   applyIcon(); // ja nastavím ikonku hneď po štarte
 
-  btn.addEventListener("click", () => { // ja reagujem na klik
+  btn.addEventListener("click", () => {
+    // ja reagujem na klik
     isVibrationOn = !isVibrationOn; // ja prepnem ON, OFF
     localStorage.setItem("gv_vibration", isVibrationOn ? "1" : "0"); // ja si to uložím
     applyIcon(); // ja hneď zmením ikonku
     if (isVibrationOn && navigator.vibrate) navigator.vibrate(20); // ja krátko zavibrujem ako potvrdenie
   });
 }
-
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.history.state) {
@@ -311,7 +349,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // initUIIcons(); // dočasne vypnuté – test výkonu  initVibrationToggle(); // ja zapnem vibro ikonku ON, OFF
 
   initVibrationToggle(); // ja zapnem vibro ikonku ON, OFF
-
 
   // initWhateverElse(); // ✅ dočasne vypnuté, lebo nie je definovaná a padá celý script
 });
@@ -741,18 +778,44 @@ if (nextBtnElement) {
 }
 
 // --- 3. FUNKCIE ---
+function startQuiz() { /* ja spustím classic quiz */
+  pushScreen("quiz"); /* ja zapíšem do histórie že som v quiz */
 
-function startQuiz() {
-  pushScreen("quiz-ready");
-  currentQuestionIndex = 0;
-  score = 0;
-  if (scoreSpan) scoreSpan.textContent = "0";
+  currentQuestionIndex = 0; /* ja začnem od 1. otázky */
+  score = 0; /* ja vynulujem skóre */
+  if (scoreSpan) scoreSpan.textContent = "0"; /* ja nastavím Score 0 */
 
-  if (startScreen) startScreen.classList.remove("active");
-  if (quizScreen) quizScreen.classList.add("active");
+  if (startScreen) { /* ja schovám Get Ready */
+    startScreen.classList.remove("active"); /* ja zruším active */
+    startScreen.style.setProperty("display", "none", "important"); /* ja schovám aj keby tam ostalo display */
+  }
 
-  showQuestion();
+  if (quizScreen) { /* ja ukážem quiz obrazovku */
+    quizScreen.classList.add("active"); /* ja zapnem active */
+    quizScreen.style.setProperty("display", "block", "important"); /* ja ukážem aj keby bola natvrdo schovaná */
+  }
+
+  showQuestion(); /* ja zobrazím 1. otázku */
 }
+
+
+function restartGlobeQuiz_script(){
+
+  currentQuestionIndex = 0; /* ja vrátim otázku na 1 */
+  quizScore = 0; /* ja vrátim skóre na 0 */
+  answerLocked = false; /* ja dovolím klikanie */
+  highlightCorrectFeature = null; /* ja zruším zelené zvýraznenie */
+  highlightWrongFeature = null; /* ja zruším červené zvýraznenie */
+  bubbleData = []; /* ja zruším bubliny */
+
+  const scoreEl = document.getElementById("globe-score"); /* ja nájdem score text */
+  if (scoreEl) scoreEl.textContent = "Score: 0"; /* ja nastavím 0 */
+
+  if (typeof updateGlobeProgress === "function") updateGlobeProgress(); /* ja obnovím progress */
+  if (typeof showGlobeQuestion === "function") showGlobeQuestion(); /* ja ukážem prvú otázku */
+}
+
+
 
 function resetAnswerUI() {
   if (quizScreen) {
@@ -992,6 +1055,10 @@ window.onpopstate = function (event) {
     if (ms) ms.style.display = "block";
 
     if (typeof startNewMapRound === "function") startNewMapRound();
+    if (typeof window.restartGlobeQuiz === "function") { /* ja skontrolujem, že reset existuje */
+  window.restartGlobeQuiz(); /* ja resetnem globe quiz, aby neostal posledný stav */
+}
+
     return;
   }
 
@@ -1007,6 +1074,14 @@ window.onpopstate = function (event) {
     const quiz = document.getElementById("quiz-screen");
     const flag = document.getElementById("flag-screen");
     const result = document.getElementById("result-screen");
+
+    const globe = document.getElementById("globe-screen"); // ja nájdem 3D globe screen
+    const globeStart = document.getElementById("globe-start-screen"); // ja nájdem globe start
+    const globeResult = document.getElementById("globe-result-screen"); // ja nájdem globe result
+if (globe) globe.style.setProperty("display", "none", "important"); /* ja schovám globe screen */
+if (globeStart) globeStart.style.removeProperty("display"); /* ja nezabetónujem start na display none */
+if (globeResult) globeResult.style.removeProperty("display"); /* ja nezabetónujem result na display none */
+
 
     if (start) {
       start.style.display = "none";
@@ -1031,7 +1106,7 @@ window.onpopstate = function (event) {
       .querySelectorAll(
         ".menu-title, .menu-grid, .category-card, .category-btn, .menu-wrap",
       )
-      .forEach((el) => el.style.setProperty("display", "", "important"));
+      .forEach((el) => el.style.removeProperty("display"));
 
     return;
   }
@@ -1112,13 +1187,13 @@ function initInfoModal() {
   }
 } // koniec initInfoModal
 
-// ===== MAPS BUTTON (temporary) =====
 window.showMaps = function () {
-  // klik na Maps musí mať čo spustiť
-  const globeScreen = document.getElementById("globe-screen"); // môj nový 3D glóbus screen
-  if (!globeScreen) return; // ak ho nenájdem, neurobím nič
+  /* ja otvorím Map Master vždy čisto a od začiatku */
+  const globeScreen =
+    document.getElementById("globe-screen"); /* ja nájdem 3D globe screen */
+  if (!globeScreen) return; /* ak ho nenájdem, nič nerobím */
 
-  // schovám všetky ostatné screeny, aby mi tam nezostal Classic/Flags
+  /* ja schovám všetky ostatné screeny */
   const screens = [
     "home-screen",
     "quiz-screen",
@@ -1126,25 +1201,31 @@ window.showMaps = function () {
     "flag-screen",
     "result-screen",
     "maps-screen",
-  ]; // maps-screen tam nechávam len keby ešte existoval
-  screens.forEach((id) => {
-    const el = document.getElementById(id); // nájdem screen podľa id
-    if (el) el.style.display = "none"; // skryjem ho
-  });
-
-  // schovám všetky overlays, ktoré môžu ostať visieť nad tým
-  const overlays = [
-    "maps-start-overlay",
-    "maps-overlay",
-    "start-overlay",
-    "quiz-overlay",
   ];
-  overlays.forEach((id) => {
-    const el = document.getElementById(id); // nájdem overlay podľa id
-    if (el) el.style.display = "none"; // schovám ho
+
+  screens.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.setProperty("display", "none", "important");
   });
 
-  globeScreen.style.display = "block"; // ukážem glóbus
+  /* ja ukážem globe */
+  globeScreen.style.setProperty("display", "block", "important");
+
+  /* ja schovám výsledok ak ostal */
+  const globeResult = document.getElementById("globe-result-screen");
+  if (globeResult)
+    globeResult.style.setProperty("display", "none", "important");
+
+  /* ja ukážem start overlay */
+  const globeStart = document.getElementById("globe-start-screen");
+  if (globeStart) globeStart.classList.add("show");
+
+  /* ja resetnem quiz */
+  if (typeof restartGlobeQuiz === "function") restartGlobeQuiz();
+
+  /* ja zapíšem history aby BACK fungoval */
+history.replaceState({ screen: "globe-start" }, "", "");
+
 };
 
 //-------------------------------------------------------------------------------------------------------------------------------------------
@@ -1172,3 +1253,6 @@ window.showMaps = function () {
     start();
   }
 })();
+
+
+

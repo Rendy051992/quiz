@@ -1564,7 +1564,7 @@ body.maps-mode #rotate-overlay{
 /* FORCE: zmenší medzeru medzi "Privacy Policy" a linkom */
 #info-modal .info-box h3{
   margin-top: 42px !important;
-  margin-bottom: 4px !important;
+  margin-bottom: 14px !important;
 }
 
 /* FORCE: nech link + Close nie sú zbytočne nízko */
@@ -1578,15 +1578,10 @@ body.maps-mode #rotate-overlay{
   margin-bottom: 6px;   /* malá medzera pod názvom GeoVerity, aby nebol nalepený text pod tým */
 }
 
-.info-box p:first-of-type {
-  margin-top: 0;        /* zruší hornú medzeru, aby odstupy neboli chaotické */
-  opacity: 0.75;        /* text je trochu svetlejší, pôsobí ako sekundárna informácia */
-  font-size: 14px;      /* menší font, aby bolo jasné, že to nie je hlavný nadpis */
+.info-box p:first-of-type{
+  margin-top: 0;
+  margin-left: 30px;
+  opacity: 0.75;
+  font-size: 14px;
 }
 
-
-/* Developed by renata text*/
-
-.info-box p:first-of-type {
-  margin-left: 30px;   /* posunie text o 12px doprava */
-}
