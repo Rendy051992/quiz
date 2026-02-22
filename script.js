@@ -783,8 +783,7 @@ function startQuiz() { /* ja spustím classic quiz */
 
   currentQuestionIndex = 0; /* ja začnem od 1. otázky */
   score = 0; /* ja vynulujem skóre */
-  if (scoreSpan) scoreSpan.textContent = "0"; /* ja nastavím Score 0 */
-
+if (scoreSpan) scoreSpan.textContent = String(score);
   if (startScreen) { /* ja schovám Get Ready */
     startScreen.classList.remove("active"); /* ja zruším active */
     startScreen.style.setProperty("display", "none", "important"); /* ja schovám aj keby tam ostalo display */
@@ -844,6 +843,7 @@ function resetAnswerUI() {
 }
 
 function showQuestion() {
+  if (nextBtn) nextBtn.textContent = t("next");
   document.querySelector(".container")?.classList.remove("answered-mode");
   const c = document.querySelector(".container");
   if (c) c.classList.remove("answered-mode");
@@ -862,8 +862,11 @@ function showQuestion() {
   const progressPercent = (currentQuestionIndex / quizQuestions.length) * 100;
   if (progressBar) progressBar.style.width = progressPercent + "%";
 
-  if (questionText) questionText.textContent = currentQuestion.question;
-
+if (questionText) {
+  const qNum = currentQuestionIndex + 1;
+  const qKey = "q" + qNum;
+  questionText.textContent = (LANG[currentLang] && LANG[currentLang][qKey]) ? t(qKey) : currentQuestion.question;
+}
   if (answersContainer) {
     answersContainer.innerHTML = "";
     const shuffledAnswers = shuffleArray([...currentQuestion.answers]);
@@ -871,8 +874,11 @@ function showQuestion() {
     shuffledAnswers.forEach((answer) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.textContent = answer.text;
-      button.classList.add("answer-btn");
+const pos = currentQuestion.answers.indexOf(answer);
+const qNum = currentQuestionIndex + 1;
+const aKey = "q" + qNum + "a" + (pos + 1);
+button.textContent = (LANG[currentLang] && LANG[currentLang][aKey]) ? t(aKey) : answer.text;  
+  button.classList.add("answer-btn");
       button.dataset.correct = answer.correct ? "true" : "false";
 
       // Eventy pre mobil a PC
@@ -928,8 +934,7 @@ function onAnswerTap(event) {
   // QUIZ ANSWER RESULT
   if (isCorrect) {
     if (status) {
-      status.textContent = "CORRECT";
-      status.className = "show correct";
+status.textContent = t("correct");      status.className = "show correct";
     }
 
     score++;
@@ -938,8 +943,7 @@ function onAnswerTap(event) {
     if (isVibrationOn && navigator.vibrate) navigator.vibrate(140);
   } else {
     if (status) {
-      status.textContent = "WRONG";
-      status.className = "show wrong";
+status.textContent = t("wrong");      status.className = "show wrong";
     }
 
     if (isVibrationOn && navigator.vibrate) navigator.vibrate([180, 90, 180]);

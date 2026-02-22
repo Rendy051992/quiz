@@ -52,18 +52,80 @@
     <section id="home-screen" class="home">
       <div class="top-nav-bar">
         <img src="icons/info.png" class="clean-icon" id="info-btn" alt="Info" />
+        <!-- ľavá info -->
+
+        <button id="lang-btn">
+          <!-- stred jazyk -->
+          <img src="icons/language.png" class="clean-icon" alt="Language" />
+        </button>
+
+        <div id="language-menu" class="language-menu hidden">
+          <!-- skryté menu pod ikonou jazyka -->
+          <button type="button" class="lang-item" data-lang="en">
+            <!-- English -->
+            <img class="lang-flag" src="flags/gb.webp" alt="English flag" />
+            <!-- vlajka -->
+            <span class="lang-text">English</span>
+            <!-- text -->
+          </button>
+
+          <button type="button" class="lang-item" data-lang="es">
+            <!-- Español -->
+            <img class="lang-flag" src="flags/es.webp" alt="Spanish flag" />
+            <!-- vlajka -->
+            <span class="lang-text">Español</span>
+            <!-- text -->
+          </button>
+
+          <button type="button" class="lang-item" data-lang="pt">
+            <!-- Português -->
+            <img class="lang-flag" src="flags/pt.webp" alt="Portuguese flag" />
+            <!-- vlajka -->
+            <span class="lang-text">Português</span>
+            <!-- text -->
+          </button>
+
+          <button type="button" class="lang-item" data-lang="de">
+            <!-- Deutsch -->
+            <img class="lang-flag" src="flags/de.webp" alt="German flag" />
+            <!-- vlajka -->
+            <span class="lang-text">Deutsch</span>
+            <!-- text -->
+          </button>
+
+          <button type="button" class="lang-item" data-lang="fr">
+            <!-- Français -->
+            <img class="lang-flag" src="flags/fr.webp" alt="French flag" />
+            <!-- vlajka -->
+            <span class="lang-text">Français</span>
+            <!-- text -->
+          </button>
+
+          <button type="button" class="lang-item" data-lang="sk">
+            <!-- Slovenčina -->
+            <img class="lang-flag" src="flags/sk.webp" alt="Slovak flag" />
+            <!-- vlajka -->
+            <span class="lang-text">Slovenčina</span>
+            <!-- text -->
+          </button>
+        </div>
+
         <img
           src="icons/vibration_on.png"
           class="clean-icon"
           id="vibration-btn"
           alt="Vibration"
         />
+        <!-- pravá vibration -->
       </div>
 
       <div class="menu-header">
         <div class="top-controls"></div>
         <h2 class="menu-title">GeoVerity</h2>
-        <p class="menu-subtitle">Ready to test your world knowledge?</p>
+        <p class="menu-subtitle" data-i18n="menuSubtitle">
+          Ready to test your world knowledge?
+        </p>
+        <!-- ja označím subtitle na preklad -->
       </div>
 
       <div class="menu-grid">
@@ -75,8 +137,8 @@
           <div class="card-glow"></div>
           <div class="card-icon">🧠</div>
           <div class="card-content">
-            <span class="card-label">TRIVIA</span>
-            <h3 class="card-title">Classic Quiz</h3>
+            <span class="card-label" data-i18n="tagTrivia"></span>
+            <h3 class="card-title" data-i18n="classicQuiz">Classic Quiz</h3>
           </div>
           <div class="card-arrow">→</div>
         </button>
@@ -89,8 +151,9 @@
           <div class="card-glow"></div>
           <div class="card-icon">🇬🇧</div>
           <div class="card-content">
-            <span class="card-label">VISUAL</span>
-            <h3 class="card-title">Flag Finder</h3>
+            <span class="card-label" data-i18n="tagVisual"></span>
+            <h3 class="card-title" data-i18n="flagFinder">Flag Finder</h3>
+            <!-- ja označím Flag Finder na preklad -->
           </div>
           <div class="card-arrow">→</div>
         </button>
@@ -103,8 +166,9 @@
           <div class="card-glow"></div>
           <div class="card-icon">🗺️</div>
           <div class="card-content">
-            <span class="card-label">EXPLORE</span>
-            <h3 class="card-title">Map Master</h3>
+            <span class="card-label" data-i18n="tagExplore"></span>
+            <h3 class="card-title" data-i18n="mapMaster">Map Master</h3>
+            <!-- ja označím Map Master na preklad -->
           </div>
           <div class="card-arrow">→</div>
         </button>
@@ -114,10 +178,14 @@
     <!-- CLASSIC QUIZ START -->
     <div id="start-screen" class="start-screen">
       <div class="start-card">
-        <span class="ready-text">Get Ready</span>
-        <h1 id="selected-category-name">Classic Quiz</h1>
+        <span class="ready-text" data-i18n="getReady"></span>
+        <h1 id="selected-category-name" data-i18n="classicQuizStart"></h1>
         <div class="start-icon-wrap">🌍</div>
-        <button id="start-btn" onclick="hapticClick()">LET'S GO</button>
+        <button
+          id="start-btn"
+          onclick="hapticClick()"
+          data-i18n="letsGo"
+        ></button>
       </div>
     </div>
 
@@ -137,14 +205,13 @@
               <span id="total-questions">5</span>
             </p>
             <div id="quiz-answer-status"></div>
-            <p>Score: <span id="score">0</span></p>
+            <p><span data-i18n="score"></span>: <span id="score">0</span></p>
           </div>
         </div>
 
         <div id="answers-container" class="answers-container"></div>
 
-        <button id="next-btn" disabled>Next</button>
-
+<button id="next-btn" disabled data-i18n="next"></button>
         <div class="progress-bar">
           <div id="progress" class="progress"></div>
         </div>
@@ -175,36 +242,38 @@
     <!-- ========================= -->
     <!-- GLOBE SCREEN -->
     <!-- ========================= -->
- <section id="globe-screen" style="display: none">
+    <section id="globe-screen" style="display: none">
+      <!-- ✅ MAP MASTER START SCREEN -->
+      <div id="globe-start-screen" class="globe-start-screen">
+        <div class="globe-start-card">
+          <div class="globe-start-ready">GET READY</div>
+          <div class="globe-start-title">Maps</div>
+          <div class="globe-start-icon">🗺️</div>
+          <button id="globe-start-btn" class="globe-start-btn" type="button">
+            LET'S GO
+          </button>
+        </div>
+      </div>
 
-  <!-- ✅ MAP MASTER START SCREEN -->
-  <div id="globe-start-screen" class="globe-start-screen">
-    <div class="globe-start-card">
-      <div class="globe-start-ready">GET READY</div>
-      <div class="globe-start-title">Maps</div>
-      <div class="globe-start-icon">🗺️</div>
-      <button id="globe-start-btn" class="globe-start-btn" type="button">
-        LET'S GO
-      </button>
-    </div>
-  </div>
-
-<div id="globe-result-screen" class="globe-result-screen" aria-hidden="true">
-  <!-- ja som overlay pre výsledky, budem nad celým globe screen -->
-  <div class="result-card" role="dialog" aria-modal="true">
-    <!-- ja som kartička s výsledkami -->
-    <h1>Quiz Results</h1>
-    <p id="globe-result-message">Not bad! Try again to improve! 💪</p>
-    <p>
-      You scored <span id="globe-final-score">0</span> out of
-      <span id="globe-max-score">30</span>
-    </p>
-    <button id="globe-restart-btn" class="restart-btn" type="button">
-      Play Again
-    </button>
-  </div>
-</div>
-
+      <div
+        id="globe-result-screen"
+        class="globe-result-screen"
+        aria-hidden="true"
+      >
+        <!-- ja som overlay pre výsledky, budem nad celým globe screen -->
+        <div class="result-card" role="dialog" aria-modal="true">
+          <!-- ja som kartička s výsledkami -->
+          <h1>Quiz Results</h1>
+          <p id="globe-result-message">Not bad! Try again to improve! 💪</p>
+          <p>
+            You scored <span id="globe-final-score">0</span> out of
+            <span id="globe-max-score">30</span>
+          </p>
+          <button id="globe-restart-btn" class="restart-btn" type="button">
+            Play Again
+          </button>
+        </div>
+      </div>
 
       <!-- FULLSCREEN LOADER (ID musí zostať globe-loader kvôli globe.js showLoader/hideLoader) -->
       <div id="globe-loader" aria-hidden="true">
@@ -222,10 +291,10 @@
         </div>
       </div>
 
-     <div id="country-label">
-  <img id="country-flag" />
-  <span id="country-name"></span>
-</div>
+      <div id="country-label">
+        <img id="country-flag" />
+        <span id="country-name"></span>
+      </div>
 
       <!-- floating label nad krajinou -->
 
@@ -246,7 +315,7 @@
 
         <!-- Borders control -->
         <div class="borders-control" id="globe-borders-toggle">
-          <span class="borders-label">Counntry borders</span>
+          <span class="borders-label">Country borders</span>
 
           <div class="reactor-widget">
             <div class="reactor-switch">
@@ -276,59 +345,67 @@
       <!-- Globe canvas mount point -->
       <div id="globe-canvas"></div>
     </section>
-<!-- INFO MODAL (HTML ONLY) -->
-<div id="info-modal" class="info-modal hidden">
-  <div class="info-backdrop"></div>
+    <!-- INFO MODAL (HTML ONLY) -->
+    <div id="info-modal" class="info-modal hidden">
+      <div class="info-backdrop"></div>
 
-  <div class="info-box">
-    <h2>🌍 GeoVerity v1.1</h2>
+      <div class="info-box">
+        <h2>🌍 GeoVerity v1.1</h2>
 
-    <p>Developed by Renata</p>
+        <p>Developed by Renata</p>
 
-    <h3>Credits</h3>
+        <h3>Credits</h3>
 
-    <p>Map data: Natural Earth</p>
-    <p>Earth textures: NASA Visible Earth</p>
-    <p>3D engine: Three.js, Globe.gl (MIT License)</p>
+        <p>Map data: Natural Earth</p>
+        <p>Earth textures: NASA Visible Earth</p>
+        <p>3D engine: Three.js, Globe.gl (MIT License)</p>
 
-    <p>
-      Flags:
-      <a href="https://flagpedia.net" target="_blank" rel="noopener noreferrer">
-        Flagpedia.net
-      </a>
-    </p>
+        <p>
+          Flags:
+          <a
+            href="https://flagpedia.net"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Flagpedia.net
+          </a>
+        </p>
 
-    <p>
-      Icons:
-      <a href="https://www.flaticon.com" target="_blank" rel="noopener noreferrer">
-        Flaticon
-      </a>
-    </p>
+        <p>
+          Icons:
+          <a
+            href="https://www.flaticon.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Flaticon
+          </a>
+        </p>
 
-    <h3>Privacy Policy</h3>
+        <h3>Privacy Policy</h3>
 
-    <div class="info-actions">
-      <a
-        class="info-policy-link"
-        href="https://rendy051992.github.io/quiz/privacy.html"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Open Privacy Policy
-      </a>
+        <div class="info-actions">
+          <a
+            class="info-policy-link"
+            href="https://rendy051992.github.io/quiz/privacy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open Privacy Policy
+          </a>
 
-      <button id="info-close" type="button">Close</button>
+          <button id="info-close" type="button">Close</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
     <script src="script.js?v=778"></script>
 
     <script src="flags.js"></script>
-  <script src="vendor/three.module.min.js"></script>
-<script src="vendor/globe.gl.min.js"></script>
-<script src="vendor/turf.min.js"></script>   <!-- TU -->
-<script src="globe.js?v=4.23"></script>
-
+    <script src="vendor/three.module.min.js"></script>
+    <script src="vendor/globe.gl.min.js"></script>
+    <script src="vendor/turf.min.js"></script>
+    <script src="lang.js"></script>
+    <script src="globe.js?v=4.23"></script>
   </body>
 </html>

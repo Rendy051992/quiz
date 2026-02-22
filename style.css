@@ -1561,11 +1561,11 @@ body.maps-mode #rotate-overlay{
   margin-top: 0;                 /* ✅ aby nepadal nižšie */
 }
 
-/* FORCE: zmenší medzeru medzi "Privacy Policy" a linkom */
+/* ===== spacing medzi Resources a text ===== */
 #info-modal .info-box h3{
-  margin-top: 42px !important;
-  margin-bottom: 14px !important;
+  margin-bottom: 16px !important;
 }
+
 
 /* FORCE: nech link + Close nie sú zbytočne nízko */
 #info-modal .info-actions{
@@ -1585,3 +1585,141 @@ body.maps-mode #rotate-overlay{
   font-size: 14px;
 }
 
+
+
+
+
+
+
+.menu-grid .category-card{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-grid .category-card .card-content{
+  flex: 1;
+  min-width: 0;
+}
+
+.menu-grid .category-card .card-title{
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.menu-grid .category-card .card-arrow{
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+
+.menu-grid .category-card .card-content{
+  padding-right: 44px;
+}
+
+.menu-grid .category-card .card-arrow{
+  position: static !important;
+}
+
+
+
+
+
+
+
+
+
+#lang-btn{
+  background: transparent; /* zruším šedé pozadie buttonu */
+  border: none;            /* zruším default border */
+  padding: 0;              /* zruším vnútorné odsadenie */
+  margin: 0;               /* zruším vonkajšie odsadenie */
+  cursor: pointer;         /* ukážem že sa dá kliknúť */
+}
+
+#lang-btn img{
+  display: block; /* odstránenie spodnej medzery pod obrázkom */
+}
+
+
+
+
+#language-menu{                               /* wrapper pre language menu */
+  position: absolute;                          /* menu sa vie umiestniť pod ikonou */
+  top: 64px;                                   /* vzdialenosť od top baru */
+  left: 50%;                                   /* vycentrujem horizontálne */
+  transform: translateX(-50%);                 /* dorovnám na stred */
+  z-index: 99999;                              /* bude nad UI */
+  width: min(360px, 92vw);                     /* premium šírka, stále responsive */
+  padding: 14px;                               /* vnútorný okraj */
+  border-radius: 22px;                         /* veľké zaoblenie */
+  background: rgba(20, 24, 40, 0.55);          /* glass pozadie */
+  backdrop-filter: blur(18px);                 /* blur efekt */
+  -webkit-backdrop-filter: blur(18px);         /* Safari blur */
+  border: 1px solid rgba(255,255,255,0.10);    /* jemný svetlý okraj */
+  box-shadow: 0 18px 55px rgba(0,0,0,0.55);    /* hlboký shadow */
+  display: flex;                               /* layout */
+  flex-direction: column;                      /* položky pod sebou */
+  gap: 12px;                                   /* medzera medzi položkami */
+}
+
+#language-menu.hidden{                         /* hidden stav */
+  display: none;                               /* menu sa skryje */
+}
+
+#language-menu .lang-item{                     /* jeden jazykový riadok */
+  width: 100%;                                 /* cez celú šírku */
+  display: flex;                               /* flag + text + šípka */
+  align-items: center;                         /* zvislé centrovanie */
+  gap: 12px;                                   /* medzera medzi prvkami */
+  padding: 14px 16px;                          /* premium padding */
+  border-radius: 18px;                         /* zaoblenie riadku */
+  background: rgba(255,255,255,0.06);          /* jemný glass riadok */
+  border: 1px solid rgba(255,255,255,0.10);    /* jemný border */
+  color: rgba(255,255,255,0.92);               /* text */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); /* vnútorné svetlo */
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease; /* smooth */
+}
+
+#language-menu .lang-item:active{ /* press efekt */
+  transform: scale(0.985); /* jemné stlačenie */
+}
+
+#language-menu .lang-flag{ /* vlajka */
+  width: 34px; /* veľkosť vlajky */
+  height: 24px; /* výška vlajky */
+  border-radius: 7px; /* zaoblené rohy */
+  object-fit: cover; /* pekný crop */
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35); /* trochu hĺbky */
+  flex: 0 0 auto; /* nezmenšovať */
+}
+
+#language-menu .lang-text{ /* názov jazyka */
+  font-size: 18px; /* premium veľkosť */
+  font-weight: 700; /* bold */
+  letter-spacing: 0.2px; /* jemná typografia */
+  flex: 1; /* zaberie zvyšok */
+}
+
+#language-menu .lang-item::after{ /* šípka vpravo */
+  content: "›"; /* chevron */
+  font-size: 22px; /* veľkosť šípky */
+  line-height: 1; /* nech neseká */
+  opacity: 0.55; /* jemná šípka */
+  margin-left: 8px; /* odstup od textu */
+}
+
+/* ===== SELECTED LANGUAGE ===== */
+
+#language-menu .lang-item.is-active{ /* vybraný jazyk */
+  background: rgba(160, 85, 255, 0.18); /* jemné fialové pozadie */
+  border: 2px solid rgba(160, 85, 255, 0.80); /* výrazný fialový border */
+  box-shadow: 0 0 0 2px rgba(160, 85, 255, 0.14),
+              0 18px 45px rgba(160, 85, 255, 0.26); /* glow */
+}
+
+#language-menu .lang-item.is-active::after{ /* ikonka pri vybranom */
+  content: "✓"; /* check */
+  opacity: 0.95; /* viditeľnosť */
+}
