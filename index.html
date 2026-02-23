@@ -69,6 +69,14 @@
             <!-- text -->
           </button>
 
+          <button type="button" class="lang-item" data-lang="it">
+            <!-- Italian -->
+            <img class="lang-flag" src="flags/it.webp" alt="Italian flag" />
+            <!-- vlajka -->
+            <span class="lang-text">Italiano</span>
+            <!-- text -->
+          </button>
+
           <button type="button" class="lang-item" data-lang="es">
             <!-- Español -->
             <img class="lang-flag" src="flags/es.webp" alt="Spanish flag" />
@@ -99,6 +107,11 @@
             <!-- vlajka -->
             <span class="lang-text">Français</span>
             <!-- text -->
+          </button>
+
+          <button type="button" class="lang-item" data-lang="pl">
+            <img class="lang-flag" src="flags/pl.webp" alt="Polish flag" />
+            <span class="lang-text">Polski</span>
           </button>
 
           <button type="button" class="lang-item" data-lang="sk">
@@ -201,8 +214,8 @@
 
           <div class="quiz-info">
             <p>
-              <span id="current-question">1</span> of
-              <span id="total-questions">5</span>
+              <span id="current-question">1</span> /
+              <span id="total-questions"></span>
             </p>
             <div id="quiz-answer-status"></div>
             <p><span data-i18n="score"></span>: <span id="score">0</span></p>
@@ -211,7 +224,7 @@
 
         <div id="answers-container" class="answers-container"></div>
 
-<button id="next-btn" disabled data-i18n="next"></button>
+        <button id="next-btn" disabled data-i18n="next"></button>
         <div class="progress-bar">
           <div id="progress" class="progress"></div>
         </div>
@@ -220,19 +233,22 @@
 
     <div id="result-screen">
       <div class="result-card">
-        <h1>Quiz Results</h1>
-        <p id="result-message">Great job!</p>
+        <h1 data-i18n="resultsTitle">Quiz Results</h1>
+
+        <p id="result-message" data-i18n="resultsMessage">Great job!</p>
+
         <p id="final-text">
-          You scored <span id="final-score">0</span> out of
+          <span data-i18n="finalTextPrefix">You scored</span>
+          <span id="final-score">0</span>
+          <span data-i18n="finalTextBetween">out of</span>
           <span id="max-score">0</span>
         </p>
+
         <button
           id="restart-btn"
           class="restart-btn"
-          onclick="
-            hapticClick();
-            restartQuiz();
-          "
+          data-i18n="restart"
+          onclick="hapticClick()"
         >
           Play Again
         </button>
@@ -304,7 +320,7 @@
 
         <div id="globe-status">
           <div id="globe-meta">
-            <div id="globe-qcount">1 of 30</div>
+            <div id="globe-qcount">1 / 30</div>
             <div id="globe-score">Score: 0</div>
           </div>
 
