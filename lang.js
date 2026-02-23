@@ -1,3 +1,11 @@
+const COUNTRY_NAMES = {
+  AFG: { en: "Afghanistan", sk: "Afganistan", it: "Afghanistan", es: "Afganistán", pt: "Afeganistão", de: "Afghanistan", fr: "Afghanistan", pl: "Afganistan" },
+  BRA: { en: "Brazil", sk: "Brazília", it: "Brasile", es: "Brasil", pt: "Brasil", de: "Brasilien", fr: "Brésil", pl: "Brazylia" },
+  SOM: { en: "Somalia", sk: "Somálsko", it: "Somalia", es: "Somalia", pt: "Somália", de: "Somalia", fr: "Somalie", pl: "Somalia" }
+};
+
+
+
 const LANG = {
   en: {
     play: "Play",
@@ -6,6 +14,7 @@ const LANG = {
     wrong: "Wrong!",
     score: "Score",
     question: "Find",
+    countryBorders: "Country borders",
     playAgain: "Play Again",
 
     menuSubtitle: "Ready to test your world knowledge?",
@@ -134,6 +143,7 @@ const LANG = {
     wrong: "Sbagliato!",
     score: "Punteggio",
     question: "Trova",
+    countryBorders: "Confini dei paesi",
     playAgain: "Gioca di nuovo",
 
     menuSubtitle: "Pronto a testare le tue conoscenze del mondo?",
@@ -391,6 +401,7 @@ const LANG = {
     wrong: "¡Incorrecto!" /*  zobrazím text pre Wrong */,
     score: "Puntuación" /*  zobrazím text pre Score */,
     question: "Encuentra" /*  zobrazím text pre Find */,
+    countryBorders: "Fronteras de países",
     playAgain: "Jugar de nuevo" /* ja zobrazím text pre Play Again */,
     getReady: "PREPÁRATE",
     letsGo: "VAMOS",
@@ -650,6 +661,7 @@ const LANG = {
     wrong: "Errado!" /* ja zobrazím text pre Wrong */,
     score: "Pontuação" /* ja zobrazím text pre Score */,
     question: "Encontrar" /* ja zobrazím text pre Find */,
+    countryBorders: "Fronteiras dos países",
     playAgain: "Jogar novamente" /* ja zobrazím text pre Play Again */,
     getReady: "PREPARE-SE",
     letsGo: "VAMOS",
@@ -908,6 +920,7 @@ const LANG = {
     wrong: "Falsch!" /* ja zobrazím text pre Wrong */,
     score: "Punktzahl" /* ja zobrazím text pre Score */,
     question: "Finde" /* ja zobrazím text pre Find */,
+    countryBorders: "Ländergrenzen",
     playAgain: "Nochmal spielen" /* ja zobrazím text pre Play Again */,
     getReady: "MACH DICH BEREIT",
     letsGo: "LOS GEHT'S",
@@ -1167,6 +1180,7 @@ const LANG = {
     wrong: "Faux!" /* ja zobrazím text pre Wrong */,
     score: "Score" /* ja zobrazím text pre Score */,
     question: "Trouver" /* ja zobrazím text pre Find */,
+    countryBorders: "Frontières des pays",
     playAgain: "Rejouer" /* ja zobrazím text pre Play Again */,
     getReady: "PRÉPARE-TOI",
     letsGo: "C'EST PARTI",
@@ -1427,6 +1441,7 @@ pl: { // 🇵🇱 nový jazyk Polish (kód "pl")
   wrong: "Źle!" /* zobrazí text Wrong */,
   score: "Wynik" /* zobrazí text Score */,
   question: "Znajdź" /* zobrazí text Find */,
+  countryBorders: "Granice państw",
   playAgain: "Zagraj ponownie" /* zobrazí text Play Again */,
   getReady: "PRZYGOTUJ SIĘ" /* text GET READY */,
   letsGo: "ZACZYNAMY" /* tlačidlo LET'S GO */,
@@ -1686,6 +1701,7 @@ pl: { // 🇵🇱 nový jazyk Polish (kód "pl")
     wrong: "Nesprávne!" /* ja zobrazím text pre Wrong */,
     score: "Skóre" /* ja zobrazím text pre Score */,
     question: "Nájdi" /* ja zobrazím text pre Find */,
+    countryBorders: "Hranice krajín",
     playAgain: "Hrať znova" /* ja zobrazím text pre Play Again */,
     getReady: "PRIPRAV SA",
     letsGo: "POĎME NA TO",
@@ -2039,3 +2055,5 @@ function tCountry(name) {
   return dict[name] || name; /* ja vrátim preklad, alebo originál */
 }
 
+
+window.LANG = LANG; // sprístupní LANG aj pre globe.js
