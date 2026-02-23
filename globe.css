@@ -1,6 +1,7 @@
-body {
-  background: #000;
+body{
+    background: #000;
 }
+
 
 /* GLOBE overlay: keď ho otvoríš, zakryje celú appku */
 #globe-screen {
@@ -20,69 +21,8 @@ body {
   height: 100%;
 }
 
-/* HUD ako jedna glass kartička, všetko bude v nej */
-#globe-hud {
-  position: absolute;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(620px, 92vw);
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 
-  padding: 14px 14px 16px 14px;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(18, 22, 30, 0.78),
-    rgba(18, 22, 30, 0.62)
-  );
-
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 22px;
-
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
-
-  z-index: 20;
-}
-
-/* ja povolím klik len tam kde treba */
-#globe-borders-toggle,
-#globe-borders-toggle * {
-  pointer-events: auto;
-}
-
-/* ===== Question text: menej kriku, viac classy ===== */
-#globe-question {
-  width: 100%;
-  text-align: center;
-
-  color: rgba(255, 255, 255, 0.92); /* ja dám bielu, nie červenú */
-  font-size: 18px; /* ja zmenším o kúsok */
-  font-weight: 800;
-  line-height: 1.15;
-
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
-}
-
-/* jemný “pill” efekt iba na text, aby to bolo ako UI label */
-#globe-question {
-  padding: 8px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* status nech sa pekne zmestí do card */
-#globe-status {
-  width: 100%;
-  margin: 0;
-}
 
 /* test button, nech zostane klikateľný */
 #globe-test-btn {
@@ -536,12 +476,12 @@ body.globe-preload #globe-screen {
   transform: translate(-50%, -50%) scale(0.85);
   margin-top: -58px;
 
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
   white-space: nowrap;
 }
+
+
 
 .globe-bubble.show {
   opacity: 1; /* ja zobrazím */
@@ -555,6 +495,8 @@ body.globe-preload #globe-screen {
 .globe-bubble.wrong {
   background: linear-gradient(135deg, #dd3838, #dd3838); /* ja dám červenú */
   margin-top: -72px; /* ja posuniem červenú ešte vyššie, lebo tá najviac prekrýva wrong highlight */
+  
+  
 }
 
 .globe-bubble .flag {
@@ -566,15 +508,17 @@ body.globe-preload #globe-screen {
   white-space: nowrap; /* ja udržím text v jednom riadku */
 }
 
+
+
 /* ===== NEXT BUTTON (GLOBE) ===== */
 
 #globe-next-btn {
-  display: none; /* ja ho defaultne skryjem */
-  position: fixed; /* ja ho prilepím na obrazovku */
-  left: 50%; /* ja ho vycentrujem horizontálne */
-  bottom: 30px; /* ja ho dám nad spodok */
+  display: none;            /* ja ho defaultne skryjem */
+  position: fixed;          /* ja ho prilepím na obrazovku */
+  left: 50%;                /* ja ho vycentrujem horizontálne */
+  bottom: 30px;            /* ja ho dám nad spodok */
   transform: translateX(-50%);
-  z-index: 9999; /* ja zabezpečím aby bol nad canvasom */
+  z-index: 9999;            /* ja zabezpečím aby bol nad canvasom */
 
   padding: 14px 24px;
   border-radius: 14px;
@@ -590,9 +534,7 @@ body.globe-preload #globe-screen {
   opacity: 0;
   pointer-events: none;
 
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 /* keď ho JS zobrazí */
@@ -608,12 +550,16 @@ body.globe-preload #globe-screen {
   pointer-events: none;
 }
 
+
+
+
 /* ===== GLOBE STATUS: progress + question count + score ===== */
 /* =========================================================
    🌍 GLOBE HUD — COMPACT INFO WINDOW STYLE
    ========================================================= */
 
 #globe-hud {
+
   position: absolute;
   top: calc(env(safe-area-inset-top) + 10px);
   left: 50%;
@@ -622,52 +568,59 @@ body.globe-preload #globe-screen {
   width: 94%;
   max-width: 520px;
 
-  padding: 10px 12px 12px 12px; /* ✅ menší HUD */
-  display: flex;
+ padding: 18px 16px 14px;   /* ⭐ viac priestoru hore */  display: flex;
   flex-direction: column;
   gap: 8px;
 
   border-radius: 20px;
 
   background:
-    radial-gradient(
-      circle at 50% 0%,
-      rgba(0, 180, 255, 0.12),
-      rgba(0, 0, 0, 0) 60%
+    radial-gradient(circle at 50% 0%,
+      rgba(0,180,255,0.12),
+      rgba(0,0,0,0) 60%
     ),
-    linear-gradient(180deg, rgba(18, 22, 30, 0.88), rgba(10, 14, 20, 0.92));
+    linear-gradient(
+      180deg,
+      rgba(18,22,30,0.88),
+      rgba(10,14,20,0.92)
+    );
 
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255,255,255,0.08);
 
   box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    0 12px 30px rgba(0,0,0,0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
 
   z-index: 20;
 }
+
 
 /* =========================================================
    FIND QUESTION
    ========================================================= */
 
 #globe-question {
+
   width: 100%;
   text-align: center;
 
   font-size: 16px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(255,255,255,0.95);
 
   padding: 8px 10px;
   border-radius: 14px;
 
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255,255,255,0.05);
 
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.06);
+
 }
+
 
 /* =========================================================
    STATUS BLOCK
@@ -677,45 +630,65 @@ body.globe-preload #globe-screen {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+
+  gap: 10px;          /* ⭐ HLAVNÝ FIX — vertikálna medzera medzi riadkami */
 
   box-sizing: border-box;
 }
+
 
 /* QUESTION + SCORE ROW */
 
 #globe-meta {
   display: flex;
   justify-content: space-between;
-  align-items: center;
 
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  align-items: flex-end;   /* ⭐ HLAVNÝ FIX — posunie text nižšie */
+
+  width: 100%;
+  gap: 12px;
+
+  padding: 10px 14px 6px;  /* ⭐ viac priestoru hore */
+
+  font-size: 15px;         /* trochu väčšie */
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+
+  box-sizing: border-box;
 }
+
 
 /* PROGRESS BAR */
 
 #globe-progress {
+
   height: 6px;
   border-radius: 999px;
 
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255,255,255,0.12);
   overflow: hidden;
 
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08);
 }
 
+
 #globe-progress-fill {
+
   height: 100%;
   width: 0%;
 
   border-radius: inherit;
 
-  background: linear-gradient(90deg, #00e5ff, #00ffa6);
+  background: linear-gradient(
+    90deg,
+    #00e5ff,
+    #00ffa6
+  );
 
   transition: width 0.35s ease;
 }
+
 
 /* TEXT WRAP FIX */
 
@@ -724,11 +697,13 @@ body.globe-preload #globe-screen {
   white-space: nowrap;
 }
 
+
 /* =========================================================
    COUNTRY BORDERS ROW
    ========================================================= */
 
 #globe-borders-toggle {
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -736,12 +711,14 @@ body.globe-preload #globe-screen {
   gap: 10px;
   padding-top: 8px;
 
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255,255,255,0.06);
 
   font-size: 14px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255,255,255,0.9);
+
 }
+
 
 /* SWITCH POINTER FIX */
 
@@ -749,44 +726,46 @@ body.globe-preload #globe-screen {
   pointer-events: auto;
 }
 
+
+
 /* ===== FLAG + TEXT INSIDE BUBBLES (HTML bubbles) ===== */
-.globe-bubble {
-  overflow: visible; /* ja dovolím, aby nič nebolo orezané */
+.globe-bubble{
+  overflow: visible;                 /* ja dovolím, aby nič nebolo orezané */
 }
 
-.globe-bubble .bubble-inner {
-  display: inline-flex; /* ja držím vlajku vedľa textu */
-  flex-direction: row; /* ja vynútim smer do riadku */
-  align-items: center; /* ja vycentrujem vertikálne */
-  justify-content: center; /* ja držím obsah uprostred */
-  gap: 12px; /* ja dám väčšiu medzeru */
-  white-space: nowrap; /* ja nezalomím text */
+.globe-bubble .bubble-inner{
+  display: inline-flex;              /* ja držím vlajku vedľa textu */
+  flex-direction: row;               /* ja vynútim smer do riadku */
+  align-items: center;               /* ja vycentrujem vertikálne */
+  justify-content: center;           /* ja držím obsah uprostred */
+  gap: 12px;                         /* ja dám väčšiu medzeru */
+  white-space: nowrap;               /* ja nezalomím text */
 }
 
 /* vlajka v bubble */
-.globe-bubble .flag-img {
-  width: 28px; /* ja dám trochu väčšiu vlajku */
-  height: 20px; /* ja zachovám pomer 4:3 */
-  object-fit: contain; /* ja NEorežem vlajku */
-  display: block; /* ja odstránim inline medzery */
-  flex: 0 0 auto; /* ja zakážem zmenšovanie */
-  border-radius: 3px; /* ja jemne zaoblím rohy vlajky */
+.globe-bubble .flag-img{
+  width: 28px;                       /* ja dám trochu väčšiu vlajku */
+  height: 20px;                      /* ja zachovám pomer 4:3 */
+  object-fit: contain;               /* ja NEorežem vlajku */
+  display: block;                    /* ja odstránim inline medzery */
+  flex: 0 0 auto;                    /* ja zakážem zmenšovanie */
+  border-radius: 3px;                /* ja jemne zaoblím rohy vlajky */
 }
 
 /* ===== FLOATING LABEL (country-label) ===== */
-#country-label {
+#country-label{
   position: absolute;
 
-  display: inline-flex; /* ja dám vlajku vedľa textu */
-  flex-direction: row; /* ja vynútim smer do riadku */
-  align-items: center; /* ja vycentrujem vertikálne */
+  display: inline-flex;              /* ja dám vlajku vedľa textu */
+  flex-direction: row;               /* ja vynútim smer do riadku */
+  align-items: center;               /* ja vycentrujem vertikálne */
   justify-content: center;
 
-  gap: 12px; /* ja dám väčšiu medzeru */
+  gap: 12px;                         /* ja dám väčšiu medzeru */
 
-  padding: 12px 18px; /* ✅ ja posuniem obsah ďalej od rohov */
-  border-radius: 18px; /* ja spravím roh jemnejší, menej reže */
-  overflow: visible; /* ✅ ja zakážem orezávanie obsahu */
+  padding: 12px 18px;                /* ✅ ja posuniem obsah ďalej od rohov */
+  border-radius: 18px;               /* ja spravím roh jemnejší, menej reže */
+  overflow: visible;                 /* ✅ ja zakážem orezávanie obsahu */
 
   font-weight: 600;
   font-size: 16px;
@@ -797,14 +776,19 @@ body.globe-preload #globe-screen {
 }
 
 /* vlajka vo floating labele */
-#country-flag {
-  width: 28px; /* ja dám trochu väčšiu vlajku */
-  height: 20px; /* ja zachovám pomer 4:3 */
-  object-fit: contain; /* ✅ ja NEorežem vlajku */
+#country-flag{
+  width: 28px;                       /* ja dám trochu väčšiu vlajku */
+  height: 20px;                      /* ja zachovám pomer 4:3 */
+  object-fit: contain;               /* ✅ ja NEorežem vlajku */
   display: block;
   flex: 0 0 auto;
   border-radius: 3px;
 }
+
+
+
+
+
 
 /* =========================
    MAP MASTER START SCREEN
@@ -812,8 +796,8 @@ body.globe-preload #globe-screen {
 
 /* ===== MAP MASTER START OVERLAY (FIXED WINDOW) ===== */
 
-.globe-start-screen {
-  /* ja spravím overlay cez celú obrazovku */
+.globe-start-screen{ /* ja spravím overlay cez celú obrazovku */
+
   position: fixed; /* ja som prilepený na screen, nie na globe */
   inset: 0; /* ja pokryjem celý screen */
   display: none; /* ja som defaultne skrytá, JS ma ukáže */
@@ -824,25 +808,22 @@ body.globe-preload #globe-screen {
   pointer-events: auto; /* ja chytám kliky */
 }
 
-.globe-start-screen.show {
-  /* ja sa ukážem keď dostanem triedu show */
+.globe-start-screen.show{ /* ja sa ukážem keď dostanem triedu show */
   display: flex;
 }
 
-.globe-start-screen::before {
-  /* ja spravím jemné tmavenie + blur pozadia */
+.globe-start-screen::before{ /* ja spravím jemné tmavenie + blur pozadia */
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.22); /* ja jemne stmavím */
+  background: rgba(0,0,0,0.22); /* ja jemne stmavím */
   backdrop-filter: blur(8px); /* ja jemne rozmažem pozadie */
   -webkit-backdrop-filter: blur(8px);
 }
 
 /* ===== START CARD ===== */
 
-.globe-start-card {
-  /* ja som sklenená kartička */
+.globe-start-card{ /* ja som sklenená kartička */
   position: relative; /* ja som nad overlay vrstvou */
   z-index: 1; /* ja som klikateľná nad ::before */
   width: min(92vw, 360px); /* ja držím rozumnú šírku */
@@ -854,74 +835,92 @@ body.globe-preload #globe-screen {
   backdrop-filter: blur(18px); /* ja spravím blur */
   -webkit-backdrop-filter: blur(18px); /* ja spravím blur pre iOS */
 
-  border: 1px solid rgba(255, 255, 255, 0.1); /* ja dám jemný border */
-  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.45); /* ja dám hĺbku */
+  border: 1px solid rgba(255,255,255,0.10); /* ja dám jemný border */
+  box-shadow: 0 18px 55px rgba(0,0,0,0.45); /* ja dám hĺbku */
 }
 
 /* ===== TEXTY ===== */
 
-.globe-start-ready {
-  /* GET READY */
+.globe-start-ready{ /* GET READY */
   font-size: 13px; /* ja som menší text */
   letter-spacing: 0.22em; /* ja spravím spaced písmená */
   font-weight: 800; /* ja som bold */
-  color: rgba(0, 255, 170, 0.75); /* ja dám zelenkavý hint */
+  color: rgba(0,255,170,0.75); /* ja dám zelenkavý hint */
   margin-bottom: 10px; /* ja dám medzeru */
 }
 
-.globe-start-title {
-  /* Maps */
+.globe-start-title{ /* Maps */
   font-size: 44px; /* ja som veľký nadpis */
   font-weight: 800; /* ja som extra bold */
-  color: rgba(255, 255, 255, 0.92); /* ja som biely */
+  color: rgba(255,255,255,0.92); /* ja som biely */
   line-height: 1; /* ja znížim výšku riadku */
   margin-bottom: 14px; /* ja dám medzeru */
 }
 
-.globe-start-icon {
-  /* ikona mapy */
-  font-size: 30px; /* ja som viditeľná */
-  margin: 0 auto 16px auto; /* ja dám medzeru pod ikonou */
-  opacity: 0.92; /* ja som jemná */
+.globe-start-icon{ /* ikona mapy */
+  font-size: 56px; /* väčšia ikona */
+  line-height: 1; /* bez extra výšky riadku */
+  margin: 6px auto 18px auto; /* lepšie centrovanie */
+  opacity: 1;
+
+  display: inline-flex; /* stabilné centrovanie */
+  align-items: center;
+  justify-content: center;
+
+  filter: drop-shadow(0 10px 22px rgba(0,0,0,0.55)); /* jemný 3D tieň */
+  text-shadow:
+    0 0 14px rgba(0,255,170,0.35),
+    0 0 28px rgba(0,255,170,0.22); /* glow podobný flags vibe */
+
+  animation: globeIconPulse 1.35s ease-in-out infinite; /* pulse */
+  transform-origin: center;
+}
+
+/* pulse animácia */
+@keyframes globeIconPulse{
+  0%   { transform: scale(1);    filter: drop-shadow(0 10px 22px rgba(0,0,0,0.55)); }
+  50%  { transform: scale(1.08); filter: drop-shadow(0 14px 30px rgba(0,0,0,0.60)); }
+  100% { transform: scale(1);    filter: drop-shadow(0 10px 22px rgba(0,0,0,0.55)); }
+}
+
+/* keď niekto nechce animácie */
+@media (prefers-reduced-motion: reduce){
+  .globe-start-icon{ animation: none; }
 }
 
 /* ===== BUTTON ===== */
 
-.globe-start-btn {
-  /* LET'S GO */
+.globe-start-btn{ /* LET'S GO */
   width: 100%; /* ja som na celú šírku card */
   height: 52px; /* ja som vysoký button */
   border-radius: 18px; /* ja som zaoblený */
-  border: 1px solid rgba(255, 255, 255, 0.1); /* ja mám jemný border */
+  border: 1px solid rgba(255,255,255,0.10); /* ja mám jemný border */
   cursor: pointer; /* ja ukážem klikateľnosť */
+  font-size: 15px;
 
-  color: rgba(255, 255, 255, 0.95); /* ja som biely text */
+  color: rgba(255,255,255,0.95); /* ja som biely text */
   font-weight: 800; /* ja som bold */
   letter-spacing: 0.08em; /* ja som “button” vibe */
 
-  background: linear-gradient(
-    90deg,
-    rgba(0, 229, 255, 0.75),
-    rgba(0, 255, 166, 0.75)
-  ); /* ja som neon gradient */
-  box-shadow:
-    0 10px 26px rgba(0, 229, 255, 0.22),
-    0 10px 26px rgba(0, 255, 166, 0.16); /* ja spravím glow */
+  background: linear-gradient(90deg, rgba(0,229,255,0.75), rgba(0,255,166,0.75)); /* ja som neon gradient */
+  box-shadow: 0 10px 26px rgba(0, 229, 255, 0.22), 0 10px 26px rgba(0, 255, 166, 0.16); /* ja spravím glow */
 }
 
-.globe-start-btn:active {
-  /* ja spravím jemný press efekt */
+.globe-start-btn:active{ /* ja spravím jemný press efekt */
   transform: scale(0.985);
 }
 
-/*------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
 
 /* ============================= */
 /* 🌍 GLOBE RESULT OVERLAY */
 /* ============================= */
 
-.globe-result-screen {
-  /* toto je fullscreen overlay nad globe, aby results neboli nalepené na globe */
+.globe-result-screen{ /* toto je fullscreen overlay nad globe, aby results neboli nalepené na globe */
   position: absolute; /* overlay sedí nad obsahom #globe-screen */
   inset: 0; /* pokryje celý dostupný priestor sekcie globe */
   display: none; /* defaultne je skrytý, JS ho zapne */
@@ -929,24 +928,23 @@ body.globe-preload #globe-screen {
   justify-content: center; /* horizontálne centrovanie kartičky */
   padding: 20px; /* okraj aby kartička nebola nalepená na okraj mobilu */
 
-  background: rgba(0, 0, 0, 0.35); /* jemné stmavenie globusu pod tým */
+  background: rgba(0,0,0,0.35); /* jemné stmavenie globusu pod tým */
   backdrop-filter: blur(6px); /* rozmazanie globusu pod overlay */
   -webkit-backdrop-filter: blur(6px); /* iOS podpora blur */
 
   z-index: 80; /* musí byť vyššie ako HUD aj globe canvas */
 }
 
-.globe-result-screen.show {
-  /* túto triedu pridá JS keď chce results zobraziť */
+.globe-result-screen.show{ /* túto triedu pridá JS keď chce results zobraziť */
   display: flex; /* zapne flex layout a tým aj centrovanie */
 }
+
 
 /* ============================= */
 /* RESULT CARD */
 /* ============================= */
 
-.globe-result-screen .result-card {
-  /* samotná kartička s výsledkom */
+.globe-result-screen .result-card{ /* samotná kartička s výsledkom */
   width: min(92vw, 360px); /* maximálne 360px ale na mobile sa prispôsobí */
   padding: 26px 22px; /* vnútorné odsadenie textu */
   border-radius: 26px; /* zaoblené rohy */
@@ -956,94 +954,62 @@ body.globe-preload #globe-screen {
   backdrop-filter: blur(18px); /* silnejší blur kartičky */
   -webkit-backdrop-filter: blur(18px); /* iOS blur */
 
-  border: 1px solid rgba(255, 255, 255, 0.1); /* jemný svetlý border */
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.55); /* hĺbka nad globusom */
+  border: 1px solid rgba(255,255,255,0.10); /* jemný svetlý border */
+  box-shadow: 0 25px 70px rgba(0,0,0,0.55); /* hĺbka nad globusom */
 }
+
 
 /* ============================= */
 /* TEXT */
 /* ============================= */
 
-.globe-result-screen h1 {
-  /* nadpis Quiz Results */
+.globe-result-screen h1{ /* nadpis Quiz Results */
   font-size: 30px; /* veľkosť nadpisu */
   font-weight: 800; /* tučný text */
-  color: rgba(255, 255, 255, 0.95); /* biela farba */
+  color: rgba(255,255,255,0.95); /* biela farba */
   margin-bottom: 14px; /* medzera pod nadpisom */
 }
 
-#globe-result-message {
-  /* text typu Not bad! */
+#globe-result-message{ /* text typu Not bad! */
   font-size: 15px; /* menší text */
-  color: rgba(255, 255, 255, 0.75); /* jemnejšia biela */
+  color: rgba(255,255,255,0.75); /* jemnejšia biela */
   margin-bottom: 18px; /* medzera pod textom */
 }
 
-.globe-result-screen p {
-  /* riadok so score */
-  color: rgba(255, 255, 255, 0.85); /* svetlý text */
+.globe-result-screen p{ /* riadok so score */
+  color: rgba(255,255,255,0.85); /* svetlý text */
   margin-bottom: 22px; /* medzera pred button */
   font-size: 16px; /* čitateľná veľkosť */
 }
+
 
 /* ============================= */
 /* BUTTON */
 /* ============================= */
 
-.globe-result-screen .restart-btn {
-  /* Play Again button */
+.globe-result-screen .restart-btn{ /* Play Again button */
   width: 100%; /* button na celú šírku kartičky */
   height: 52px; /* výška button */
   border-radius: 18px; /* zaoblenie */
-  border: 1px solid rgba(255, 255, 255, 0.1); /* jemný border */
+  border: 1px solid rgba(255,255,255,0.10); /* jemný border */
   cursor: pointer; /* kurzor ruky */
 
-  color: rgba(255, 255, 255, 0.95); /* text farba */
+  color: rgba(255,255,255,0.95); /* text farba */
   font-weight: 800; /* tučný text */
+  font-size: 20px;
   letter-spacing: 0.08em; /* spacing písmen */
 
-  background: linear-gradient(
-    90deg,
-    rgba(0, 229, 255, 0.75),
-    rgba(0, 255, 166, 0.75)
+  background: linear-gradient(90deg,
+    rgba(0,229,255,0.75),
+    rgba(0,255,166,0.75)
   ); /* neon gradient ako ostatné buttony v app */
 
   box-shadow:
-    0 10px 26px rgba(0, 229, 255, 0.25),
-    0 10px 26px rgba(0, 255, 166, 0.18); /* glow efekt */
+    0 10px 26px rgba(0,229,255,0.25),
+    0 10px 26px rgba(0,255,166,0.18); /* glow efekt */
 }
 
-.globe-result-screen .restart-btn:active {
-  /* keď používateľ stlačí */
+.globe-result-screen .restart-btn:active{ /* keď používateľ stlačí */
   transform: scale(0.985); /* jemný klik efekt */
 }
 
-/* ============================= */
-/* 🌍 HUD SPACING FIX */
-/* ============================= */
-
-#globe-hud {
-  padding: 14px 16px 16px 16px; /* viac vzduchu hore */
-  gap: 10px; /* väčšia medzera medzi blokmi */
-}
-
-/* FIND BAR */
-#globe-question {
-  margin-bottom: 6px; /* oddelenie od status */
-}
-
-/* QUESTION + SCORE ROW */
-#globe-meta {
-  margin-top: 2px;
-  margin-bottom: 6px; /* oddelenie od progress */
-}
-
-/* PROGRESS BAR */
-#globe-progress {
-  margin-top: 2px;
-}
-
-/* BORDERS TOGGLE */
-#globe-borders-toggle {
-  margin-top: 6px;
-}

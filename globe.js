@@ -84,6 +84,7 @@ console.time("GLOBE_INIT"); // meranie init času
   let highlightCorrectFeature = null; // tu si pamätám ktorú krajinu zafarbím na zeleno
   let highlightWrongFeature = null; // tu si pamätám ktorú krajinu zafarbím na červeno
   let bubbleData = []; // ja sem budem dávať 2 bubliny (correct, wrong)
+  let lastCameraMoveTime = 0;
 
   // ja z polygonu vytiahnem približný stred (lat,lng) aby som tam prilepila bublinu
   function getFeatureCenterLatLng(feat) {
@@ -350,12 +351,19 @@ console.time("GLOBE_INIT"); // meranie init času
         el.style.pointerEvents = "none"; /* ja neblokujem klik */
         el.style.userSelect = "none"; /* ja neoznačujem text */
 
+        let lastCameraMoveTime = 0;
+        const CAMERA_SETTLE_DELAY = 250;
+
         function clampBubbleToScreen() {
           /* ja clampujem len keď sa kamera nehýbe, aby sa bubliny netriasli */
           let stableFrames = 0; /* ja rátam koľko framov je kamera stabilná */
           let lastPOV = null; /* ja si pamätám posledný pointOfView */
 
           function step() {
+            if (performance.now() - lastCameraMoveTime < CAMERA_SETTLE_DELAY) {
+              requestAnimationFrame(step); // ja počkám ďalší frame a skúsim znova
+              return; // ja teraz nič nehýbem, lebo kamera sa ešte hýbe
+            }
             const pov =
               globeInstance && typeof globeInstance.pointOfView === "function"
                 ? globeInstance.pointOfView()
@@ -405,6 +413,12 @@ console.time("GLOBE_INIT"); // meranie init času
               host.getBoundingClientRect(); /* ja zistím hranice */
             const r = el.getBoundingClientRect(); /* ja zistím rozmer bubliny */
 
+            const hud =
+              document.getElementById("globe-hud"); /* ja nájdem HUD */
+            const hudRect = hud
+              ? hud.getBoundingClientRect()
+              : null; /* ja zistím hranice HUD */
+
             let dx = 0; /* ja posun X */
             let dy = 0; /* ja posun Y */
 
@@ -412,9 +426,11 @@ console.time("GLOBE_INIT"); // meranie init času
               dx = hostRect.left + pad - r.left; /* ja posuniem doprava */
             if (r.right > hostRect.right - pad)
               dx = hostRect.right - pad - r.right; /* ja posuniem doľava */
-
-            if (r.top < hostRect.top + pad)
-              dy = hostRect.top + pad - r.top; /* ja posuniem dole */
+            const topLimit = hudRect
+              ? hudRect.bottom + pad
+              : hostRect.top + pad; /* ja nedovolím ísť pod HUD */
+            if (r.top < topLimit)
+              dy = topLimit - r.top; /* ja posuniem dole pod HUD */
             if (r.bottom > hostRect.bottom - pad)
               dy = hostRect.bottom - pad - r.bottom; /* ja posuniem hore */
 
@@ -696,10 +712,17 @@ console.time("GLOBE_INIT"); // meranie init času
     el.textContent = txt;
   }
 
+  const CAMERA_FOCUS_MS = 1200; /* čas animácie kamery — musí byť rovnaký ako pointOfView */
+
   function moveCameraTo(lat, lng) {
     if (!globeInstance) return;
 
-    globeInstance.pointOfView({ lat: lat, lng: lng, altitude: 2.2 }, 1200);
+    lastCameraMoveTime = performance.now(); // ja si uložím čas pohybu kamery
+
+    globeInstance.pointOfView(
+      { lat: lat, lng: lng, altitude: 2.2 },
+      CAMERA_FOCUS_MS,
+    );
   }
 
   function updateGlobeStatusUI() {
@@ -707,11 +730,10 @@ console.time("GLOBE_INIT"); // meranie init času
       quizCountries && quizCountries.length ? quizCountries.length : 30;
     const qNum = Math.min(currentQuestionIndex + 1, total);
 
-    const qEl = document.getElementById("globe-qcount");
-    if (qEl) qEl.textContent = `Question ${qNum} of ${total}`;
-
-    const sEl = document.getElementById("globe-score");
-    if (sEl) sEl.textContent = `Score: ${quizScore}`;
+const qEl = document.getElementById("globe-qcount");
+qEl.textContent = `${qNum} / ${total}`;
+const sEl = document.getElementById("globe-score");
+if (sEl) sEl.textContent = `${t("score")}: ${quizScore}`;
 
     const fill = document.getElementById("globe-progress-fill");
     const pct = Math.max(
@@ -747,36 +769,37 @@ console.time("GLOBE_INIT"); // meranie init času
       return; /* ja končím */
     }
 
-    if (currentQuestionIndex >= quizCountries.length) {
-      /* ja som na konci quizu */
-      const resultScreen = document.getElementById(
-        "globe-result-screen",
-      ); /* ja nájdem results overlay */
-      const scoreEl =
-        document.getElementById(
-          "globe-final-score",
-        ); /* ja nájdem finálne score */
-      const maxEl =
-        document.getElementById("globe-max-score"); /* ja nájdem max score */
+ if (currentQuestionIndex >= quizCountries.length) {
 
-      if (scoreEl)
-        scoreEl.textContent = String(quizScore); /* ja zapíšem body */
-      if (maxEl)
-        maxEl.textContent = String(
-          quizCountries.length,
-        ); /* ja zapíšem počet otázok */
+  const resultScreen = document.getElementById("globe-result-screen");
+  const scoreEl = document.getElementById("globe-final-score");
+  const maxEl = document.getElementById("globe-max-score");
 
-      const hud = document.getElementById("globe-hud"); /* ja nájdem HUD */
-      if (hud) hud.style.display = "none"; /* ja schovám HUD */
+  if (scoreEl) scoreEl.textContent = String(quizScore);
+  if (maxEl) maxEl.textContent = String(quizCountries.length);
 
-      if (resultScreen) {
-        resultScreen.style.display =
-          "flex"; /* ja ho určite zobrazím aj keď má inline display none */
-        resultScreen.classList.add("show"); /* ja pridám triedu show */
-      }
+  /* percentá výkonu */
+  const pct = quizCountries.length ? quizScore / quizCountries.length : 0;
 
-      return; /* ja končím */
-    }
+  let key;
+
+  if (pct >= 0.9) key = "resultGreat";
+  else if (pct >= 0.7) key = "resultGood";
+  else if (pct >= 0.4) key = "resultOk";
+  else key = "resultBad";
+
+if (globeResultMessageEl) globeResultMessageEl.textContent = t(key);
+
+  const hud = document.getElementById("globe-hud");
+  if (hud) hud.style.display = "none";
+
+  if (resultScreen) {
+    resultScreen.style.display = "flex";
+    resultScreen.classList.add("show");
+  }
+
+  return;
+}
 
     answerLocked = false; /* ja dovolím nové kliknutie */
     currentCorrectFeature =
@@ -804,7 +827,7 @@ console.time("GLOBE_INIT"); // meranie init času
     const displayName = getDisplayNameFromFeature(
       currentCorrectFeature,
     ); /* ja získam krátky názov do UI */
-    setGlobeQuestionText(`Find: ${displayName}`); /* ja nastavím otázku */
+setGlobeQuestionText(`${t("question")}: ${displayName}`);
   }
 
   const DISPLAY_NAME_MAP = {
@@ -813,62 +836,91 @@ console.time("GLOBE_INIT"); // meranie init času
     Czechia: "Czechia",
   };
 
-  function getDisplayNameFromFeature(feat) {
-    const raw = feat?.properties?.name || feat?.properties?.ADMIN || "";
-    return DISPLAY_NAME_MAP[raw] || raw;
+function getDisplayNameFromFeature(feat) {
+  const raw =
+    feat?.properties?.name ||
+    feat?.properties?.ADMIN ||
+    feat?.properties?.NAME ||
+    "";
+
+  const lang =
+    localStorage.getItem("lang") ||
+    localStorage.getItem("language") ||
+    localStorage.getItem("selectedLang") ||
+    localStorage.getItem("selectedLanguage") ||
+    "en";
+
+  const shortName = DISPLAY_NAME_MAP?.[raw] || raw;
+
+  const iso3 = feat?.id || ""; /* ISO3 z geojson, napr AFG */
+  const iso2 = window.ISO3_TO_ISO2?.[iso3] || ""; /* ISO2, napr AF */
+
+  /* 1) Najprv skúsim automatický preklad cez Intl pre KAŽDÚ krajinu */
+  if (iso2 && typeof Intl !== "undefined" && Intl.DisplayNames) {
+    try {
+      const dn = new Intl.DisplayNames([lang], { type: "region" });
+      const autoName = dn.of(iso2);
+      if (autoName) return autoName;
+    } catch (e) {
+      /* nič, spadnem na fallback */
+    }
   }
 
-  function findFeatureByLatLng(lat, lng) {
-    if (!countriesFeatures || !countriesFeatures.length) return null;
+  /* 2) Fallback: ak máš v lang.js vlastné preklady pre niektoré názvy */
+  const manual = window.LANG?.[lang]?.countries?.[shortName];
+  return manual || shortName;
+}
 
-    for (const f of countriesFeatures) {
-      const g = f?.geometry;
-      if (!g) continue;
 
-      const checkRing = (ring) => {
-        if (!ring || ring.length < 3) return false;
+function findFeatureByLatLng(lat, lng) {
+  if (!countriesFeatures || !countriesFeatures.length) return null;
 
-        let inside = false;
+  for (const f of countriesFeatures) {
+    const g = f?.geometry;
+    if (!g) continue;
 
-        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-          const xi = ring[i][0];
-          const yi = ring[i][1];
-          const xj = ring[j][0];
-          const yj = ring[j][1];
+    const checkRing = (ring) => {
+      if (!ring || ring.length < 3) return false;
 
-          const intersect =
-            yi > lat !== yj > lat &&
-            lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
+      let inside = false;
 
-          if (intersect) inside = !inside;
-        }
+      for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const xi = ring[i][0];
+        const yi = ring[i][1];
+        const xj = ring[j][0];
+        const yj = ring[j][1];
 
-        return inside;
-      };
+        const intersects =
+          (yi > lat) !== (yj > lat) &&
+          lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
 
-      const checkPolygon = (poly) => {
-        if (!poly || !poly.length) return false;
-
-        /* vonkajší ring */
-        if (checkRing(poly[0])) return true;
-
-        /* ak sú diery (holes), ignorujeme ich */
-        return false;
-      };
-
-      if (g.type === "Polygon") {
-        if (checkPolygon(g.coordinates)) return f;
+        if (intersects) inside = !inside;
       }
 
-      if (g.type === "MultiPolygon") {
-        for (const poly of g.coordinates) {
-          if (checkPolygon(poly)) return f;
-        }
-      }
+      return inside;
+    };
+
+    const checkPolygon = (poly) => {
+      if (!poly || !poly.length) return false;
+
+      if (checkRing(poly[0])) return true; /* vonkajší ring */
+
+      return false;
+    };
+
+    if (g.type === "Polygon") {
+      if (checkPolygon(g.coordinates)) return f;
     }
 
-    return null;
+    if (g.type === "MultiPolygon") {
+      for (const poly of g.coordinates) {
+        if (checkPolygon(poly)) return f;
+      }
+    }
   }
+
+  return null;
+}
 
   function wireGlobePolygonClick() {
     if (!globeInstance) return;
@@ -893,32 +945,35 @@ console.time("GLOBE_INIT"); // meranie init času
         clickedFeature = currentCorrectFeature; // ja prepnem klik na Somalia
       }
 
-      const labelEl = document.getElementById("country-label");
-      const nameEl = document.getElementById("country-name");
-      const flagEl = document.getElementById("country-flag");
+    const labelEl = document.getElementById("country-label");
+const nameEl = document.getElementById("country-name");
+const flagEl = document.getElementById("country-flag");
 
-      if (labelEl && poly) {
-        const name = getDisplayNameFromFeature(poly);
-        if (nameEl) nameEl.textContent = name || "Unknown";
+if (labelEl && poly) {
 
-        const iso3 =
-          poly?.properties?.ISO_A3 ||
-          poly?.properties?.ADM0_A3 ||
-          poly?.properties?.iso_a3 ||
-          "";
-        const iso2 = (ISO3_TO_ISO2[iso3] || "").toLowerCase();
+  const displayName = getDisplayNameFromFeature(poly); // použije preklady
 
-        if (flagEl) {
-          if (iso2) {
-            flagEl.src = `flags2/${iso2}.webp`;
-            flagEl.style.display = "block";
-          } else {
-            flagEl.style.display = "none";
-          }
-        }
+  if (nameEl) nameEl.textContent = displayName || "Unknown";
 
-        labelEl.classList.add("show");
-      }
+  const iso3 =
+    poly?.properties?.ISO_A3 ||
+    poly?.properties?.ADM0_A3 ||
+    poly?.properties?.iso_a3 ||
+    "";
+
+  const iso2 = (ISO3_TO_ISO2[iso3] || "").toLowerCase();
+
+  if (flagEl) {
+    if (iso2) {
+      flagEl.src = `flags2/${iso2}.webp`;
+      flagEl.style.display = "block";
+    } else {
+      flagEl.style.display = "none";
+    }
+  }
+
+  labelEl.classList.add("show");
+}
 
       const isCorrect = clickedFeature === currentCorrectFeature;
 
@@ -962,51 +1017,51 @@ console.time("GLOBE_INIT"); // meranie init času
         return { lat: lat, lng: lng };
       };
 
-      const getName = (feat) =>
-        feat?.properties?.name || feat?.properties?.ADMIN || "Unknown";
-      const correctCenter = getFeatureCenter(currentCorrectFeature);
-      const wrongCenter = getFeatureCenter(clickedFeature);
+   const getName = (feat) => getDisplayNameFromFeature(feat) || "Unknown";
+const correctCenter = getFeatureCenter(currentCorrectFeature);
+const wrongCenter = getFeatureCenter(clickedFeature);
 
-      if (isCorrect) {
-        safeVibrate(140); /* ja vibrácia correct */
 
-        moveCameraTo(correctCenter.lat, correctCenter.lng);
-      } else {
-        safeVibrate([180, 90, 180]); /* ja vibrácia wrong */
+if (isCorrect) {
+  safeVibrate(140); /* vibrácia pre correct */
 
-        const toRad = (v) => (v * Math.PI) / 180;
-        const toDeg = (v) => (v * 180) / Math.PI;
+  moveCameraTo(correctCenter.lat, correctCenter.lng);
+} else {
+  safeVibrate([180, 90, 180]); /* vibrácia pre wrong */
 
-        const lat1 = toRad(correctCenter.lat);
-        const lng1 = toRad(correctCenter.lng);
-        const lat2 = toRad(wrongCenter.lat);
-        const lng2 = toRad(wrongCenter.lng);
+  const toRad = (v) => (v * Math.PI) / 180;
+  const toDeg = (v) => (v * 180) / Math.PI;
 
-        const x1 = Math.cos(lat1) * Math.cos(lng1);
-        const y1 = Math.cos(lat1) * Math.sin(lng1);
-        const z1 = Math.sin(lat1);
+  const lat1 = toRad(correctCenter.lat);
+  const lng1 = toRad(correctCenter.lng);
+  const lat2 = toRad(wrongCenter.lat);
+  const lng2 = toRad(wrongCenter.lng);
 
-        const x2 = Math.cos(lat2) * Math.cos(lng2);
-        const y2 = Math.cos(lat2) * Math.sin(lng2);
-        const z2 = Math.sin(lat2);
+  const x1 = Math.cos(lat1) * Math.cos(lng1);
+  const y1 = Math.cos(lat1) * Math.sin(lng1);
+  const z1 = Math.sin(lat1);
 
-        let xm = x1 + x2;
-        let ym = y1 + y2;
-        let zm = z1 + z2;
+  const x2 = Math.cos(lat2) * Math.cos(lng2);
+  const y2 = Math.cos(lat2) * Math.sin(lng2);
+  const z2 = Math.sin(lat2);
 
-        const len = Math.hypot(xm, ym, zm) || 1;
-        xm /= len;
-        ym /= len;
-        zm /= len;
+  let xm = x1 + x2;
+  let ym = y1 + y2;
+  let zm = z1 + z2;
 
-        const midLat = toDeg(Math.asin(zm));
-        const midLng = toDeg(Math.atan2(ym, xm));
+  const len = Math.hypot(xm, ym, zm) || 1;
+  xm /= len;
+  ym /= len;
+  zm /= len;
 
-        globeInstance.pointOfView(
-          { lat: midLat, lng: midLng, altitude: 3.2 },
-          1200,
-        );
-      }
+  const midLat = toDeg(Math.asin(zm));
+  const midLng = toDeg(Math.atan2(ym, xm));
+
+  globeInstance.pointOfView(
+    { lat: midLat, lng: midLng, altitude: 3.2 },
+    1200
+  );
+}
 
       showGlobeNextButton();
 
@@ -1116,44 +1171,44 @@ console.time("GLOBE_INIT"); // meranie init času
     }
   }
 
-function wireGlobePlayAgain() {
-  const restartBtn = document.getElementById("globe-restart-btn");
-  if (!restartBtn) return;
+  function wireGlobePlayAgain() {
+    const restartBtn = document.getElementById("globe-restart-btn");
+    if (!restartBtn) return;
 
-  restartBtn.onclick = () => {
-    hapticTap(); // vibrácia pri Play Again
+    restartBtn.onclick = () => {
+      hapticTap(); // vibrácia pri Play Again
 
-    const resultScreen = document.getElementById("globe-result-screen");
-    if (resultScreen) resultScreen.style.display = "none"; // skryť results
+      const resultScreen = document.getElementById("globe-result-screen");
+      if (resultScreen) resultScreen.style.display = "none"; // skryť results
 
-    const hud = document.getElementById("globe-hud");
-    if (hud) hud.style.display = "block"; // zobraziť HUD
+      const hud = document.getElementById("globe-hud");
+      if (hud) hud.style.display = "block"; // zobraziť HUD
 
-    const nextBtn = document.getElementById("globe-next-btn");
-    if (nextBtn) {
-      nextBtn.classList.remove("show"); // odstrániť animáciu
-      nextBtn.style.display = "none";   // skryť tlačidlo
-      nextBtn.disabled = true;          // deaktivovať klik
-    }
+      const nextBtn = document.getElementById("globe-next-btn");
+      if (nextBtn) {
+        nextBtn.classList.remove("show"); // odstrániť animáciu
+        nextBtn.style.display = "none"; // skryť tlačidlo
+        nextBtn.disabled = true; // deaktivovať klik
+      }
 
-    answerLocked = false;               // odomknúť odpoveď
-    highlightCorrectFeature = null;     // zrušiť highlight správnej
-    highlightWrongFeature = null;       // zrušiť highlight zlej
+      answerLocked = false; // odomknúť odpoveď
+      highlightCorrectFeature = null; // zrušiť highlight správnej
+      highlightWrongFeature = null; // zrušiť highlight zlej
 
-    // zosúladiť bordersEnabled s aktuálnym stavom toggle v UI
-    bordersEnabled = document.getElementById("reactor")?.checked === true;
+      // zosúladiť bordersEnabled s aktuálnym stavom toggle v UI
+      bordersEnabled = document.getElementById("reactor")?.checked === true;
 
-    bubbleData = [];                   // vymazať bubliny
-    if (globeInstance) globeInstance.htmlElementsData([]); // odstrániť HTML prvky z glóbusu
+      bubbleData = []; // vymazať bubliny
+      if (globeInstance) globeInstance.htmlElementsData([]); // odstrániť HTML prvky z glóbusu
 
-    quizCountries = buildQuizCountries(); // vytvoriť nové otázky
-    currentQuestionIndex = 0;             // reset indexu
-    quizScore = 0;                        // reset skóre
+      quizCountries = buildQuizCountries(); // vytvoriť nové otázky
+      currentQuestionIndex = 0; // reset indexu
+      quizScore = 0; // reset skóre
 
-    applyPolygonStyle(false);             // aplikovať štýl polygonov podľa bordersEnabled
-    showNextQuestion();                   // zobraziť prvú otázku
-  };
-}
+      applyPolygonStyle(false); // aplikovať štýl polygonov podľa bordersEnabled
+      showNextQuestion(); // zobraziť prvú otázku
+    };
+  }
 
   window.restartGlobeQuiz = function () {
     /* ja resetnem Map Master pri BACK */
@@ -1220,6 +1275,8 @@ function wireGlobePlayAgain() {
   }
 
   function wireBordersToggle() {
+    const label = document.getElementById("globe-borders-label");
+if (label) label.textContent = t("countryBorders");
     const input = document.getElementById("reactor");
     if (!input) return;
 
@@ -1346,38 +1403,11 @@ const globeFinalScoreEl =
   ); /* sem píšem finálne score číslo */
 const globeMaxScoreEl =
   document.getElementById("globe-max-score"); /* sem píšem max počet otázok */
-const globeResultMessageEl = document.getElementById(
-  "globe-result-message",
-); /* sem píšem text výsledku */
+const globeResultMessageEl = document.getElementById("globe-result-message");
 const globeRestartBtn =
   document.getElementById("globe-restart-btn"); /* Play Again button */
 
-/* 2) táto funkcia zobrazí results overlay a vyplní texty */
-function showGlobeResults() {
-  /* toto volám keď skončí quiz (po poslednej otázke) */
-  if (!globeResultScreen) return; /* ak tam element nie je, nerobím nič */
 
-  globeFinalScoreEl.textContent =
-    String(score); /* score = tvoja globálna premenná v globe quiz */
-  globeMaxScoreEl.textContent =
-    String(totalQuestions); /* totalQuestions = 30 v tvojom globe quize */
-
-  /* jednoduchý text podľa výkonu, môžeš si neskôr zmeniť */
-  const pct = totalQuestions ? score / totalQuestions : 0; /* percentá výkonu */
-  if (pct >= 0.9)
-    globeResultMessageEl.textContent = "Insane! You’re a map god 😄";
-  /* top výkon */ else if (pct >= 0.7)
-    globeResultMessageEl.textContent = "Great job! Keep going 💪"; /* dobré */
-  else if (pct >= 0.4)
-    globeResultMessageEl.textContent = "Not bad! Try again to improve 🙂";
-  /* ok */ else
-    globeResultMessageEl.textContent =
-      "Oof 😅 Run it back, you’ll get it!"; /* slabšie */
-
-  globeResultScreen.style.display =
-    "flex"; /* zapnem overlay (lebo v HTML má display none) */
-  globeResultScreen.classList.add("show"); /* ak používaš aj .show v CSS */
-}
 
 /* 3) táto funkcia skryje results overlay (keď hráš znova) */
 function hideGlobeResults() {

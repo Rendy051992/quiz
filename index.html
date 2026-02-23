@@ -231,11 +231,10 @@
       </div>
     </div>
 
-    <div id="result-screen">
-      <div class="result-card">
-        <h1 data-i18n="resultsTitle">Quiz Results</h1>
-
-        <p id="result-message" data-i18n="resultsMessage">Great job!</p>
+<div id="result-screen">
+  <div class="result-card">
+    <h1 data-i18n="resultsTitle">Quiz Results</h1>
+    <p id="result-message"></p>
 
         <p id="final-text">
           <span data-i18n="finalTextPrefix">You scored</span>
@@ -262,12 +261,20 @@
       <!-- ✅ MAP MASTER START SCREEN -->
       <div id="globe-start-screen" class="globe-start-screen">
         <div class="globe-start-card">
-          <div class="globe-start-ready">GET READY</div>
-          <div class="globe-start-title">Maps</div>
+          <div class="globe-start-ready" data-i18n="getReady">GET READY</div>
+          <!-- text sa prekladá podľa jazyka -->
+          <div class="globe-start-title" data-i18n="mapMaster">Maps</div>
+          <!-- text sa prekladá podľa jazyka -->
           <div class="globe-start-icon">🗺️</div>
-          <button id="globe-start-btn" class="globe-start-btn" type="button">
+          <button
+            id="globe-start-btn"
+            class="globe-start-btn"
+            type="button"
+            data-i18n="letsGo"
+          >
             LET'S GO
           </button>
+        
         </div>
       </div>
 
@@ -279,13 +286,23 @@
         <!-- ja som overlay pre výsledky, budem nad celým globe screen -->
         <div class="result-card" role="dialog" aria-modal="true">
           <!-- ja som kartička s výsledkami -->
-          <h1>Quiz Results</h1>
-          <p id="globe-result-message">Not bad! Try again to improve! 💪</p>
+          <h1 data-i18n="resultsTitle">Quiz Results</h1>
+
+         <p id="globe-result-message"></p>
+
           <p>
-            You scored <span id="globe-final-score">0</span> out of
+            <span data-i18n="finalTextPrefix">You scored</span>
+            <span id="globe-final-score">0</span>
+            <span data-i18n="finalTextBetween">out of</span>
             <span id="globe-max-score">30</span>
           </p>
-          <button id="globe-restart-btn" class="restart-btn" type="button">
+
+          <button
+            id="globe-restart-btn"
+            class="restart-btn"
+            type="button"
+            data-i18n="restart"
+          >
             Play Again
           </button>
         </div>
@@ -331,8 +348,9 @@
 
         <!-- Borders control -->
         <div class="borders-control" id="globe-borders-toggle">
-          <span class="borders-label">Country borders</span>
-
+          <div class="globe-borders-label" data-i18n="countryBorders">
+            Country borders
+          </div>
           <div class="reactor-widget">
             <div class="reactor-switch">
               <input type="checkbox" id="reactor" />
@@ -352,68 +370,61 @@
         </div>
       </div>
 
-      <button id="globe-next-btn" type="button" disabled>Next</button>
+      <button id="globe-next-btn" type="button" disabled data-i18n="next">
+        Next
+      </button>
       <!-- ✅ Next button -->
 
-      <button id="globe-play-again">Play Again</button>
+      <button id="globe-play-again" data-i18n="playAgain">Play Again</button>
       <!-- tu mám tlačidlo na reštart quizu -->
 
       <!-- Globe canvas mount point -->
       <div id="globe-canvas"></div>
     </section>
     <!-- INFO MODAL (HTML ONLY) -->
-    <div id="info-modal" class="info-modal hidden">
-      <div class="info-backdrop"></div>
+    <!-- INFO MODAL -->
+<div id="info-modal" class="info-modal hidden">
 
-      <div class="info-box">
-        <h2>🌍 GeoVerity v1.1</h2>
+  <div class="info-backdrop"></div>
 
-        <p>Developed by Renata</p>
+  <div class="info-box">
 
-        <h3>Credits</h3>
-
-        <p>Map data: Natural Earth</p>
-        <p>Earth textures: NASA Visible Earth</p>
-        <p>3D engine: Three.js, Globe.gl (MIT License)</p>
-
-        <p>
-          Flags:
-          <a
-            href="https://flagpedia.net"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Flagpedia.net
-          </a>
-        </p>
-
-        <p>
-          Icons:
-          <a
-            href="https://www.flaticon.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Flaticon
-          </a>
-        </p>
-
-        <h3>Privacy Policy</h3>
-
-        <div class="info-actions">
-          <a
-            class="info-policy-link"
-            href="https://rendy051992.github.io/quiz/privacy.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Open Privacy Policy
-          </a>
-
-          <button id="info-close" type="button">Close</button>
+    <div class="info-header">
+      <div class="info-title">
+        <span class="info-icon">🌍</span>
+        <div>
+          <div class="info-app">GeoVerity v1.1</div>
+          <div class="info-dev">Developed by Renata</div>
         </div>
       </div>
     </div>
+
+    <div class="info-content">
+
+      <h3>CREDITS</h3>
+
+      <p>Map data: Natural Earth</p>
+      <p>Earth textures: NASA Visible Earth</p>
+      <p>3D engine: Three.js, Globe.gl (MIT License)</p>
+      <p>Flags: <a href="https://flagpedia.net" target="_blank">Flagpedia.net</a></p>
+      <p>Icons: <a href="https://www.flaticon.com" target="_blank">Flaticon</a></p>
+
+      <h3>PRIVACY POLICY</h3>
+
+      <p>
+        <a href="https://rendy051992.github.io/quiz/privacy.html" target="_blank" class="privacy-link">
+          Open Privacy Policy
+        </a>
+      </p>
+
+    </div>
+
+    <div class="info-actions">
+<button id="info-close" class="info-close-btn" type="button">Close</button>    </div>
+
+  </div>
+
+</div>
 
     <script src="script.js?v=778"></script>
 
@@ -422,6 +433,8 @@
     <script src="vendor/globe.gl.min.js"></script>
     <script src="vendor/turf.min.js"></script>
     <script src="lang.js"></script>
+    <script src="countries-i18n.js"></script>
     <script src="globe.js?v=4.23"></script>
+    <script src="iso3to2.js"></script>
   </body>
 </html>
