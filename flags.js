@@ -23,6 +23,24 @@ function safeVibrate(pattern) {
   }
 }
 
+function safeFeedback(type) {
+  try {
+    if (typeof isSoundOn !== "undefined" && !isSoundOn) {
+      return; // keď je sound off, vypne sa aj vibrácia
+    }
+
+    if (window.SFX) {
+      if (type === "correct" && typeof window.SFX.correct === "function") window.SFX.correct();
+      if (type === "wrong" && typeof window.SFX.wrong === "function") window.SFX.wrong();
+    }
+
+    if (type === "correct") safeVibrate(140);
+    if (type === "wrong") safeVibrate([180, 90, 180]);
+  } catch (e) {
+    // nikdy nezastav hru kvôli feedbacku
+  }
+}
+
 const flagData = [
   {
     name: "China",
@@ -397,25 +415,31 @@ status.textContent = (ok ? t("correct") : t("wrong")).toUpperCase();    status.c
   };
 
   // Zafarbenie karty
-  if (selectedFile === question.file) {
-    setStatus(true); // CORRECT
-    card.classList.add("correct");
-    flagScore++;
-    const scoreElem = document.getElementById("flag-score-text");
-    if (scoreElem) scoreElem.innerText = `${t("score")}: ${flagScore}`;
-    safeVibrate(140);
-  } else {
-    setStatus(false); // WRONG
-    card.classList.add("wrong");
-    const allCards = document.querySelectorAll(".flag-card");
-    allCards.forEach((c) => {
-      const img = c.querySelector("img");
-      if (img && img.src.includes(question.file)) {
-        c.classList.add("correct");
-      }
-    });
-    safeVibrate([180, 90, 180]);
-  }
+ if (selectedFile === question.file) {
+  setStatus(true);
+  card.classList.add("correct");
+  flagScore++;
+
+  const scoreElem = document.getElementById("flag-score-text");
+  if (scoreElem) scoreElem.innerText = `${t("score")}: ${flagScore}`;
+
+  safeFeedback("correct");   // ← namiesto safeVibrate
+} else {
+  setStatus(false);
+  card.classList.add("wrong");
+
+  const allCards = document.querySelectorAll(".flag-card");
+  allCards.forEach((c) => {
+    const img = c.querySelector("img");
+    if (img && img.src.includes(question.file)) {
+      c.classList.add("correct");
+    }
+  });
+
+  safeFeedback("wrong");     // ← namiesto safeVibrate
+}
+
+
 
   // --- KRITICKÝ BOD: Odomknutie tlačidla ---
   if (nextBtn) {

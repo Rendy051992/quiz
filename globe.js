@@ -45,6 +45,24 @@ console.time("GLOBE_INIT"); // meranie init času
     }
   }
 
+  function safeFeedback(type) {
+  try {
+    if (typeof isSoundOn !== "undefined" && !isSoundOn) {
+      return; // keď je sound off, vypne sa aj vibrácia
+    }
+
+    if (window.SFX) {
+      if (type === "correct" && typeof window.SFX.correct === "function") window.SFX.correct();
+      if (type === "wrong" && typeof window.SFX.wrong === "function") window.SFX.wrong();
+    }
+
+    if (type === "correct") safeVibrate(140);
+    if (type === "wrong") safeVibrate([180, 90, 180]);
+  } catch (e) {
+    // nikdy nezastav map quiz kvôli feedbacku
+  }
+}
+
   let globeInstance = null; // uloží Globe() inštanciu
   let initRunning = false; // ochrana proti 2x init
   let bordersEnabled = false; // borders sa zapnú až po prvom kliku
@@ -1023,12 +1041,10 @@ const wrongCenter = getFeatureCenter(clickedFeature);
 
 
 if (isCorrect) {
-  safeVibrate(140); /* vibrácia pre correct */
-
+safeFeedback("correct"); /* sound + vibr spolu */
   moveCameraTo(correctCenter.lat, correctCenter.lng);
 } else {
-  safeVibrate([180, 90, 180]); /* vibrácia pre wrong */
-
+safeFeedback("wrong"); /* sound + vibr spolu */
   const toRad = (v) => (v * Math.PI) / 180;
   const toDeg = (v) => (v * 180) / Math.PI;
 
@@ -1284,10 +1300,13 @@ if (label) label.textContent = t("countryBorders");
 
     input.onchange = null;
 
-    input.addEventListener("change", () => {
-      bordersEnabled = input.checked;
-      applyPolygonStyle(false);
-    });
+input.addEventListener("change", () => {
+
+  if (window.playUiClick) window.playUiClick(); // click sound ako button
+
+  bordersEnabled = input.checked;
+  applyPolygonStyle(false);
+});
 
     const wrap = input.closest(".reactor-widget");
     if (wrap) {

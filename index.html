@@ -50,87 +50,91 @@
     </div>
 
     <section id="home-screen" class="home">
-      <div class="top-nav-bar">
-        <img src="icons/info.png" class="clean-icon" id="info-btn" alt="Info" />
-        <!-- ľavá info -->
+<div class="top-nav-bar">
 
-        <button id="lang-btn">
-          <!-- stred jazyk -->
-          <img src="icons/language.png" class="clean-icon" alt="Language" />
-        </button>
+  <!-- LEFT SIDE -->
+  <div class="nav-left">
 
-        <div id="language-menu" class="language-menu hidden">
-          <!-- skryté menu pod ikonou jazyka -->
-          <button type="button" class="lang-item" data-lang="en">
-            <!-- English -->
-            <img class="lang-flag" src="flags/gb.webp" alt="English flag" />
-            <!-- vlajka -->
-            <span class="lang-text">English</span>
-            <!-- text -->
-          </button>
+    <img src="icons/info.png"
+         class="clean-icon"
+         id="info-btn"
+         alt="Info" />
 
-          <button type="button" class="lang-item" data-lang="it">
-            <!-- Italian -->
-            <img class="lang-flag" src="flags/it.webp" alt="Italian flag" />
-            <!-- vlajka -->
-            <span class="lang-text">Italiano</span>
-            <!-- text -->
-          </button>
+    <button id="lang-btn">
+      <img src="icons/language.png"
+           class="clean-icon"
+           alt="Language" />
+    </button>
 
-          <button type="button" class="lang-item" data-lang="es">
-            <!-- Español -->
-            <img class="lang-flag" src="flags/es.webp" alt="Spanish flag" />
-            <!-- vlajka -->
-            <span class="lang-text">Español</span>
-            <!-- text -->
-          </button>
+  </div>
 
-          <button type="button" class="lang-item" data-lang="pt">
-            <!-- Português -->
-            <img class="lang-flag" src="flags/pt.webp" alt="Portuguese flag" />
-            <!-- vlajka -->
-            <span class="lang-text">Português</span>
-            <!-- text -->
-          </button>
 
-          <button type="button" class="lang-item" data-lang="de">
-            <!-- Deutsch -->
-            <img class="lang-flag" src="flags/de.webp" alt="German flag" />
-            <!-- vlajka -->
-            <span class="lang-text">Deutsch</span>
-            <!-- text -->
-          </button>
+  <!-- RIGHT SIDE -->
+  <div class="nav-right">
 
-          <button type="button" class="lang-item" data-lang="fr">
-            <!-- Français -->
-            <img class="lang-flag" src="flags/fr.webp" alt="French flag" />
-            <!-- vlajka -->
-            <span class="lang-text">Français</span>
-            <!-- text -->
-          </button>
+    <img
+      src="icons/vibration_on.png"
+      class="clean-icon"
+      id="vibration-btn"
+      alt="Vibration"
+    />
 
-          <button type="button" class="lang-item" data-lang="pl">
-            <img class="lang-flag" src="flags/pl.webp" alt="Polish flag" />
-            <span class="lang-text">Polski</span>
-          </button>
+    <img
+      src="icons/soundon.png"
+      class="clean-icon"
+      id="sound-btn"
+      alt="Sound"
+    />
 
-          <button type="button" class="lang-item" data-lang="sk">
-            <!-- Slovenčina -->
-            <img class="lang-flag" src="flags/sk.webp" alt="Slovak flag" />
-            <!-- vlajka -->
-            <span class="lang-text">Slovenčina</span>
-            <!-- text -->
-          </button>
-        </div>
+  </div>
 
-        <img
-          src="icons/vibration_on.png"
-          class="clean-icon"
-          id="vibration-btn"
-          alt="Vibration"
-        />
-        <!-- pravá vibration -->
-      </div>
+
+  <!-- LANGUAGE MENU -->
+  <div id="language-menu" class="language-menu hidden">
+
+    <button type="button" class="lang-item" data-lang="en">
+      <img class="lang-flag" src="flags/gb.webp" alt="English flag" />
+      <span class="lang-text">English</span>
+    </button>
+
+    <button type="button" class="lang-item" data-lang="it">
+      <img class="lang-flag" src="flags/it.webp" alt="Italian flag" />
+      <span class="lang-text">Italiano</span>
+    </button>
+
+    <button type="button" class="lang-item" data-lang="es">
+      <img class="lang-flag" src="flags/es.webp" alt="Spanish flag" />
+      <span class="lang-text">Español</span>
+    </button>
+
+    <button type="button" class="lang-item" data-lang="pt">
+      <img class="lang-flag" src="flags/pt.webp" alt="Portuguese flag" />
+      <span class="lang-text">Português</span>
+    </button>
+
+    <button type="button" class="lang-item" data-lang="de">
+      <img class="lang-flag" src="flags/de.webp" alt="German flag" />
+      <span class="lang-text">Deutsch</span>
+    </button>
+
+    <button type="button" class="lang-item" data-lang="fr">
+      <img class="lang-flag" src="flags/fr.webp" alt="French flag" />
+      <span class="lang-text">Français</span>
+    </button>
+
+    <button type="button" class="lang-item" data-lang="pl">
+      <img class="lang-flag" src="flags/pl.webp" alt="Polish flag" />
+      <span class="lang-text">Polski</span>
+    </button>
+
+    <button type="button" class="lang-item" data-lang="sk">
+      <img class="lang-flag" src="flags/sk.webp" alt="Slovak flag" />
+      <span class="lang-text">Slovenčina</span>
+    </button>
+
+  </div>
+
+</div>
 
       <div class="menu-header">
         <div class="top-controls"></div>
@@ -436,5 +440,6 @@
     <script src="countries-i18n.js"></script>
     <script src="globe.js?v=4.23"></script>
     <script src="iso3to2.js"></script>
+    
   </body>
 </html>

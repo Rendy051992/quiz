@@ -1,3 +1,171 @@
+// ===== GLOBAL SOUND SETTINGS (shared for whole app) =====
+window.SOUND = {
+  enabled: localStorage.getItem("soundEnabled") !== "0",
+  setEnabled(value) {
+    this.enabled = !!value;
+    localStorage.setItem("soundEnabled", this.enabled ? "1" : "0");
+  }
+};
+
+// ===== SFX (correct, wrong) pre Classic Quiz =====
+window.SFX = window.SFX || {}; // aby to nepadalo, ak už existuje
+
+const sfxCorrect = new Audio("audio/correct.mp3"); sfxCorrect.preload = "auto"; sfxCorrect.volume = 0.80;
+const sfxWrong   = new Audio("audio/wrong.mp3");   sfxWrong.preload = "auto";   sfxWrong.volume = 0.85;
+
+window.SFX.correct = function () {
+  if (!window.SOUND || !window.SOUND.enabled) return;
+  try { sfxCorrect.currentTime = 0; sfxCorrect.play().catch(() => {}); } catch (e) {}
+};
+
+window.SFX.wrong = function () {
+  if (!window.SOUND || !window.SOUND.enabled) return;
+  try { sfxWrong.currentTime = 0; sfxWrong.play().catch(() => {}); } catch (e) {}
+};
+
+// ===== UI CLICK SOUND (100% stable, no mp3, no delay, categories ON, Classic answers OFF) =====
+(function () {
+  if (window.__gvUiClickInit) return;
+  window.__gvUiClickInit = true;
+
+  let ctx = null;
+
+  // anti double, aby sa jeden tap nezmenil na 2-3 zvuky
+  let lastAt = 0;
+  const MIN_GAP_MS = 90;
+
+  function getCtx() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+    }
+    return ctx;
+  }
+
+  function unlockAudio() {
+    const c = getCtx();
+    if (!c) return;
+    if (c.state === "suspended") c.resume().catch(() => {});
+
+  }
+  
+
+  // ultra krátky "tick" click, bez súboru, bez načítania
+  function playUiClick() {
+    // ===== CORRECT / WRONG SFX (mp3) =====
+const sfxCorrect = new Audio("audio/correct.mp3"); sfxCorrect.preload = "auto"; sfxCorrect.volume = 0.75;
+const sfxWrong   = new Audio("audio/wrong.mp3");   sfxWrong.preload = "auto";   sfxWrong.volume = 0.80;
+
+window.SFX = window.SFX || {}; // bezpečne vytvorím objekt
+window.SFX.correct = function () {
+  if (!window.SOUND || !window.SOUND.enabled) return;
+  try { sfxCorrect.currentTime = 0; sfxCorrect.play().catch(() => {}); } catch (e) {}
+  
+};
+window.SFX.wrong = function () {
+  if (!window.SOUND || !window.SOUND.enabled) return;
+  try { sfxWrong.currentTime = 0; sfxWrong.play().catch(() => {}); } catch (e) {}
+};
+    if (!window.SOUND || !window.SOUND.enabled) return;
+
+    const now = performance.now();
+    if (now - lastAt < MIN_GAP_MS) return;
+    lastAt = now;
+
+    unlockAudio();
+
+    const c = getCtx();
+    if (!c) return;
+
+    try {
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+
+      osc.type = "triangle";
+      osc.frequency.value = 1200;
+
+      gain.gain.value = 0.00001;
+      gain.gain.setValueAtTime(0.00001, c.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.10, c.currentTime + 0.003);
+      gain.gain.exponentialRampToValueAtTime(0.00001, c.currentTime + 0.028);
+
+      osc.connect(gain);
+      gain.connect(c.destination);
+
+      osc.start();
+      osc.stop(c.currentTime + 0.03);
+    } catch (e) {}
+    window.playUiClick = playUiClick;
+    
+  }
+
+  // ===== CORRECT / WRONG SFX (mp3) =====
+const sfxCorrect = new Audio("audio/correct.mp3"); sfxCorrect.preload = "auto"; sfxCorrect.volume = 0.75;
+const sfxWrong   = new Audio("audio/wrong.mp3");   sfxWrong.preload = "auto";   sfxWrong.volume = 0.80;
+
+window.SFX = window.SFX || {};
+
+window.SFX.correct = function () {
+  if (!window.SOUND || !window.SOUND.enabled) return;
+  try {
+    sfxCorrect.currentTime = 0;
+    sfxCorrect.play().catch(() => {});
+  } catch (e) {}
+};
+
+window.SFX.wrong = function () {
+  if (!window.SOUND || !window.SOUND.enabled) return;
+  try {
+    sfxWrong.currentTime = 0;
+    sfxWrong.play().catch(() => {});
+  } catch (e) {}
+};
+
+  function isClassicAnswerTap(e) {
+    return !!e.target.closest("#answers-container");
+  }
+
+  function isCategoryTap(e) {
+    return !!e.target.closest(".category-card");
+  }
+
+  // odomkni audio na prvý dotyk po reloade (mobile je v tomto chaos)
+  document.addEventListener("touchstart", unlockAudio, { passive: true });
+  document.addEventListener("pointerdown", unlockAudio, { passive: true });
+  document.addEventListener("mousedown", unlockAudio);
+
+  // 1) Categories vždy pípajú (Classic, Flags, Maps)
+  // Použijem aj touchstart aj pointerdown aj click, aby to fungovalo na 100% mobilov
+  function handleCategory(e) {
+    if (isClassicAnswerTap(e)) return;
+    if (!isCategoryTap(e)) return;
+    playUiClick();
+  }
+
+  document.addEventListener("touchstart", handleCategory, true);
+  document.addEventListener("pointerdown", handleCategory, true);
+  document.addEventListener("click", handleCategory, true);
+
+  // 2) Ostatné UI buttony pípajú, ale Classic answers nikdy
+  function handleUiButtons(e) {
+    if (isClassicAnswerTap(e)) return;
+    if (isCategoryTap(e)) return;
+
+    const el = e.target.closest("button, a, .btn, [role='button']");
+    if (!el) return;
+
+    if (el.disabled || el.getAttribute("aria-disabled") === "true") return;
+
+    playUiClick();
+  }
+
+  document.addEventListener("touchstart", handleUiButtons, true);
+  document.addEventListener("pointerdown", handleUiButtons, true);
+  
+})();
+
+
 function initAppStart() {
   // funkcia ktorá bude obsahovať kód po načítaní app
   // Hneď po načítaní aplikácie povieme, že sme v menu
@@ -356,6 +524,41 @@ function initVibrationToggle() {
   });
 }
 
+function initSoundToggle() {
+  // prepína SOUND ikonku ON, OFF + klik
+  const btn = document.getElementById("sound-btn"); // nájde ikonku v HTML
+  if (!btn) return; // stop, ak ikonka neexistuje
+
+  const applyIcon = () => {
+    const on = !!window.SOUND?.enabled; // berie stav z globálneho SOUND
+    btn.src = on ? "icons/soundon.png" : "icons/soundoff.png"; // prepne obrázok
+    btn.alt = on ? "Sound on" : "Sound off"; // prepne alt text
+    btn.setAttribute("aria-pressed", on ? "true" : "false"); // a11y stav
+  };
+
+  applyIcon(); // nastaví ikonku hneď po štarte
+
+  btn.addEventListener("click", () => {
+    // pri kliknutí prepne stav a uloží ho cez SOUND.setEnabled
+    const newState = !window.SOUND?.enabled; // nový stav
+
+    if (window.SOUND && typeof window.SOUND.setEnabled === "function") {
+      window.SOUND.setEnabled(newState); // uloží do localStorage soundEnabled
+    } else {
+      // fallback, ak by SOUND neexistoval
+      window.SOUND = window.SOUND || {};
+      window.SOUND.enabled = newState;
+      localStorage.setItem("soundEnabled", newState ? "1" : "0");
+    }
+
+    applyIcon(); // hneď prekreslí ikonku
+
+    if (newState && typeof window.playUiClick === "function") {
+      window.playUiClick(); // krátky click hneď po zapnutí zvuku
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.history.state) {
     history.replaceState({ screen: "menu" }, "", "");
@@ -367,6 +570,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // initUIIcons(); // dočasne vypnuté – test výkonu  initVibrationToggle(); // ja zapnem vibro ikonku ON, OFF
 
   initVibrationToggle(); // ja zapnem vibro ikonku ON, OFF
+  initSoundToggle();
 
   // initWhateverElse(); // ✅ dočasne vypnuté, lebo nie je definovaná a padá celý script
 });
@@ -958,6 +1162,13 @@ function onAnswerTap(event) {
   if (nxt) nxt.disabled = false;
 
   const isCorrect = selectedButton.dataset.correct === "true";
+if (isCorrect) {
+  if (window.SFX && typeof window.SFX.correct === "function") window.SFX.correct();
+  if (navigator && typeof navigator.vibrate === "function") navigator.vibrate([18]); // krátka jemná vibrácia
+} else {
+  if (window.SFX && typeof window.SFX.wrong === "function") window.SFX.wrong();
+  if (navigator && typeof navigator.vibrate === "function") navigator.vibrate([35, 25, 35]); // dvojitý impulz pre wrong
+}
   selectedButton.classList.add(isCorrect ? "correct" : "incorrect");
 
   const correctBtn = answersContainer?.querySelector('[data-correct="true"]');

@@ -827,9 +827,11 @@ body.globe-preload #globe-screen {
   position: relative; /* ja som nad overlay vrstvou */
   z-index: 1; /* ja som klikateľná nad ::before */
   width: min(92vw, 360px); /* ja držím rozumnú šírku */
-  padding: 22px 20px; /* ja dám vnútorný priestor */
+  padding: 32px 20px; /* ja dám viac priestoru hore dole */
   border-radius: 26px; /* ja spravím veľké zaoblenie */
   text-align: center; /* ja všetko vycentrujem */
+
+  min-height: 360px; /* ⭐ karta bude vyššia */
 
   background: rgba(18, 22, 30, 0.62); /* ja spravím tmavé glass pozadie */
   backdrop-filter: blur(18px); /* ja spravím blur */
@@ -837,6 +839,10 @@ body.globe-preload #globe-screen {
 
   border: 1px solid rgba(255,255,255,0.10); /* ja dám jemný border */
   box-shadow: 0 18px 55px rgba(0,0,0,0.45); /* ja dám hĺbku */
+
+  display: flex; /* ja zapnem flex layout vnútri karty */
+  flex-direction: column; /* ja dám všetko pod seba */
+  align-items: center; /* ja vycentrujem obsah horizontálne */
 }
 
 /* ===== TEXTY ===== */
@@ -860,8 +866,7 @@ body.globe-preload #globe-screen {
 .globe-start-icon{ /* ikona mapy */
   font-size: 56px; /* väčšia ikona */
   line-height: 1; /* bez extra výšky riadku */
-  margin: 6px auto 18px auto; /* lepšie centrovanie */
-  opacity: 1;
+margin: 28px auto 22px auto; /* ⭐ posunie mapu nižšie */  opacity: 1;
 
   display: inline-flex; /* stabilné centrovanie */
   align-items: center;
@@ -891,6 +896,7 @@ body.globe-preload #globe-screen {
 /* ===== BUTTON ===== */
 
 .globe-start-btn{ /* LET'S GO */
+    margin-top: auto; /* ja dotlačím button úplne dole v karte */
   width: 100%; /* ja som na celú šírku card */
   height: 52px; /* ja som vysoký button */
   border-radius: 18px; /* ja som zaoblený */
@@ -1013,3 +1019,67 @@ body.globe-preload #globe-screen {
   transform: scale(0.985); /* jemný klik efekt */
 }
 
+
+
+
+
+
+/* =========================================================
+   PREMIUM 3D BUBBLES — ONLY DESIGN (NO POSITION CHANGE)
+   ========================================================= */
+
+/* základ bubble upgrade */
+.globe-bubble{
+  border-radius: 18px;
+  border: 1.5px solid rgba(255,255,255,0.35); /* jemný 3D border */
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.25); /* horný highlight */
+
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* zelená correct */
+.globe-bubble.correct{
+  background: linear-gradient(
+    145deg,
+    #00e676 0%,
+    #00c853 40%,
+    #00b248 100%
+  );
+
+  border: 1.5px solid rgba(0,255,170,0.6);
+
+  box-shadow:
+    0 10px 26px rgba(0,0,0,0.4),
+    0 0 18px rgba(0,255,170,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
+/* červená wrong */
+.globe-bubble.wrong{
+  background: linear-gradient(
+    145deg,
+    #ff5252 0%,
+    #ff1744 40%,
+    #d50000 100%
+  );
+
+  border: 1.5px solid rgba(255,120,120,0.7);
+
+  box-shadow:
+    0 10px 26px rgba(0,0,0,0.4),
+    0 0 18px rgba(255,40,40,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
+/* malý 3D hover efekt keď sa zobrazia */
+.globe-bubble.show{
+  transition: box-shadow 0.25s ease, filter 0.25s ease;
+  filter: saturate(1.1) brightness(1.05);
+}

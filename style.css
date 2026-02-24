@@ -1793,3 +1793,23 @@ body.maps-mode #rotate-overlay{
 
 
 
+.top-nav-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 22px; /* viac priestoru od okraja */
+}
+
+.nav-left,
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.clean-icon{
+  width:28px;
+  height:28px;
+  object-fit:contain;
+  display:block;
+}
