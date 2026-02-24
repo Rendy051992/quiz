@@ -1,0 +1,28 @@
+{
+  "name": "quiz_android",
+  "version": "1.0.0",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rendy051992/quiz.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rendy051992/quiz/issues"
+  },
+  "homepage": "https://github.com/Rendy051992/quiz#readme",
+  "description": "",
+  "dependencies": {
+    "@capacitor/android": "^8.0.2",
+    "@capacitor/app": "^8.0.1",
+    "@capacitor/cli": "^8.0.2",
+    "@capacitor/core": "^8.0.2",
+    "globe.gl": "^2.45.0",
+    "three": "^0.182.0"
+  }
+}

@@ -1464,124 +1464,352 @@ body.maps-mode #rotate-overlay{
 
 /*-----------------------------------------------------------------------------------------------------------------------*/
 
-/* ===== INFO MODAL, default hidden ===== */
-.info-modal.hidden{
-  display: none;                 /* ✅ najdôležitejší riadok, aby nič nerozbilo layout */
-}
+/* INFO MODAL */
 
 .info-modal{
-  position: fixed;               /* ✅ nebude súčasť layoutu, nebude tlačiť quiz */
+  position: fixed;
   inset: 0;
-  z-index: 999999;               /* ✅ bude nad všetkým */
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-modal.hidden{
+  display: none;
 }
 
 .info-backdrop{
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.55);  /* ✅ tmavé pozadie */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
 }
 
 .info-box{
-  position: absolute;
-  left: 50%;
-  top: calc(env(safe-area-inset-top, 0px) + 80px);
-  transform: translateX(-50%);
+  position: relative;
+  width: 90%;
+  max-width: 420px;
+  padding: 22px;
+  border-radius: 20px;
 
-  width: min(560px, 92vw);
-  max-height: min(70vh, 520px);
-  overflow: auto;
-
-  background: rgba(10, 16, 28, 0.78);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 18px;
-  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
-  color: #eaf3ff;
-  padding: 16px;
-}
-
-.info-box a{
-  color: #7cc4ff;
-  text-decoration: underline;
-  word-break: break-word;
-}
-
-#info-close{
-  margin-top: 18px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 110px;
-  height: 42px;
-
-  border-radius: 999px;
-
-  background: linear-gradient(180deg, rgba(120,190,255,0.35), rgba(60,120,255,0.18)) !important;
-  border: 1px solid rgba(140,210,255,0.35) !important;
-
-  color: #eaf3ff !important;
-  font-weight: 800;
-  letter-spacing: 0.2px;
+  background: linear-gradient(180deg, rgba(20,30,50,0.95), rgba(10,15,30,0.95));
+  border: 1px solid rgba(255,255,255,0.15);
 
   box-shadow:
-    0 14px 34px rgba(0,0,0,0.55),
-    0 0 24px rgba(92,186,255,0.22),
-    inset 0 0 0 1px rgba(255,255,255,0.08);
+    0 20px 60px rgba(0,0,0,0.6),
+    inset 0 0 30px rgba(0,150,255,0.15);
 
-  cursor: pointer;
+  color: white;
+  font-weight: 500;
 }
 
-#info-close:active{
+/* HEADER */
+
+.info-header{
+  margin-bottom: 14px;
+}
+
+.info-title{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.info-icon{
+  font-size: 28px;
+}
+
+.info-app{
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.info-dev{
+ font-size: 14px;
+  opacity: 0.7;
+  margin-top: 10px;   /* väčšia medzera pod GeoVerity */
+}
+
+/* CONTENT */
+
+.info-content h3{
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-size: 15px;
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
+
+.info-content p{
+  margin: 4px 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* LINKS */
+
+.info-content a{
+  color: #6ec1ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* BUTTON */
+
+.info-actions{
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.info-close-btn{
+  padding: 10px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.25);
+
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-weight: 600;
+
+  backdrop-filter: blur(6px);
+}
+
+.info-close-btn:active{
   transform: scale(0.96);
 }
 
-/* link + close vedľa seba bez prekrývania */
-.info-actions{
-  margin-top: 10px;
 
-  display: flex;                 /* ✅ urobí row */
+
+
+
+
+.menu-grid .category-card{
+  display: flex;
   align-items: center;
-  justify-content: space-between;/* ✅ link vľavo, close vpravo */
-  gap: 12px;                     /* ✅ medzera medzi nimi */
+  gap: 12px;
 }
 
-.info-policy-link{
-  flex: 1;                       /* ✅ link zoberie voľné miesto */
-  min-width: 0;                  /* ✅ dovolí zalomiť text */
-  word-break: break-word;
-  
+.menu-grid .category-card .card-content{
+  flex: 1;
+  min-width: 0;
 }
 
-/* Close nech sa nikdy “nepretlačí” cez link */
-#info-close{
-  flex: 0 0 auto;                /* ✅ vždy si drží svoju šírku */
-  margin-top: 0;                 /* ✅ aby nepadal nižšie */
+.menu-grid .category-card .card-title{
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
 }
 
-/* FORCE: zmenší medzeru medzi "Privacy Policy" a linkom */
-#info-modal .info-box h3{
-  margin-top: 42px !important;
-  margin-bottom: 14px !important;
-}
-
-/* FORCE: nech link + Close nie sú zbytočne nízko */
-#info-modal .info-actions{
-  margin-top: 0px !important;
+.menu-grid .category-card .card-arrow{
+  margin-left: auto;
+  flex: 0 0 auto;
 }
 
 
-
-.info-box h2 {
-  margin-bottom: 6px;   /* malá medzera pod názvom GeoVerity, aby nebol nalepený text pod tým */
+.menu-grid .category-card .card-content{
+  padding-right: 44px;
 }
 
-.info-box p:first-of-type{
-  margin-top: 0;
-  margin-left: 30px;
-  opacity: 0.75;
-  font-size: 14px;
+.menu-grid .category-card .card-arrow{
+  position: static !important;
 }
 
+
+
+
+
+
+
+
+
+#lang-btn{
+  background: transparent; /* zruším šedé pozadie buttonu */
+  border: none;            /* zruším default border */
+  padding: 0;              /* zruším vnútorné odsadenie */
+  margin: 0;               /* zruším vonkajšie odsadenie */
+  cursor: pointer;         /* ukážem že sa dá kliknúť */
+}
+
+#lang-btn img{
+  display: block; /* odstránenie spodnej medzery pod obrázkom */
+}
+
+
+
+
+/* ===== LANGUAGE MENU OVERLAY — CENTERED CLEAN VERSION ===== */
+
+#language-menu{
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  display: flex;
+  flex-direction: column;     /* POD SEBA */
+  align-items: center;        /* horizontálne center */
+  justify-content: center;    /* vertikálne center */
+
+  gap: 14px;                  /* medzera medzi jazykmi */
+
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+#language-menu.hidden{
+  display: none;
+}
+
+
+/* ===== LANGUAGE ITEM ===== */
+
+#language-menu .lang-item{
+  width: min(520px, 100%);
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 16px 18px;
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.92);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 8px 30px rgba(0,0,0,0.35);
+
+  transition: all 140ms ease;
+}
+
+#language-menu .lang-item:active{
+  transform: scale(0.97);
+}
+
+
+/* ===== FLAG ===== */
+
+#language-menu .lang-flag{
+  width: 36px;
+  height: 26px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+  flex: 0 0 auto;
+}
+
+
+/* ===== TEXT ===== */
+
+#language-menu .lang-text{
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  flex: 1;
+}
+
+
+/* ===== ARROW ===== */
+
+#language-menu .lang-item::after{
+  content: "›";
+  font-size: 22px;
+  opacity: 0.55;
+}
+
+
+/* ===== ACTIVE LANGUAGE ===== */
+
+#language-menu .lang-item.is-active{
+  background: rgba(160, 85, 255, 0.18);
+  border: 2px solid rgba(160, 85, 255, 0.85);
+
+  box-shadow:
+    0 0 0 2px rgba(160, 85, 255, 0.15),
+    0 20px 50px rgba(160, 85, 255, 0.28);
+}
+
+#language-menu .lang-item.is-active::after{
+  content: "✓";
+  opacity: 0.95;
+}
+
+
+
+
+/* ===== LANGUAGE MENU ANIMATION ===== */
+
+#language-menu{
+  transform-origin: top center; /* animácia začne zhora */
+}
+
+/* otvorenie — iba keď NIE JE hidden */
+#language-menu:not(.hidden){
+  animation: langMenuOpen 0.42s cubic-bezier(.16,1,.3,1);
+}
+
+/* zatvorenie — keď sa pridá hidden */
+#language-menu.hidden{
+  animation: langMenuClose 0.22s ease;
+}
+
+
+/* ===== OPEN ===== */
+
+@keyframes langMenuOpen{
+  0%{
+    opacity: 0;
+    transform: translateY(-80px) scale(0.92);
+  }
+  60%{
+    opacity: 1;
+    transform: translateY(8px) scale(1.02); /* malý bounce */
+  }
+  100%{
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* ===== CLOSE ===== */
+
+@keyframes langMenuClose{
+  0%{
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100%{
+    opacity: 0;
+    transform: translateY(-50px) scale(0.94);
+  }
+}
+
+
+
+.top-nav-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 22px; /* viac priestoru od okraja */
+}
+
+.nav-left,
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.clean-icon{
+  width:28px;
+  height:28px;
+  object-fit:contain;
+  display:block;
+}
