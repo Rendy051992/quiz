@@ -1794,22 +1794,37 @@ body.maps-mode #rotate-overlay{
 
 
 .top-nav-bar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px 22px; /* viac priestoru od okraja */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-left: 18px;
+  padding-right: 18px;
+
+  /* toto je kľúč: notch / status bar */
+  padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+  padding-bottom: 12px;
 }
 
 .nav-left,
 .nav-right{
   display:flex;
   align-items:center;
-  gap:20px;
+  gap:18px;
 }
 
 .clean-icon{
   width:28px;
   height:28px;
-  object-fit:contain;
   display:block;
+}
+
+#home-screen{
+  padding-top: calc(env(safe-area-inset-top, 0px) + 70px);
 }
